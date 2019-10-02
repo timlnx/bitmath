@@ -174,7 +174,7 @@ class Bitmath(object):
     """The base class for all the other prefix classes"""
 
     # All the allowed input types
-    valid_types = (int, float, long)
+    valid_types = (float, long, numbers.Integral)
 
     def __init__(self, value=0, bytes=None, bits=None):
         """Instantiate with `value` by the unit, in plain bytes, or
