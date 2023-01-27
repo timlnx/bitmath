@@ -142,35 +142,12 @@ sdist: setup.py clean
 	@echo "#############################################"
 	python setup.py sdist
 
-deb: setup.py clean
-	git archive --format=tar --prefix=bitmath/ HEAD | gzip -9 > ../bitmath_$(VERSION).$(RPMRELEASE).orig.tar.gz
-	debuild -us -uc
-
 rpmcommon: sdist python-bitmath.spec setup.py
 	@echo "#############################################"
 	@echo "# Building (S)RPM Now"
 	@echo "#############################################"
 	@mkdir -p rpm-build
 	@cp dist/$(NAME)-$(VERSION).$(RPMRELEASE).tar.gz rpm-build/$(VERSION).$(RPMRELEASE).tar.gz
-
-srpm5: rpmcommon
-	rpmbuild --define "_topdir %(pwd)/rpm-build" \
-	--define 'dist .el5' \
-	--define "_builddir %{_topdir}" \
-	--define "_rpmdir %{_topdir}" \
-	--define "_srcrpmdir %{_topdir}" \
-	--define "_specdir $(RPMSPECDIR)" \
-	--define "_sourcedir %{_topdir}" \
-	--define "_source_filedigest_algorithm 1" \
-	--define "_binary_filedigest_algorithm 1" \
-	--define "_binary_payload w9.gzdio" \
-	--define "_source_payload w9.gzdio" \
-	--define "_default_patch_fuzz 2" \
-	-bs $(RPMSPEC)
-	@echo "#############################################"
-	@echo "$(PKGNAME) SRPM is built:"
-	@find rpm-build -maxdepth 2 -name '$(PKGNAME)*src.rpm' | awk '{print "    " $$1}'
-	@echo "#############################################"
 
 srpm: rpmcommon
 	rpmbuild --define "_topdir %(pwd)/rpm-build" \
@@ -198,45 +175,7 @@ rpm: rpmcommon
 	@find rpm-build -maxdepth 2 -name '$(PKGNAME)*.rpm' | awk '{print "    " $$1}'
 	@echo "#############################################"
 
-virtualenv2:
-	@echo "#############################################"
-	@echo "# Creating a virtualenv"
-	@echo "#############################################"
-	virtualenv $(NAME)env2 --python=python2
-	. $(NAME)env2/bin/activate && pip install -r requirements.txt
-
-ci-unittests2:
-	@echo "#############################################"
-	@echo "# Running Unit Tests in virtualenv"
-	@echo "# Using python: $(shell ./bitmathenv2/bin/python --version 2>&1)"
-	@echo "#############################################"
-	. $(NAME)env2/bin/activate && export PYVER=PY2X && nosetests -v --with-coverage --cover-html --cover-min-percentage=90 --cover-package=bitmath tests/
-	@echo "Testing argparse integration without progressbar dependency (#86)"
-	. $(NAME)env2/bin/activate && pip uninstall -y progressbar231 click
-	. $(NAME)env2/bin/activate && export PYVER=PY2X && nosetests -v --with-coverage --cover-html --cover-min-percentage=90 --cover-package=bitmath tests/test_argparse_type.py
-
-ci-list-deps2:
-	@echo "#############################################"
-	@echo "# Listing all pip deps"
-	@echo "#############################################"
-	. $(NAME)env2/bin/activate && pip freeze
-
-ci-pycodestyle2:
-	@echo "#############################################"
-	@echo "# Running PEP8 Compliance Tests in virtualenv"
-	@echo "#############################################"
-	. $(NAME)env2/bin/activate && pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
-
-ci-pyflakes2:
-	@echo "#################################################"
-	@echo "# Running Pyflakes Compliance Tests in virtualenv"
-	@echo "#################################################"
-	. $(NAME)env2/bin/activate && pyflakes bitmath/__init__.py tests/*.py
-
-ci2: clean uniquetestnames virtualenv2 ci-list-deps2 ci-pycodestyle2 ci-pyflakes2 ci-unittests2
-	:
-
-virtualenv3:
+virtualenv:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Creating a virtualenv"
@@ -244,7 +183,7 @@ virtualenv3:
 	virtualenv $(NAME)env3 --python=python3
 	. $(NAME)env3/bin/activate && pip install -r requirements-py3.txt
 
-ci-unittests3:
+ci-unittests:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Running Unit Tests in virtualenv"
@@ -255,31 +194,26 @@ ci-unittests3:
 	. $(NAME)env3/bin/activate && pip uninstall -y progressbar33 click
 	. $(NAME)env3/bin/activate && export PYVER=PY3X && nosetests -v --with-coverage --cover-html --cover-package=bitmath tests/test_argparse_type.py
 
-ci-list-deps3:
+ci-list-deps:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Listing all pip deps"
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pip freeze
 
-ci-pycodestyle3:
+ci-pycodestyle:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Running PEP8 Compliance Tests in virtualenv"
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
 
-ci-pyflakes3:
+ci-pyflakes:
 	@echo ""
 	@echo "#################################################"
 	@echo "# Running Pyflakes Compliance Tests in virtualenv"
 	@echo "#################################################"
 	. $(NAME)env3/bin/activate && pyflakes bitmath/__init__.py tests/*.py
 
-ci3: clean uniquetestnames virtualenv3 ci-list-deps3 ci-pycodestyle3 ci-pyflakes3 ci-unittests3
+ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-pyflakes ci-unittests
 	:
-
-ci: ci2
-	:
-
-ci-all: ci2 ci3

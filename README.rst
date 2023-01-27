@@ -72,19 +72,10 @@ Installation
 
 The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
 you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as the `EPEL6
-<http://download.fedoraproject.org/pub/epel/6/i386/repoview/epel-release.html>`_
-and `EPEL7
-<http://download.fedoraproject.org/pub/epel/7/x86_64/repoview/epel-release.html>`_
-repositories. There are now dual python2.x and python3.x releases
-available.
+the main Fedora repositories, as well as EPEL Repositories. As of 2022
+bitmath is only developed, tested, and supported for currently
+supported Python releases.
 
-
-**Python 2.x**:
-
-.. code-block:: bash
-
-   $ sudo dnf install python2-bitmath
 
 **Python 3.x**:
 
@@ -117,18 +108,6 @@ You could also install bitmath from `PyPi
    <https://github.com/tbielawa/bitmath/issues/57#issuecomment-227018168>`_
    for more information.
 
-
-**PPA**:
-
-Ubuntu Xenial, Wily, Vivid, Trusty, and Precise users can install
-bitmath from the `launchpad PPA
-<https://launchpad.net/~tbielawa/+archive/ubuntu/bitmath>`_:
-
-.. code-block:: bash
-
-   $ sudo add-apt-repository ppa:tbielawa/bitmath
-   $ sudo apt-get update
-   $ sudo apt-get install python-bitmath
 
 
 **Source**:
@@ -435,92 +414,3 @@ Formatting
    [1.000@KiB]
    [38.000@Byte]
    [10.000@Byte]
-
-``argparse`` Integration
-------------------------
-
-Example script using ``bitmath.integrations.bmargparse.BitmathType`` as an
-argparser argument type:
-
-.. code-block:: python
-
-   import argparse
-   from bitmath.integrations.bmargparse import BitmathType
-   parser = argparse.ArgumentParser(
-       description="Arg parser with a bitmath type argument")
-   parser.add_argument('--block-size',
-                       type=BitmathType,
-                       required=True)
-
-   results = parser.parse_args()
-   print "Parsed in: {PARSED}; Which looks like {TOKIB} as a Kibibit".format(
-       PARSED=results.block_size,
-       TOKIB=results.block_size.Kib)
-
-If ran as a script the results would be similar to this:
-
-.. code-block:: bash
-
-   $ python ./bmargparse.py --block-size 100MiB
-   Parsed in: 100.0 MiB; Which looks like 819200.0 Kib as a Kibibit
-
-``click`` Integration
----------------------
-
-Example script using ``bitmath.integrations.bmclick.BitmathType`` as an
-click parameter type:
-
-.. code-block:: python
-
-   import click
-   from bitmath.integrations.bmclick import BitmathType
-
-   @click.command()
-   @click.argument('size', type=BitmathType())
-   def best_prefix(size):
-      click.echo(size.best_prefix())
-
-If ran as a script the results should be similar to this:
-
-.. code-block:: bash
-
-   $ python ./bestprefix.py "1024 KiB"
-   1.0 MiB
-
-``progressbar`` Integration
----------------------------
-
-Use ``bitmath.integrations.bmprogressbar.BitmathFileTransferSpeed`` as a
-``progressbar`` file transfer speed widget to monitor download speeds:
-
-.. code-block:: python
-
-   import requests
-   import progressbar
-   import bitmath
-   from bitmath.integrations.bmprogressbar import BitmathFileTransferSpeed
-
-   FETCH = 'https://www.kernel.org/pub/linux/kernel/v3.0/patch-3.16.gz'
-   widgets = ['Bitmath Progress Bar Demo: ', ' ',
-              progressbar.Bar(marker=progressbar.RotatingMarker()), ' ',
-              BitmathFileTransferSpeed()]
-
-   r = requests.get(FETCH, stream=True)
-   size = bitmath.Byte(int(r.headers['Content-Length']))
-   pbar = progressbar.ProgressBar(widgets=widgets, maxval=int(size),
-                                  term_width=80).start()
-   chunk_size = 2048
-   with open('/dev/null', 'wb') as fd:
-       for chunk in r.iter_content(chunk_size):
-           fd.write(chunk)
-           if (pbar.currval + chunk_size) < pbar.maxval:
-               pbar.update(pbar.currval + chunk_size)
-   pbar.finish()
-
-
-If ran as a script the results would be similar to this:
-
-.. code-block:: bash
-
-   $ python ./smalldl.py
-   Bitmath Progress Bar Demo:  ||||||||||||||||||||||||||||||||||||||||| 1.58 MiB/s

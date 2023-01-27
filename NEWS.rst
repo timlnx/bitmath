@@ -5,6 +5,48 @@ NEWS
    :depth: 1
    :local:
 
+.. _bitmath-2.0.0:
+
+bitmath-2.0.0
+*************
+
+bitmath-2.0.0 **will be** the first new release since 1.3.3 was
+released in 2018!
+
+Beginning with the release of 2.0.0 bitmath will only officially
+support supported python versions. It is considered a happy bonus if
+bitmath works with an unsupported Python version.
+
+The focus of the first "bitmath 2" releases will be
+simplification. Some things will go again, they may come back a little
+later.
+
+
+What to Expect
+==============
+
+In the semantic versioning world, a major version number increase is
+meant to express fundamental changes to the software. Changes which
+will **almost certainly** result in breakages for at least some of the
+user base. For bitmath this will be true as well, and in this case
+that user base is specifically anyone still using the library on
+Python 2.x.
+
+* The Bitmath API - The fundamental API will remain unchanged. What
+  will change are Python language features used and dropping of
+  workarounds for older Python versions
+* Bitmath :ref:`Integrations
+  <bitmath_3rd_party_module_integrations>` - Integrations will be
+  removed from the primary source code for now. Many of these can be
+  provided as code examples instead which will simplify packaging and
+  testing requirements for the project.
+* Packaging - It looks like a lot has changed in the last 2.5 years in
+  the Python packaging world, and I have a lot to catch up on. I guess
+  we use TOML instead of setup.py now, that's neat.
+* Distribution - I daily drive Fedora Linux and Mac OS X, I don't have
+  time to keep up with other platforms. If someone wants to bring back
+  debian packaging, contact me and we'll work something out.
+
 
 .. _bitmath-1.4.0-1:
 

@@ -850,6 +850,8 @@ behavior.
 
 .. py:module:: bitmath.integrations
 
+.. _bitmath_3rd_party_module_integrations:
+
 3rd Party Module Integrations
 *****************************
 
