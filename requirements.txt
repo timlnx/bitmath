@@ -1,8 +1,0 @@
-python-coveralls
-coverage==4.0.3
-mock
-nose
-pyflakes
-pycodestyle
-progressbar231
-click
