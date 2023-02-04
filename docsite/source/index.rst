@@ -57,9 +57,8 @@ Installation
 
 The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
 you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as the EPEL6 and EPEL7
-repositories. There are now dual python2.x and python3.x releases
-available.
+the main Fedora repositories, as well as the latest supported EPEL
+repositories.
 
 **Python 3.x**:
 
@@ -381,64 +380,3 @@ If ran as a script the results would be similar to this:
 
    $ python ./bmargparse.py --block-size 100MiB
    Parsed in: 100.0 MiB; Which looks like 819200.0 Kib as a Kibibit
-
-``click`` Integration
----------------------
-
-Example script using ``bitmath.integrations.bmclick.BitmathType`` as an
-click parameter type:
-
-.. code-block:: python
-
-   import click
-   from bitmath.integrations.bmclick import BitmathType
-
-   @click.command()
-   @click.argument('size', type=BitmathType())
-   def best_prefix(size):
-      click.echo(size.best_prefix())
-
-If ran as a script the results should be similar to this:
-
-.. code-block:: bash
-
-   $ python ./bestprefix.py "1024 KiB"
-   1.0 MiB
-
-``progressbar`` Integration
----------------------------
-
-Use ``bitmath.integrations.bmprogressbar.BitmathFileTransferSpeed`` as a
-``progressbar`` file transfer speed widget to monitor download speeds:
-
-.. code-block:: python
-
-   import requests
-   import progressbar
-   import bitmath
-   from bitmath.integrations.bmprogressbar import BitmathFileTransferSpeed
-
-   FETCH = 'https://www.kernel.org/pub/linux/kernel/v3.0/patch-3.16.gz'
-   widgets = ['Bitmath Progress Bar Demo: ', ' ',
-              progressbar.Bar(marker=progressbar.RotatingMarker()), ' ',
-              BitmathFileTransferSpeed()]
-
-   r = requests.get(FETCH, stream=True)
-   size = bitmath.Byte(int(r.headers['Content-Length']))
-   pbar = progressbar.ProgressBar(widgets=widgets, maxval=int(size),
-                                  term_width=80).start()
-   chunk_size = 2048
-   with open('/dev/null', 'wb') as fd:
-       for chunk in r.iter_content(chunk_size):
-           fd.write(chunk)
-           if (pbar.currval + chunk_size) < pbar.maxval:
-               pbar.update(pbar.currval + chunk_size)
-   pbar.finish()
-
-
-If ran as a script the results would be similar to this:
-
-.. code-block:: bash
-
-   $ python ./smalldl.py
-   Bitmath Progress Bar Demo:  ||||||||||||||||||||||||||||||||||||||||| 1.58 MiB/s

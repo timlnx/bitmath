@@ -31,14 +31,10 @@ focusing on file size unit conversion, functionality now includes:
 * Rich comparison operations (``1024 Bytes == 1KiB``)
 * bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
 * Reading a device's storage capacity (Linux/OS X support only)
-* `argparse <https://docs.python.org/2/library/argparse.html>`_
-  integration as a custom type
-* `click <https://click.palletsprojects.com/>`_
-  integration as a custom parameter type
-* `progressbar <https://code.google.com/p/python-progressbar/>`_
-  integration as a better file transfer speed widget
 * String parsing
 * Sorting
+* `argparse <https://docs.python.org/2/library/argparse.html>`_
+  integration as a custom type
 
 
 In addition to the conversion and math operations, `bitmath` provides
@@ -72,23 +68,15 @@ Installation
 
 The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
 you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as EPEL Repositories. As of 2022
+the main Fedora repositories, as well as EPEL Repositories. As of 2023
 bitmath is only developed, tested, and supported for currently
 supported Python releases.
 
-
-**Python 3.x**:
 
 .. code-block:: bash
 
    $ sudo dnf install python3-bitmath
 
-
-.. note::
-
-   **Upgrading**: If you have the old *python-bitmath* package
-   installed presently, you could also run ``sudo dnf update
-   python-bitmath`` instead
 
 
 **PyPi**:
@@ -140,8 +128,6 @@ Topics include:
   * Context Managers
   * Module Variables
   * ``argparse`` integration
-  * ``click`` integration
-  * ``progressbar`` integration
 
 * The ``bitmath`` command-line Tool
 
@@ -414,3 +400,31 @@ Formatting
    [1.000@KiB]
    [38.000@Byte]
    [10.000@Byte]
+
+``argparse`` Integration
+------------------------
+
+Example script using ``bitmath.integrations.bmargparse.BitmathType`` as an
+argparser argument type:
+
+.. code-block:: python
+
+   import argparse
+   from bitmath.integrations.bmargparse import BitmathType
+   parser = argparse.ArgumentParser(
+       description="Arg parser with a bitmath type argument")
+   parser.add_argument('--block-size',
+                       type=BitmathType,
+                       required=True)
+
+   results = parser.parse_args()
+   print "Parsed in: {PARSED}; Which looks like {TOKIB} as a Kibibit".format(
+       PARSED=results.block_size,
+       TOKIB=results.block_size.Kib)
+
+If ran as a script the results would be similar to this:
+
+.. code-block:: bash
+
+   $ python ./bmargparse.py --block-size 100MiB
+   Parsed in: 100.0 MiB; Which looks like 819200.0 Kib as a Kibibit
