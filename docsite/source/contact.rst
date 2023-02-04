@@ -20,12 +20,6 @@ ahead:
 
  * `GitHub: tbielawa <https://github.com/tbielawa/>`_
 
-**Tweet-Tweet**
- I have been known to tweet from time to time.
-
- * `@tbielawa <https://twitter.com/tbielawa>`_
-
-
 **Bugs/Issues/Requests**
  All contributions related directly to the bitmath project, i.e. bug
  reports or feature requests, should be posted to the project issue
@@ -33,14 +27,6 @@ ahead:
  information.
 
  * :ref:`Contributing <contributing>`
-
-**Saying hello**
- I'm on the `freenode <https://freenode.net/>`_ IRC network Monday
- through Friday, from around 9am EST through 5pm EST.
-
- * Issue a ``/who tbielawa*`` command to the server, a handle with the
-   netmask ``~tbielawa@redhat/tbielawa`` will appear for you to
-   ``/query`` if I'm online.
 
 **E-Mail**
  If you want to contact me directly, `clone the project
