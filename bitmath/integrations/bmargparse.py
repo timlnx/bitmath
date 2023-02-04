@@ -32,7 +32,7 @@ def BitmathType(bmstring):
     """An 'argument type' for integrations with the argparse module.
 
 For more information, see
-https://docs.python.org/2/library/argparse.html#type Of particular
+https://docs.python.org/3/library/argparse.html#type Of particular
 interest to us is this bit:
 
    ``type=`` can take any callable that takes a single string
