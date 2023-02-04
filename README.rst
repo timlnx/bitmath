@@ -33,7 +33,7 @@ focusing on file size unit conversion, functionality now includes:
 * Reading a device's storage capacity (Linux/OS X support only)
 * String parsing
 * Sorting
-* `argparse <https://docs.python.org/2/library/argparse.html>`_
+* `argparse <https://docs.python.org/3/library/argparse.html>`_
   integration as a custom type
 
 
@@ -42,7 +42,7 @@ human readable representations of values which are suitable for use in
 interactive shells as well as larger scripts and applications. The
 format produced for these representations is customizable via the
 functionality included in stdlibs `string.format
-<https://docs.python.org/2/library/string.html>`_.
+<https://docs.python.org/3/library/string.html>`_.
 
 In discussion we will refer to the NIST units primarily. I.e., instead
 of "megabyte" we will refer to "mebibyte". The former is ``10^3 =

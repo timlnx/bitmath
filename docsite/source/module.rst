@@ -86,7 +86,7 @@ bitmath.listdir()
 .. function:: listdir(search_base[, followlinks=False[, filter='*'[, relpath=False[, bestprefix=False[, system=NIST]]]]])
 
    This is a `generator
-   <https://docs.python.org/2/tutorial/classes.html#generators>`_
+   <https://docs.python.org/3/tutorial/classes.html#generators>`_
    which recurses a directory tree yielding 2-tuples of:
 
    * The absolute/relative path to a discovered file
@@ -99,7 +99,7 @@ bitmath.listdir()
                             enables directory link following
    :param string filter: **Default:** ``*`` (everything). A glob to
                          filter results with. See `fnmatch
-                         <https://docs.python.org/2/library/fnmatch.html>`_
+                         <https://docs.python.org/3/library/fnmatch.html>`_
                          for more details about *globs*
    :param bool relpath: **Default:** ``False``, returns the fully
                         qualified to each discovered file. ``True`` to
@@ -532,7 +532,7 @@ Context Managers
 ****************
 
 This section describes all of the `context managers
-<https://docs.python.org/2/reference/datamodel.html#context-managers>`_
+<https://docs.python.org/3/reference/datamodel.html#context-managers>`_
 provided by the bitmath class.
 
 .. warning::
@@ -872,18 +872,18 @@ argparse
 .. versionadded:: 1.2.0
 
 The `argparse module
-<https://docs.python.org/2/library/argparse.html>`_ (part of stdlib)
+<https://docs.python.org/3/library/argparse.html>`_ (part of stdlib)
 is used to parse command line arguments. By default, parsed options
 and arguments are turned into strings. However, one useful feature
 :py:mod:`argparse` provides is the ability to `specify what datatype
-<https://docs.python.org/2/library/argparse.html#type>`_ any given
+<https://docs.python.org/3/library/argparse.html#type>`_ any given
 argument or option should be interpreted as.
 
 .. function:: BitmathType(bmstring)
 
    The :func:`BitmathType` factory creates objects that can be passed
    to the type argument of `ArgumentParser.add_argument()
-   <https://docs.python.org/2/library/argparse.html#argparse.ArgumentParser.add_argument>`_. Arguments
+   <https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument>`_. Arguments
    that have :func:`BitmathType` objects as their type will
    automatically parse the command line argument into a matching
    :ref:`bitmath object <classes>`.

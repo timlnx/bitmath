@@ -107,7 +107,7 @@ leave a comment in the pull request.
 Automated Tests
 ***************
 
-Write `unittests <https://docs.python.org/2/library/unittest.html>`_
+Write `unittests <https://docs.python.org/3/library/unittest.html>`_
 for any new functionality, `if you are up to the task`. This is not a
 requirement, but it does get you a lot of karma.
 
@@ -131,7 +131,7 @@ bitmath unit tests are integrated with/depend on the following items:
   with GitHub to notify you if a pull-request would improve/decrease
   overall code test coverage.
 
-* `unittest <https://docs.python.org/2/library/unittest.html>`_ -
+* `unittest <https://docs.python.org/3/library/unittest.html>`_ -
   Python unit testing framework. All bitmath tests are written using
   this framework.
 

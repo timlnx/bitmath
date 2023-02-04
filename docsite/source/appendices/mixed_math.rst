@@ -20,7 +20,7 @@ When coercion happens is determined by the following conditions and
 rules:
 
 1. `Precedence and Associativity of Operators
-   <https://docs.python.org/2/reference/expressions.html#operator-precedence>`_
+   <https://docs.python.org/3/reference/expressions.html#operator-precedence>`_
    in Python\ [#precedence]_
 2. Situational semantics -- some operations, though mathematically
    valid, do not make logical sense when applied to context.

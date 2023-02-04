@@ -28,7 +28,7 @@ bitmath objects have several instance attributes:
 .. py:attribute:: BitMathInstance.binary
 
    The `Python binary representation
-   <https://docs.python.org/2/library/functions.html#bin>`_ of the
+   <https://docs.python.org/3/library/functions.html#bin>`_ of the
    instance's value (in bits)
 
    .. code-block:: python
@@ -426,7 +426,7 @@ mini-language, read on.
 You may be asking yourself where these ``{value:.2f}`` and ``{unit}``
 strings came from. These are part of the `Format Specification
 Mini-Language
-<https://docs.python.org/2/library/string.html#format-specification-mini-language>`_
+<https://docs.python.org/3/library/string.html#format-specification-mini-language>`_
 which is part of the Python standard library. To be explicitly clear
 about what's going on here, let's break the first specifier
 (``{value:.2f}``) down into it's component parts::
