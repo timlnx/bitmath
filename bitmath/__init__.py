@@ -36,21 +36,9 @@ decimal and binary prefixes:
 man 7 units (from the Linux Documentation Project 'man-pages' package)
 
 
-BEFORE YOU GET HASTY WITH EXCLUDING CODE FROM COVERAGE: If you
-absolutely need to skip code coverage because of a strange Python 2.x
-vs 3.x thing, use the fancy environment substitution stuff from the
-.coverage RC file. In review:
+* If you *NEED* to skip a statement because of something untestable:
 
-* If you *NEED* to skip a statement because of Python 2.x issues add the following::
-
-      # pragma: PY2X no cover
-
-* If you *NEED* to skip a statement because of Python 3.x issues add the following::
-
-      # pragma: PY3X no cover
-
-In this configuration, statements which are skipped in 2.x are still
-covered in 3.x, and the reverse holds true for tests skipped in 3.x.
+      # pragma: no cover
 """
 
 from __future__ import print_function
@@ -80,11 +68,6 @@ __all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB',
            'format_string', 'format_plural', 'parse_string', 'parse_string_unsafe',
            'ALL_UNIT_TYPES', 'NIST', 'NIST_PREFIXES', 'NIST_STEPS',
            'SI', 'SI_PREFIXES', 'SI_STEPS']
-
-# Python 3.x compat
-if sys.version > '3':
-    long = int  # pragma: PY2X no cover
-    unicode = str  # pragma: PY2X no cover
 
 #: A list of all the valid prefix unit types. Mostly for reference,
 #: also used by the CLI tool as valid types
@@ -174,7 +157,7 @@ class Bitmath(object):
     """The base class for all the other prefix classes"""
 
     # All the allowed input types
-    valid_types = (float, long, numbers.Integral)
+    valid_types = (int, float)
 
     def __init__(self, value=0, bytes=None, bits=None):
         """Instantiate with `value` by the unit, in plain bytes, or
@@ -862,27 +845,22 @@ RTYPE. E.g., 3 * MiB(3), or 10 / GB(42)
         # num / bm = num
         return other / float(self.value)
 
-    """Called to implement the built-in functions complex(), int(),
-long(), and float(). Should return a value of the appropriate type.
+    """Called to implement the built-in functions complex(), int(), and
+float(). Should return a value of the appropriate type.
 
 If one of those methods does not support the operation with the
 supplied arguments, it should return NotImplemented.
 
-For bitmath purposes, these methods return the int/long/float
+For bitmath purposes, these methods return the int/float
 equivalent of the this instances prefix Unix value. That is to say:
 
     - int(KiB(3.336)) would return 3
-    - long(KiB(3.336)) would return 3L
     - float(KiB(3.336)) would return 3.336
 """
 
     def __int__(self):
         """Return this instances prefix unit as an integer"""
         return int(self.prefix_value)
-
-    def __long__(self):
-        """Return this instances prefix unit as a long integer"""
-        return long(self.prefix_value)  # pragma: PY3X no cover
 
     def __float__(self):
         """Return this instances prefix unit as a floating point number"""
@@ -1399,7 +1377,7 @@ String inputs may include whitespace characters between the value and
 the unit.
     """
     # Strings only please
-    if not isinstance(s, (str, unicode)):
+    if not isinstance(s, (str)):
         raise ValueError("parse_string only accepts string inputs but a %s was given" %
                          type(s))
 
@@ -1459,7 +1437,7 @@ Note the following caveats:
 * Capitalization does not matter
 
     """
-    if not isinstance(s, (str, unicode)) and \
+    if not isinstance(s, (str)) and \
        not isinstance(s, numbers.Number):
         raise ValueError("parse_string_unsafe only accepts string/number inputs but a %s was given" %
                          type(s))
@@ -1474,7 +1452,7 @@ Note the following caveats:
         return Byte(s)
 
     # Test case: a number pretending to be a string
-    if isinstance(s, (str, unicode)):
+    if isinstance(s, (str)):
         try:
             # Can we turn it directly into a number?
             return Byte(float(s))
