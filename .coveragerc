@@ -14,11 +14,7 @@ exclude_lines =
     # Explicitly label a line as 'do not cover'
     pragma: no cover
 
-    # Stuff to skip only on Python 2.x. Insert a line like:" # pragma:
-    # PY2X no cover" And export the env var "PYVER" as "PY2X". To skip
-    # certain things on only Py3.x export PYVER as PY3X
-    #
-    # Review: http://nedbatchelder.com/code/coverage/config.html#h_Syntax if you need a refresher
+    # Review: https://coverage.readthedocs.io/en/stable/config.html#syntax if you need a refresher
     #
     # BTW, the exports happen in the Makefile on lines like (for the 3.x tests):
     #

@@ -1,9 +1,7 @@
 python-coveralls
-coverage==4.0.3
+coverage
 mock
 nose
 nose-cover3
 pyflakes
 pycodestyle
-progressbar33
-click

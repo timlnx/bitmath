@@ -190,9 +190,6 @@ ci-unittests:
 	@echo "# Using python: $(shell ./bitmathenv3/bin/python --version 2>&1)"
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && export PYVER=PY3X && nosetests -v --with-coverage --cover-html --cover-package=bitmath tests/
-	@echo "Testing argparse integration without progressbar dependency (#86)"
-	. $(NAME)env3/bin/activate && pip uninstall -y progressbar33 click
-	. $(NAME)env3/bin/activate && export PYVER=PY3X && nosetests -v --with-coverage --cover-html --cover-package=bitmath tests/test_argparse_type.py
 
 ci-list-deps:
 	@echo ""
