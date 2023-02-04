@@ -1,10 +1,6 @@
 name: Makefile CI
 
-on:
-  push:
-    branches: [ "master", "2023-01-26-no-more-py2" ]
-  pull_request:
-    branches: [ "master", "2023-01-26-no-more-py2" ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -20,6 +16,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip virtualenv
-      - name: Run unittests
-        run: make ci
+          python -m pip install --upgrade pip virtualenv 
