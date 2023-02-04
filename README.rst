@@ -1,14 +1,6 @@
-.. image:: https://api.travis-ci.org/tbielawa/bitmath.png
-   :target: https://travis-ci.org/tbielawa/bitmath/
-   :align: right
-   :height: 19
-   :width: 77
+.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
 
-.. image:: https://coveralls.io/repos/tbielawa/bitmath/badge.png?branch=master
-   :target: https://coveralls.io/r/tbielawa/bitmath?branch=master
-   :align: right
-   :height: 19
-   :width: 77
 
 .. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
    :target: http://bitmath.rtfd.org/
