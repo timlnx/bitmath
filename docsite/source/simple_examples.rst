@@ -192,19 +192,19 @@ out sorted by increasing magnitude (lines **10** and **11**, and
    >>> for f in os.listdir('./tests/'):
    ...     sizes.append(KiB(os.path.getsize('./tests/' + f)))
 
-   >>> print sizes
+   >>> print(sizes)
    [KiB(7337.0), KiB(1441.0), KiB(2126.0), KiB(2178.0), KiB(2326.0), KiB(4003.0), KiB(48.0), KiB(1770.0), KiB(7892.0), KiB(4190.0)]
 
-   >>> print sorted(sizes)
+   >>> print(sorted(sizes))
    [KiB(48.0), KiB(1441.0), KiB(1770.0), KiB(2126.0), KiB(2178.0), KiB(2326.0), KiB(4003.0), KiB(4190.0), KiB(7337.0), KiB(7892.0)]
 
    >>> human_sizes = [s.best_prefix() for s in sizes]
-   >>> print sorted(human_sizes)
+   >>> print(sorted(human_sizes))
    [KiB(48.0), MiB(1.4072265625), MiB(1.728515625), MiB(2.076171875), MiB(2.126953125), MiB(2.271484375), MiB(3.9091796875), MiB(4.091796875), MiB(7.1650390625), MiB(7.70703125)]
 
 Now print them out in descending magnitude
 
 .. code-block:: python
 
-   >>> print sorted(human_sizes, reverse=True)
+   >>> print(sorted(human_sizes, reverse=True))
    [KiB(7892.0), KiB(7337.0), KiB(4190.0), KiB(4003.0), KiB(2326.0), KiB(2178.0), KiB(2126.0), KiB(1770.0), KiB(1441.0), KiB(48.0)]

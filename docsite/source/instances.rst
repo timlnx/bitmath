@@ -22,7 +22,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.base
+      >>> print(b.base)
       2
 
 .. py:attribute:: BitMathInstance.binary
@@ -34,7 +34,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.binary
+      >>> print(b.binary)
       0b10100111001000
 
 .. py:attribute:: BitMathInstance.bin
@@ -48,7 +48,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.bits
+      >>> print(b.bits)
       10696.0
 
 .. py:attribute:: BitMathInstance.bytes
@@ -58,7 +58,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.bytes
+      >>> print(b.bytes)
       1337
 
 .. py:attribute:: BitMathInstance.power
@@ -68,7 +68,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.power
+      >>> print(b.power)
       0
 
 .. py:attribute:: BitMathInstance.system
@@ -78,7 +78,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.system
+      >>> print(b.system)
       NIST
 
 .. py:attribute:: BitMathInstance.value
@@ -88,7 +88,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.value
+      >>> print(b.value)
       1337.0
 
 .. py:attribute:: BitMathInstance.unit
@@ -98,7 +98,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.unit
+      >>> print(b.unit)
       Byte
 
 .. py:attribute:: BitMathInstance.unit_plural
@@ -108,7 +108,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.unit_plural
+      >>> print(b.unit_plural)
       Bytes
 
 .. py:attribute:: BitMathInstance.unit_singular
@@ -119,7 +119,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.unit_singular
+      >>> print(b.unit_singular)
       Byte
 
 
@@ -136,8 +136,8 @@ and what you can expect their printed representation to look like:
    :linenos:
 
    >>> dvd_capacity = GB(4.7)
-   >>> print "Capacity in bits: %s\nbytes: %s\n" % \
-                (dvd_capacity.bits, dvd_capacity.bytes)
+   >>> print("Capacity in bits: %s\nbytes: %s\n" % \
+                (dvd_capacity.bits, dvd_capacity.bytes))
 
    Capacity in bits: 37600000000.0
    bytes: 4700000000.0
@@ -181,12 +181,12 @@ classes. You can even ``to_THING()`` an instance into itself again:
    True
 
    >>> another_mib = one_mib.to_MiB()
-   >>> print one_mib, one_mib_in_kb, another_mib
+   >>> print(one_mib, one_mib_in_kb, another_mib)
    1.0 MiB 8388.608 kb 1.0 MiB
 
    >>> six_TB = TB(6)
    >>> six_TB_in_bits = six_TB.to_Bit()
-   >>> print six_TB, six_TB_in_bits
+   >>> print(six_TB, six_TB_in_bits)
    6.0 TB 4.8e+13 Bit
 
    >>> six_TB == six_TB_in_bits
@@ -239,7 +239,7 @@ even easier to read.
 
 
    >>> for _rate in tx_rate():
-   ...    print "Rate: %s/second" % Bit(_rate)
+   ...    print("Rate: %s/second" % Bit(_rate))
    ...    time.sleep(1)
 
    Rate: 100.0 Bit/sec
@@ -258,7 +258,7 @@ And now using a custom formatting definition:
 .. code-block:: python
 
    >>> for _rate in tx_rate():
-   ...    print Bit(_rate).best_prefix().format("Rate: {value:.3f} {unit}/sec")
+   ...    print(Bit(_rate).best_prefix().format("Rate: {value:.3f} {unit}/sec"))
    ...    time.sleep(1)
 
    Rate: 12.500 Byte/sec
@@ -293,7 +293,7 @@ bitmath instances come with a verbose built-in string representation:
 .. code-block:: python
 
    >>> leet_bits = Bit(1337)
-   >>> print leet_bits
+   >>> print(leet_bits)
    1337.0 Bit
 
 However, for instances which aren't whole numbers (as in ``MiB(1/3.0)
@@ -327,7 +327,7 @@ First, for reference, the default formatting:
 .. code-block:: python
 
    >>> ugly_number = MB(50).to_MiB() / 8.0
-   >>> print ugly_number
+   >>> print(ugly_number)
    5.96046447754 MiB
 
 Now, let's use the :py:meth:`format` method to limit that to two
@@ -335,7 +335,7 @@ digits of precision:
 
 .. code-block:: python
 
-   >>> print ugly_number.format("{value:.2f}{unit}")
+   >>> print(ugly_number.format("{value:.2f}{unit}"))
    5.96 MiB
 
 By changing the **2** character, you increase or decrease the
@@ -364,7 +364,7 @@ of how an attribute may be referenced multiple times.
       ...: The instance is {bits} bits large
       ...: bytes/bits without trailing decimals: {bytes:.0f}/{bits:.0f}""" % str(ugly_number)
 
-   >>> print ugly_number.format(longer_format)
+   >>> print(ugly_number.format(longer_format))
    Formatting attributes for 5.96046447754 MiB
    This instances prefix unit is MiB, which is a NIST type unit
    The unit value is 5.96046447754
@@ -401,11 +401,11 @@ classes. Under the covers these properties call ``to_THING``.
    >>> one_mib == one_mib.kb
    True
 
-   >>> print one_mib, one_mib.kb, one_mib.MiB
+   >>> print(one_mib, one_mib.kb, one_mib.MiB)
    1.0 MiB 8388.608 kb 1.0 MiB
 
    >>> six_TB = TB(6)
-   >>> print six_TB, six_TB.Bit
+   >>> print(six_TB, six_TB.Bit)
    6.0 TB 4.8e+13 Bit
 
    >>> six_TB == six_TB.Bit

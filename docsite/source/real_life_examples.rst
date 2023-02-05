@@ -24,7 +24,7 @@ as such:
 
    >>> import bitmath
    >>> downstream = bitmath.Mib(50)
-   >>> print downstream.to_MB()
+   >>> print(downstream.to_MB())
    MB(6.25)
 
 This tells us that if our ISP advertises **50Mbps** we can expect to
@@ -51,7 +51,7 @@ in this case is:
    :emphasize-lines: 3
 
    >>> song_size = GB(5) / 1000
-   >>> print song_size
+   >>> print(song_size)
    0.005GB
 
 Or, using ``best_prefix``, (line **2**) to generate a more
@@ -62,7 +62,7 @@ human-readable form:
    :emphasize-lines: 2
 
    >>> song_size = GB(5) / 1000
-   >>> print song_size.best_prefix()
+   >>> print(song_size.best_prefix())
    5.0MB
 
 That's great, if you have normal radio-length songs. But how many of
@@ -78,7 +78,7 @@ MB) large.
 
    >>> ipod_capacity = GB(5)
    >>> bootleg_size = MB(19.5)
-   >>> print ipod_capacity / bootleg_size
+   >>> print(ipod_capacity / bootleg_size)
    256.41025641
 
 The result on line **4** tells tells us that we could fit **256**
@@ -102,7 +102,7 @@ returns). We can use ``bitmath`` to do that too:
    >>> these_files = os.listdir('.')
    >>> for f in these_files:
    ...    f_size = Byte(os.path.getsize(f))
-   ...    print "%s - %s" % (f, f_size.to_KiB())
+   ...    print("%s - %s" % (f, f_size.to_KiB()))
 
    test_basic_math.py - 3.048828125 KiB
    __init__.py - 0.1181640625 KiB
@@ -122,7 +122,7 @@ directly into a bitmath object:
    >>> import bitmath
    >>> these_files = os.listdir('.')
    >>> for f in these_files:
-   ...     print "%s - %s" % (f, bitmath.getsize(f))
+   ...     print("%s - %s" % (f, bitmath.getsize(f)))
 
    test_basic_math.py - 3.048828125 KiB
    __init__.py - 0.1181640625 KiB
@@ -255,7 +255,7 @@ using the :py:mod:`bitmath` library. Let's see how:
 
    >>> bdp = (GB(tx * rtt)).to_Byte()
 
-   >>> print bdp.to_KiB()
+   >>> print(bdp.to_KiB())
 
    KiB(24.2919921875)
 
@@ -266,7 +266,7 @@ We could shorten that even further:
 
 .. code-block:: python
 
-   >>> print (GB((1/8.0) * (0.199 * 10**-3))).to_Byte()
+   >>> print((GB((1/8.0) * (0.199 * 10**-3))).to_Byte())
    24875.0Byte
 
 **Get the current kernel parameters**
@@ -285,7 +285,7 @@ Recall, these values are in bytes. What are they in KiB?
 
 .. code-block:: python
 
-   >>> print Byte(212992).to_KiB()
+   >>> print(Byte(212992).to_KiB())
    KiB(208.0)
 
 This means our core networking buffer sizes are set to 208KiB
@@ -335,11 +335,11 @@ size is ``4096 bytes``, but you can check by running the command:
 
    >>> sys_buffer = Byte(sys_pages * page_size)
 
-   >>> print sys_buffer.to_MiB()
+   >>> print(sys_buffer.to_MiB())
 
    2192.4375MiB
 
-   >>> print sys_buffer.to_GiB()
+   >>> print(sys_buffer.to_GiB())
 
    2.14105224609GiB
 
@@ -417,7 +417,7 @@ example system.
    >>> fh = open('/dev/sda', 'r')
    >>> sda_capacity = bitmath.query_device_capacity(fh)
    >>> fh.close()
-   >>> print sda_capacity.best_prefix()
+   >>> print(sda_capacity.best_prefix())
    238.474937439 GiB
 
 We can simplify this so that the file handle is automatically closed
@@ -427,5 +427,5 @@ for us by using the ``with`` context manager.
 
    >>> with open('/dev/sda', 'r') as fh:
    ...     sda_capacity = bitmath.query_device_capacity(fh)
-   >>> print sda_capacity.best_prefix()
+   >>> print(sda_capacity.best_prefix())
    238.474937439 GiB

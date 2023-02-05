@@ -99,7 +99,7 @@ Bytes and 1024 Bytes in size, respectively.
 Then:
 
     >>> for f in bitmath.listdir('./tests/listdir_nosymlinks'):
-    ...     print f
+    ...     print(f)
 
 Would yield 2-tuple's of:
 

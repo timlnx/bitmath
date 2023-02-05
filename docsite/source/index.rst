@@ -136,12 +136,12 @@ Arithmetic
    >>> import bitmath
    >>> log_size = bitmath.kB(137.4)
    >>> log_zipped_size = bitmath.Byte(987)
-   >>> print "Compression saved %s space" % (log_size - log_zipped_size)
+   >>> print("Compression saved %s space" % (log_size - log_zipped_size))
    Compression saved 136.413kB space
    >>> thumb_drive = bitmath.GiB(12)
    >>> song_size = bitmath.MiB(5)
    >>> songs_per_drive = thumb_drive / song_size
-   >>> print songs_per_drive
+   >>> print(songs_per_drive)
    2457.6
 
 
@@ -154,7 +154,7 @@ File size unit conversion:
 
    >>> from bitmath import *
    >>> dvd_size = GiB(4.7)
-   >>> print "DVD Size in MiB: %s" % dvd_size.to_MiB()
+   >>> print("DVD Size in MiB: %s" % dvd_size.to_MiB())
    DVD Size in MiB: 4812.8 MiB
 
 
@@ -166,9 +166,9 @@ Select a human-readable unit
    >>> small_number = kB(100)
    >>> ugly_number = small_number.to_TiB()
 
-   >>> print ugly_number
+   >>> print(ugly_number)
    9.09494701773e-08 TiB
-   >>> print ugly_number.best_prefix()
+   >>> print(ugly_number.best_prefix())
    97.65625 KiB
 
 
@@ -196,7 +196,7 @@ Sorting
                      KiB(2326.0), KiB(4003.0), KiB(48.0), KiB(1770.0),
                      KiB(7892.0), KiB(4190.0)]
 
-   >>> print sorted(sizes)
+   >>> print(sorted(sizes))
    [KiB(48.0), KiB(1441.0), KiB(1770.0), KiB(2126.0), KiB(2178.0),
    KiB(2326.0), KiB(4003.0), KiB(4190.0), KiB(7337.0), KiB(7892.0)]
 
@@ -222,7 +222,7 @@ Example:
       ...: The instance is {bits} bits large
       ...: bytes/bits without trailing decimals: {bytes:.0f}/{bits:.0f}""" % str(ugly_number)
 
-   >>> print ugly_number.format(longer_format)
+   >>> print(ugly_number.format(longer_format))
    Formatting attributes for 5.96046447754 MiB
    This instances prefix unit is MiB, which is a NIST type unit
    The unit value is 5.96046447754
@@ -241,7 +241,7 @@ Utility Functions
 
 .. code-block:: python
 
-   >>> print bitmath.getsize('python-bitmath.spec')
+   >>> print(bitmath.getsize('python-bitmath.spec'))
    3.7060546875 KiB
 
 **bitmath.parse_string()**
@@ -252,9 +252,9 @@ Parse a string with standard units:
 
    >>> import bitmath
    >>> a_dvd = bitmath.parse_string("4.7 GiB")
-   >>> print type(a_dvd)
+   >>> print(type(a_dvd))
    <class 'bitmath.GiB'>
-   >>> print a_dvd
+   >>> print(a_dvd)
    4.7 GiB
 
 **bitmath.parse_string_unsafe()**
@@ -265,7 +265,7 @@ Parse a string with ambiguous units:
 
    >>> import bitmath
    >>> a_gig = bitmath.parse_string_unsafe("1gb")
-   >>> print type(a_gig)
+   >>> print(type(a_gig))
    <class 'bitmath.GB'>
    >>> a_gig == bitmath.GB(1)
    True
@@ -280,7 +280,7 @@ Parse a string with ambiguous units:
    >>> import bitmath
    >>> with open('/dev/sda') as fp:
    ...     root_disk = bitmath.query_device_capacity(fp)
-   ...     print root_disk.best_prefix()
+   ...     print(root_disk.best_prefix())
    ...
    238.474937439 GiB
 
@@ -289,7 +289,7 @@ Parse a string with ambiguous units:
 .. code-block:: python
 
    >>> for i in bitmath.listdir('./tests/', followlinks=True, relpath=True, bestprefix=True):
-   ...     print i
+   ...     print(i)
    ...
    ('tests/test_file_size.py', KiB(9.2900390625))
    ('tests/test_basic_math.py', KiB(7.1767578125))
@@ -325,7 +325,7 @@ Formatting
 
    >>> with bitmath.format(fmt_str="[{value:.3f}@{unit}]"):
    ...     for i in bitmath.listdir('./tests/', followlinks=True, relpath=True, bestprefix=True):
-   ...         print i[1]
+   ...         print(i[1])
    ...
    [9.290@KiB]
    [7.177@KiB]
@@ -370,9 +370,9 @@ argparser argument type:
                        required=True)
 
    results = parser.parse_args()
-   print "Parsed in: {PARSED}; Which looks like {TOKIB} as a Kibibit".format(
+   print("Parsed in: {PARSED}; Which looks like {TOKIB} as a Kibibit".format(
        PARSED=results.block_size,
-       TOKIB=results.block_size.Kib)
+       TOKIB=results.block_size.Kib))
 
 If ran as a script the results would be similar to this:
 

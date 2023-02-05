@@ -201,7 +201,7 @@ bitmath class, however that is a valid use case.
       >>> a_mebibyte == a_mebibyte_sized_kibibyte
       True
 
-      >>> print a_mebibyte, a_mebibyte_sized_kibibyte
+      >>> print(a_mebibyte, a_mebibyte_sized_kibibyte)
       1.0 MiB 1024.0 KiB
 
    Or, using the :py:meth:`BitMathClass.from_other` class method:
@@ -216,5 +216,5 @@ bitmath class, however that is a valid use case.
       >>> a_mebibyte == a_big_kibibyte
       True
 
-      >>> print a_mebibyte, a_big_kibibyte
+      >>> print(a_mebibyte, a_big_kibibyte)
       1.0 MiB 1024.0 KiB

@@ -46,7 +46,7 @@ bitmath.getsize()
    .. code-block:: python
 
       >>> import bitmath
-      >>> print bitmath.getsize('./bitmath/__init__.py')
+      >>> print(bitmath.getsize('./bitmath/__init__.py'))
       33.3583984375 KiB
 
    Let's say we want to see the results in bytes. We can do this by
@@ -55,7 +55,7 @@ bitmath.getsize()
    .. code-block:: python
 
       >>> import bitmath
-      >>> print bitmath.getsize('./bitmath/__init__.py', bestprefix=False)
+      >>> print(bitmath.getsize('./bitmath/__init__.py', bestprefix=False))
       34159.0 Byte
 
    Recall, the default for representation is with the best
@@ -67,11 +67,11 @@ bitmath.getsize()
       :linenos:
       :emphasize-lines: 1-4
 
-      >>> print bitmath.getsize('./bitmath/__init__.py')
+      >>> print(bitmath.getsize('./bitmath/__init__.py'))
       33.3583984375 KiB
-      >>> print bitmath.getsize('./bitmath/__init__.py', system=bitmath.NIST)
+      >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.NIST))
       33.3583984375 KiB
-      >>> print bitmath.getsize('./bitmath/__init__.py', system=bitmath.SI)
+      >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.SI))
       34.159 kB
 
    We can see in lines **1** → **4** that the same result is returned
@@ -163,12 +163,12 @@ bitmath.listdir()
 
       >>> import bitmath
       >>> for f in bitmath.listdir('./some_files'):
-      ...     print f
+      ...     print(f)
       ...
       ('/tmp/tmp.P5lqtyqwPh/some_files/first_file', Byte(1337.0))
       ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))
       >>> for f in bitmath.listdir('./some_files', relpath=True):
-      ...     print f
+      ...     print(f)
       ...
       ('some_files/first_file', Byte(1337.0))
       ('some_files/deeper_files/second_file', Byte(13370.0))
@@ -183,7 +183,7 @@ bitmath.listdir()
    .. code-block:: python
 
       >>> for f in bitmath.listdir('./some_files', filter='second*'):
-      ...     print f
+      ...     print(f)
       ...
       ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))
 
@@ -194,7 +194,7 @@ bitmath.listdir()
    .. code-block:: python
 
       >>> files = list(bitmath.listdir('./some_files'))
-      >>> print files
+      >>> print(files)
       [('/tmp/tmp.P5lqtyqwPh/some_files/first_file', Byte(1337.0)), ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))]
 
    Here's a more advanced example where we will sum the size of all
@@ -205,13 +205,13 @@ bitmath.listdir()
    .. code-block:: python
 
       >>> discovered_files = [f[1] for f in bitmath.listdir('./some_files')]
-      >>> print discovered_files
+      >>> print(discovered_files)
       [Byte(1337.0), Byte(13370.0)]
-      >>> print reduce(lambda x,y: x+y, discovered_files)
+      >>> print(reduce(lambda x,y: x+y, discovered_files))
       14707.0 Byte
-      >>> print reduce(lambda x,y: x+y, discovered_files).best_prefix()
+      >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix())
       14.3623046875 KiB
-      >>> print reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}")
+      >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}"))
       14.362 KiB
 
 
@@ -242,9 +242,9 @@ bitmath.parse_string()
 
       >>> import bitmath
       >>> a_dvd = bitmath.parse_string("4.7 GiB")
-      >>> print type(a_dvd)
+      >>> print(type(a_dvd))
       <class 'bitmath.GiB'>
-      >>> print a_dvd
+      >>> print(a_dvd)
       4.7 GiB
 
    .. caution::
@@ -267,7 +267,7 @@ bitmath.parse_string()
       >>> try:
       ...     a_dvd = bitmath.parse_string("4.7 G")
       ... except ValueError:
-      ...    print "Error while parsing string into bitmath object"
+      ...    print("Error while parsing string into bitmath object")
       ...
       Error while parsing string into bitmath object
 
@@ -281,9 +281,9 @@ bitmath.parse_string()
       >>> sizes = [ 1337, 1337.7, "1337", "1337.7", "1337 B", "1337B" ]
       >>> for size in sizes:
       ...     try:
-      ...         print "Parsed size into %s" % bitmath.parse_string(size).best_prefix()
+      ...         print("Parsed size into %s" % bitmath.parse_string(size).best_prefix())
       ...     except ValueError:
-      ...         print "Could not parse input: %s" % size
+      ...         print("Could not parse input: %s" % size)
       ...
       Could not parse input: 1337
       Could not parse input: 1337.7
@@ -313,11 +313,11 @@ bitmath.parse_string()
       >>> import bitmath
       >>> a_mebibyte = bitmath.parse_string("1 MiB")
       >>> a_mebioctet = bitmath.parse_string("1 Mio")
-      >>> print a_mebibyte, a_mebioctet
+      >>> print(a_mebibyte, a_mebioctet)
       1.0 MiB 1.0 MiB
-      >>> print bitmath.parse_string("1Po")
+      >>> print(bitmath.parse_string("1Po"))
       1.0 PB
-      >>> print bitmath.parse_string("1337 Eio")
+      >>> print(bitmath.parse_string("1337 Eio"))
       1337.0 EiB
 
    Notice how on lines **4** and **5** that the variable
@@ -422,7 +422,7 @@ bitmath.parse_string_unsafe()
       ...     _ = fp.readline()
       ...     for line in fp.readlines():
       ...         cols = line.split()[0:4]
-      ...         print """Filesystem: %s
+      ...         print("""Filesystem: %s)
       ... - Used: %s""" % (cols[0], bitmath.parse_string_unsafe(cols[1]))
       Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
       - Used: 107.0 GB
@@ -457,10 +457,10 @@ bitmath.parse_string_unsafe()
       ...     _ = fp.readline()
       ...     for line in fp.readlines():
       ...         cols = line.split()[0:4]
-      ...         print """Filesystem: %s
+      ...         print("""Filesystem: %s
       ... - Used: %s""" % (cols[0],
       ...                  bitmath.parse_string_unsafe(cols[1], \
-      ...                      system=bitmath.NIST))
+      ...                      system=bitmath.NIST)))
       Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
       - Used: 100.0 GiB
       Filesystem: /dev/sda1
@@ -513,7 +513,7 @@ bitmath.query_device_capacity()
       >>> import bitmath
       >>> with open("/dev/sda") as device:
       ...     size = bitmath.query_device_capacity(device).best_prefix()
-      ...     print "Device %s capacity: %s (%s Bytes)" % (device.name, size, size_bytes)
+      ...     print("Device %s capacity: %s (%s Bytes)" % (device.name, size, size_bytes))
       Device /dev/sda capacity: 238.474937439 GiB (2.56060514304e+11 Bytes)
 
 
@@ -620,8 +620,8 @@ bitmath.format()
           'always_plural': always_plural_kbs
       }
 
-      print """None of the following will be pluralized, because that feature is turned off
-      """
+      print("""None of the following will be pluralized, because that feature is turned off
+      """)
 
       test_string = """   One unit of 'Bit': {not_plural}
 
@@ -630,18 +630,18 @@ bitmath.format()
          several items of a unit will always be pluralized in normal US English
          speech: {always_plural}"""
 
-      print test_string.format(**formatting_args)
+      print(test_string.format(**formatting_args))
 
-      print """
+      print("""
       ----------------------------------------------------------------------
-      """
+      """)
 
-      print """Now, we'll use the bitmath.format() context manager
+      print("""Now, we'll use the bitmath.format() context manager
       to print the same test string, but with pluralization enabled.
-      """
+      """)
 
       with bitmath.format(plural=True):
-          print test_string.format(**formatting_args)
+          print(test_string.format(**formatting_args))
 
    The context manager is demonstrated in lines **33** → **34**. In
    these lines we use the :py:func:`bitmath.format` context manager,
@@ -685,13 +685,13 @@ bitmath.format()
       :linenos:
 
       >>> import bitmath
-      >>> print "Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512))
+      >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       Some instances: 0.333333333333 KiB, 512.0 Bit
       >>> with bitmath.format("{value:e}-{unit}"):
-      ...     print "Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512))
+      ...     print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       ...
       Some instances: 3.333333e-01-KiB, 5.120000e+02-Bit
-      >>> print "Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512))
+      >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       Some instances: 0.333333333333 KiB, 512.0 Bit
 
 
@@ -736,7 +736,7 @@ behavior.
    .. code-block:: python
 
       >>> from bitmath import *
-      >>> print MiB(1337), kb(0.1234567), Byte(0)
+      >>> print(MiB(1337), kb(0.1234567), Byte(0))
       1337.0 MiB 0.1234567 kb 0.0 Byte
 
    We can make these instances print however we want to. Let's wrap
@@ -748,7 +748,7 @@ behavior.
 
       >>> import bitmath
       >>> bitmath.format_string = "[{value:.2f}-{unit}]"
-      >>> print bitmath.MiB(1337), bitmath.kb(0.1234567), bitmath.Byte(0)
+      >>> print(bitmath.MiB(1337), bitmath.kb(0.1234567), bitmath.Byte(0))
       [1337.00-MiB] [0.12-kb] [0.00-Byte]
 
 .. py:data:: format_plural
@@ -763,7 +763,7 @@ behavior.
    .. code-block:: python
 
       >>> import bitmath
-      >>> print bitmath.MiB(1337)
+      >>> print(bitmath.MiB(1337))
       1337.0 MiB
 
    And now we'll enable pluralization (line **2**):
@@ -774,10 +774,10 @@ behavior.
 
       >>> import bitmath
       >>> bitmath.format_plural = True
-      >>> print bitmath.MiB(1337)
+      >>> print(bitmath.MiB(1337))
       1337.0 MiBs
       >>> bitmath.format_plural = False
-      >>> print bitmath.MiB(1337)
+      >>> print(bitmath.MiB(1337))
       1337.0 MiB
 
    On line **5** we disable pluralization again and then see that the
@@ -926,7 +926,7 @@ argument or option should be interpreted as.
       >>> parser.add_argument('--block-size', type=bitmath.BitmathType)
       >>> args = "--block-size 1MiB"
       >>> results = parser.parse_args(args.split())
-      >>> print type(results.block_size)
+      >>> print(type(results.block_size))
       <class 'bitmath.MiB'>
 
    On line **3** we add the ``--block-size`` option to the parser,

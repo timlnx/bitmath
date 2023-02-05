@@ -160,7 +160,7 @@ Let's look at an example of this in action:
 
    In [9]: bm = PiB(24)
 
-   In [10]: print num + bm
+   In [10]: print(num + bm)
    66.0
 
 Equivalently, divorcing the bitmath instance from it's value (this is
@@ -170,7 +170,7 @@ coercion):
 
    In [12]: bm_value = bm.value
 
-   In [13]: print num + bm_value
+   In [13]: print(num + bm_value)
    66.0
 
 What it all boils down to is this: if we don't provide a unit then

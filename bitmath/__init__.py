@@ -41,8 +41,6 @@ man 7 units (from the Linux Documentation Project 'man-pages' package)
       # pragma: no cover
 """
 
-from __future__ import print_function
-
 import argparse
 import contextlib
 import fnmatch
@@ -370,7 +368,7 @@ instantiate the class ahead of time.
 
    >>> import bitmath
    >>> kib = bitmath.KiB.from_other(bitmath.MiB(1))
-   >>> print kib
+   >>> print(kib)
    KiB(1024.0)
 
         """
@@ -1228,7 +1226,7 @@ ioctl's for querying block device sizes:
                 # Confirm this character is right by running (on Linux):
                 #
                 #    >>> import struct
-                #    >>> print 8 == struct.calcsize('L')
+                #    >>> print(8 == struct.calcsize('L'))
                 #
                 # The result should be true as long as your kernel
                 # headers define BLKGETSIZE64 as a u64 type (please
