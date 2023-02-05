@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[build.targets.wheel]
+packages = ["bitmath"]
+
+
+[project]
+name = "bitmath"
+version = "2.0.0"
+authors = [
+  { name="Tim Bielawa", email="timbielawa@gmail.com" },
+  ]
+  description = "Pythonic module for representing and manipulating file sizes with different prefix notations (file size unit conversion)"
+  readme = "README.rst"
+  requires-python = ">=3.7"
+  classifiers = [
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: System Administrators',
+        'Intended Audience :: Telecommunications Industry',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Communications :: File Sharing',
+        'Topic :: Internet',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Information Analysis',
+        'Topic :: Scientific/Engineering :: Mathematics',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Software Development :: Testing',
+        'Topic :: Software Development :: Testing :: Acceptance',
+        'Topic :: Software Development :: Testing :: Unit',
+        'Topic :: System :: Filesystems',
+        'Topic :: System :: Systems Administration',
+        'Topic :: Text Processing :: Filters',
+        'Topic :: Utilities'
+      ]
+
+[project.urls]
+"Homepage" = "https://bitmath.readthedocs.io/en/latest/index.html"
+"Bug Tracker" = "https://github.com/tbielawa/bitmath/issues"
+"Git Repo" = "https://github.com/tbielawa/bitmath"
+
+[publish.index]
+disable = true
