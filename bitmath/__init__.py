@@ -1364,7 +1364,7 @@ def listdir(search_base, followlinks=False, filter='*',
                 yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
             else:
                 if os.path.isdir(_path) or os.path.islink(_path):
-                    pass
+                    pass  # pragma: no cover
                 else:
                     yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
 

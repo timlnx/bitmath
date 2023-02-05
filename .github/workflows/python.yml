@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        python-version: ["3.7", "3.8"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
         os: ["macos-latest", "ubuntu-latest"]
     runs-on: ${{ matrix.os }}
     steps:
@@ -24,16 +24,17 @@ jobs:
           ./tests/test_unique_testcase_names.sh
 
       - name: install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+          pip install pytest-cov
 
-      - name: Ensure that code is poppin fresh (Check Code Style)
+      - name: Pre-Tests code smell validation
         run: |
           pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
-
-      - name: Flakey or Crunchy (Run PyFlakes)
-        run: |
           pyflakes bitmath/__init__.py tests/*.py
 
       - name: Run Unit Tests
         run: |
-          nosetests -v tests/
+          pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered tests
