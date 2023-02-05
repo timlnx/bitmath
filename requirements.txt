@@ -1,0 +1,7 @@
+python-coveralls
+coverage
+mock
+nose
+nose-cover3
+pyflakes
+pycodestyle

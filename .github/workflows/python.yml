@@ -10,27 +10,30 @@ jobs:
         os: ["macos-latest", "ubuntu-latest"]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - name: "GitHub Checks it out :sunglasses-face:"
+        uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
+
+      - name: Verify Test Case Names Unique
+        run: |
+          ./tests/test_unique_testcase_names.sh
+
       - name: install dependencies
-        run: pip install -r requirements-py3.txt
-      # - name: Install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip python-coveralls coverage mock nose pyflakes pycodestyle
+        run: pip install -r requirements.txt
 
       - name: Ensure that code is poppin fresh (Check Code Style)
         run: |
           pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
+
       - name: Flakey or Crunchy (Run PyFlakes)
         run: |
           pyflakes bitmath/__init__.py tests/*.py
-      - name: Verify Test Case Names Unique
-        run: |
-          ./tests/test_unique_testcase_names.sh
+
       - name: Run Unit Tests
         run: |
           nosetests -v tests/
