@@ -55,7 +55,6 @@ docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
 	@echo "#############################################"
 	awk 'BEGIN{P=0} /^Examples/ { P=1} { if (P == 1) print $$0 }' README.rst | cat $< - > $@
 
-
 # Regenerate %.1.asciidoc if %.1.asciidoc.in has been modified more
 # recently than %.1.asciidoc.
 %.1.asciidoc: %.1.asciidoc.in VERSION
@@ -101,29 +100,10 @@ tag:
 tests: uniquetestnames unittests pycodestyle pyflakes
 	:
 
-unittests:
-	@echo "#############################################"
-	@echo "# Running Unit Tests"
-	@echo "#############################################"
-	nosetests -v --with-coverage --cover-html --cover-package=bitmath --cover-min-percentage=90
-
 clean:
 	@find . -type f -regex ".*\.py[co]$$" -delete
 	@find . -type f \( -name "*~" -or -name "#*" \) -delete
-	@rm -fR build cover dist rpm-build MANIFEST htmlcov .coverage bitmathenv bitmathenv2 bitmathenv3 docsite/build/html/ docsite/build/doctrees/ bitmath.egg-info
-
-pycodestyle:
-	@echo "#############################################"
-	@echo "# Running PEP8 Compliance Tests"
-	@echo "#############################################"
-	pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
-
-pyflakes:
-	@echo "#############################################"
-	@echo "# Running Pyflakes Sanity Tests"
-	@echo "# Note: most import errors may be ignored"
-	@echo "#############################################"
-	-pyflakes bitmath/__init__.py tests/*.py
+	@rm -fR build cover dist rpm-build MANIFEST htmlcov .coverage bitmathenv3 docsite/build/html/ docsite/build/doctrees/ bitmath.egg-info
 
 uniquetestnames:
 	@echo "#############################################"
@@ -181,7 +161,7 @@ virtualenv:
 	@echo "# Creating a virtualenv"
 	@echo "#############################################"
 	virtualenv $(NAME)env3 --python=python3
-	. $(NAME)env3/bin/activate && pip install -r requirements-py3.txt
+	. $(NAME)env3/bin/activate && pip install -r requirements.txt
 
 ci-unittests:
 	@echo ""
@@ -189,7 +169,7 @@ ci-unittests:
 	@echo "# Running Unit Tests in virtualenv"
 	@echo "# Using python: $(shell ./bitmathenv3/bin/python --version 2>&1)"
 	@echo "#############################################"
-	. $(NAME)env3/bin/activate && export PYVER=PY3X && nosetests -v --with-coverage --cover-html --cover-package=bitmath tests/
+	. $(NAME)env3/bin/activate && pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered tests
 
 ci-list-deps:
 	@echo ""
