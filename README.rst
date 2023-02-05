@@ -48,9 +48,9 @@ most of the time what you're really seeing are the base-2 sizes/rates.
 And did we mention there's almost 200 unittests? `Check them out for
 yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
 
-Running the tests should be as simple as calling the ``ci-all`` target
-in the Makefile: ``make ci-all``. Please file a bug report if you run
-into issues.
+Running the tests should be as simple as calling the ``ci`` target in
+the Makefile: ``make ci``. Please file a bug report if you run into
+issues.
 
 
 
@@ -61,14 +61,13 @@ Installation
 The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
 you're on a Fedora/RHEL based distribution. bitmath is available in
 the main Fedora repositories, as well as EPEL Repositories. As of 2023
-bitmath is only developed, tested, and supported for currently
-supported Python releases.
+bitmath is only developed, tested, and supported for `currently
+supported <https://devguide.python.org/versions/>`_ Python releases.
 
 
 .. code-block:: bash
 
    $ sudo dnf install python3-bitmath
-
 
 
 **PyPi**:

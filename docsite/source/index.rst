@@ -57,10 +57,10 @@ Installation
 
 The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
 you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as the latest supported EPEL
-repositories.
+the main Fedora repositories, as well as EPEL Repositories. As of 2023
+bitmath is only developed, tested, and supported for `currently
+supported <https://devguide.python.org/versions/>`_ Python releases.
 
-**Python 3.x**:
 
 .. code-block:: bash
 
