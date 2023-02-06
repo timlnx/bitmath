@@ -251,30 +251,29 @@ type.
     # Properties
 
     #: The mathematical base of an instance
-    base = property(lambda s: s._base)
+    base = property(lambda s: s._base,
+                    doc="The mathematical base of the unit of the instance (this will be 2 or 10)")
 
-    binary = property(lambda s: bin(int(s.bits)))
-    """The binary representation of an instance in binary 1s and 0s. Note
+    binary = property(lambda s: bin(int(s.bits)),
+                      doc="""The binary representation of an instance in binary 1s and 0s. Note
 that for very large numbers this will mean a lot of 1s and 0s. For
-example, GiB(100) would be represented as::
+example, GiB(100) would be represented in Python as::
 
     0b1100100000000000000000000000000000000000
-
 That leading ``0b`` is normal. That's how Python represents binary.
-
-    """
+""")
 
     #: Alias for :attr:`binary`
-    bin = property(lambda s: s.binary)
+    bin = property(lambda s: s.binary, doc="Alias for the 'binary' property")
 
     #: The number of bits in an instance
-    bits = property(lambda s: s._bit_value)
+    bits = property(lambda s: s._bit_value, doc="The number of bits in an instance")
 
     #: The number of bytes in an instance
-    bytes = property(lambda s: s._byte_value)
+    bytes = property(lambda s: s._byte_value, doc="The number of bytes in an instance")
 
     #: The mathematical power of an instance
-    power = property(lambda s: s._power)
+    power = property(lambda s: s._power, doc="The mathematical power of an instance")
 
     @property
     def system(self):
@@ -304,7 +303,6 @@ For example:
    >>> Byte(1).unit == 'Byte'
    >>> Byte(1.1).unit == 'Bytes'
    >>> Gb(2).unit == 'Gbs'
-
         """
         global format_plural
 
@@ -328,7 +326,6 @@ For example:
    >>> KiB(1).unit_plural == 'KiB'
    >>> Byte(1024).unit_plural == 'Bytes'
    >>> Gb(1).unit_plural == 'Gb'
-
         """
         return self._name_plural
 
