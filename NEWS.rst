@@ -39,7 +39,8 @@ Python 2.x.
   <bitmath_3rd_party_module_integrations>` - Integrations will be
   removed from the primary source code for now. Many of these can be
   provided as code examples instead which will simplify packaging and
-  testing requirements for the project.
+  testing requirements for the project. They'll be in the docs or just
+  in git, not sure yet.
 * Packaging - It looks like a lot has changed in the last 2.5 years in
   the Python packaging world, and I have a lot to catch up on. I guess
   we use TOML instead of setup.py now, that's neat.
