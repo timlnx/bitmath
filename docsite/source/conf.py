@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'bitmath'
-copyright = u'2014-2016, Tim Bielawa'
+copyright = u'2014-2023, Tim Bielawa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

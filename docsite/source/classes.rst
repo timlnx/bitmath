@@ -119,7 +119,7 @@ Initializing
 
    :param int value: **Default: 0**. The value of the instance in
                      *prefix units*. For example, if we were
-                     instantiating a ``bitmath.KiB`` object to
+                     instantiating a :class:`.KiB` object to
                      represent 13.37 KiB, the ``value`` parameter
                      would be **13.37**. For instance, ``k =
                      bitmath.KiB(13.37)``.
@@ -163,8 +163,8 @@ Class Method: from_other()
 ==========================
 
 bitmath **class objects** have one public class method,
-:py:meth:`BitMathClass.from_other` which provides an
-alternative way to initialize a bitmath class.
+:py:meth:`.from_other` which provides an alternative way to initialize
+a bitmath class.
 
 This method may be called on bitmath class objects directly. That is
 to say: you do not need to call this method on an instance of a
@@ -176,8 +176,8 @@ bitmath class, however that is a valid use case.
    Instantiate any ``BitMathClass`` using another instance as
    reference for it's initial value.
 
-   The ``from_other()`` class method has one required parameter: an
-   instance of a bitmath class.
+   The :py:meth:`.from_other` class method has one required parameter:
+   an instance of a bitmath class.
 
    :param BitMathInstance item: An instance of a bitmath class.
    :return: a bitmath instance of type ``BitMathClass`` equivalent in
@@ -204,7 +204,7 @@ bitmath class, however that is a valid use case.
       >>> print(a_mebibyte, a_mebibyte_sized_kibibyte)
       1.0 MiB 1024.0 KiB
 
-   Or, using the :py:meth:`BitMathClass.from_other` class method:
+   Or, using the :py:meth:`.from_other` class method:
 
    .. code-block:: python
       :linenos:

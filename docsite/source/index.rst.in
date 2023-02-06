@@ -72,38 +72,23 @@ yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
 Installation
 ############
 
-The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
-you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as EPEL Repositories. As of 2023
-bitmath is only developed, tested, and supported for `currently
-supported <https://devguide.python.org/versions/>`_ Python releases.
+bitmath is available in Fedora and EPEL repositories, as well as
+directly available via `PyPI
+<https://pypi.python.org/pypi/bitmath>`_. As of 2023 bitmath is only
+developed, tested, and supported for `currently supported
+<https://devguide.python.org/versions/>`_ Python releases.
 
+**Package Managers**
 
 .. code-block:: bash
 
    $ sudo dnf install python3-bitmath
+   $ pip install --user bitmath
 
 
-**PyPi**:
+**Source**::
 
-You could also install bitmath from `PyPi
-<https://pypi.python.org/pypi/bitmath>`_ if you like:
-
-.. code-block:: bash
-
-   $ sudo pip install bitmath
-
-.. note::
-
-   **pip** installs need pip >= 1.1. To workaround this, `download
-   bitmath <https://pypi.python.org/pypi/bitmath/#downloads>`_, from
-   PyPi and then ``pip install bitmath-x.y.z.tar.gz``. See `issue #57
-   <https://github.com/tbielawa/bitmath/issues/57#issuecomment-227018168>`_
-   for more information.
-
-
-
-**Source**:
+    NOTE: UPDATE THIS FOR THE NEW HATCH.TOML THING
 
 Or, if you want to install from source:
 
@@ -111,11 +96,8 @@ Or, if you want to install from source:
 
    $ sudo python ./setup.py install
 
-If you want the bitmath manpage installed as well:
-
-.. code-block:: bash
-
-   $ sudo make install
+If you want the ``/bin/bitmath`` manpage too, then ``sudo make
+install`` will install the Python library and the manpage.
 
 
 Contents

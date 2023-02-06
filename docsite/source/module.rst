@@ -30,7 +30,7 @@ bitmath.getsize()
    :param bool bestprefix: **Default:** ``True``, the returned
                            instance will be in the best human-readable
                            prefix unit. If set to ``False`` the result
-                           is a ``bitmath.Byte`` instance.
+                           is a :class:`.Byte` instance.
    :param system: **Default:** :py:data:`bitmath.NIST`. The preferred
                   system of units for the returned instance.
    :type system: One of :py:data:`bitmath.NIST` or :py:data:`bitmath.SI`
@@ -110,7 +110,7 @@ bitmath.listdir()
                         :py:func:`os.path.realpath` to normalize path
                         references
    :param bool bestprefix: **Default:** ``False``, returns
-                           ``bitmath.Byte`` instances. Set to ``True``
+                           :class:`.Byte` instances. Set to ``True``
                            to return the best human-readable prefix
                            unit for representation
    :param system: **Default:** :py:data:`bitmath.NIST`. Set a prefix
@@ -123,7 +123,7 @@ bitmath.listdir()
       * This function does **not** return tuples for directory
         entities. Including directories in results is `scheduled for
         introduction <https://github.com/tbielawa/bitmath/issues/27>`_
-        in the upcoming 1.1.0 release.
+        in an upcoming release.
       * Symlinks to **files** are followed automatically
 
 
@@ -223,8 +223,6 @@ bitmath.parse_string()
 ======================
 
 .. function:: parse_string(str_repr)
-
-   .. versionadded:: 1.1.0
 
    Parse a string representing a unit into a proper bitmath
    object. All non-string inputs are rejected and will raise a
@@ -337,13 +335,13 @@ bitmath.parse_string()
       forgiving with input. Please read the documentation carefully so
       you understand the risks you assume using the ``unsafe`` parser.
 
+   .. versionadded:: 1.1.0
+
 
 bitmath.parse_string_unsafe()
 =============================
 
 .. function:: parse_string_unsafe(repr[, system=bitmath.SI])
-
-   .. versionadded:: 1.3.1
 
    Parse a string or number into a proper bitmath object. This is the
    less strict version of the :py:func:`bitmath.parse_string`
@@ -472,6 +470,7 @@ bitmath.parse_string_unsafe()
    Capital **G** followed by a lower-case **i** ending with a capital
    **B**, ``GiB``.
 
+   .. versionadded:: 1.3.1
 
 
 bitmath.query_device_capacity()

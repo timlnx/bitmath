@@ -21,9 +21,10 @@ bitmath objects have several instance attributes:
 
    .. code-block:: python
 
-      >>> b = bitmath.Byte(1337)
-      >>> print(b.base)
+      >>> print(bitmath.Byte(1337).base)
       2
+      >>> print(bitmath.kB(1337).base)
+      10
 
 .. py:attribute:: BitMathInstance.binary
 
