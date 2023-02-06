@@ -97,9 +97,6 @@ pypitest:
 tag:
 	git tag -s -m $(TAG) $(TAG)
 
-tests: uniquetestnames unittests pycodestyle pyflakes
-	:
-
 clean:
 	@find . -type f -regex ".*\.py[co]$$" -delete
 	@find . -type f \( -name "*~" -or -name "#*" \) -delete

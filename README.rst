@@ -1,12 +1,37 @@
-.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
-   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
-
-
 .. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
    :target: http://bitmath.rtfd.org/
    :align: right
    :height: 19
    :width: 77
+
+.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
+
+.. image:: https://img.shields.io/github/issues/tbielawa/bitmath?style=flat-square
+   :target: https://github.com/tbielawa/bitmath/issues
+   :alt: Open issues
+
+.. image:: https://img.shields.io/github/issues-pr/tbielawa/bitmath?style=flat-square
+   :target: https://github.com/tbielawa/bitmath/pulls
+   :alt: Open pull requests
+
+.. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
+   :target: https://pypistats.org/packages/bitmath
+   :alt: PyPI - Package Downloads
+
+.. image:: https://img.shields.io/github/stars/tbielawa/bitmath?style=flat-square
+   :target: https://pypistats.org/packages/bitmath
+   :alt: GitHub Project Popularity
+
+.. image:: https://img.shields.io/pypi/l/bitmath?style=flat-square
+   :target: https://opensource.org/licenses/MIT
+   :alt: PyPI - License
+
+.. image:: https://img.shields.io/pypi/implementation/bitmath?style=flat-square
+   :alt: PyPI - Implementation
+
+.. image:: https://img.shields.io/pypi/pyversions/bitmath?style=flat-square
+   :alt: PyPI - Python Version
 
 
 bitmath
