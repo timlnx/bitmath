@@ -10,6 +10,18 @@ This section describes the guidelines for contributing to bitmath.
    :local:
 
 
+
+.. _contributing_code_of_conduct:
+
+Code of Conduct
+***************
+
+All persons submitting code or otherwise interacting with the bitmath
+project on GitHub must accept and abide by the terms of the `Code of
+Conduct
+<https://github.com/tbielawa/bitmath/blob/master/CODE_OF_CONDUCT.md>`_.
+
+
 .. _contributing_issue_reporting:
 
 Issue Reporting
@@ -120,29 +132,20 @@ Components
 
 bitmath unit tests are integrated with/depend on the following items:
 
-* `Travis CI <https://travis-ci.org/>`_ - Free online service
-  providing `continuous integration` functionality for open source
-  projects. Tests are ran automatically on every git
-  commit. Integrates with GitHub to notify you if a pull request
-  passes or fails all unitests.
-
-* `Coveralls <https://coveralls.io/github/tbielawa/bitmath>`_ - Free
-  online service providing code test coverage reporting. Integrates
-  with GitHub to notify you if a pull-request would improve/decrease
-  overall code test coverage.
+* `GitHub Actions <https://github.com/tbielawa/bitmath/actions>`_ -
+  GitHub Actions provideFree online `continuous integration`
+  functionality for projects. Tests are ran automatically on every git
+  commit. In the past we used Travis for this functionality.
 
 * `unittest <https://docs.python.org/3/library/unittest.html>`_ -
   Python unit testing framework. All bitmath tests are written using
   this framework.
 
-* `nose <https://nose.readthedocs.io/en/latest/>`_ - Per the **nose**
-  website: "`extends unittest to make testing easier`". **nose** is
-  used to run our unit tests.
-
-* `coverage <http://coverage.readthedocs.io/en/latest/>`_ - A tool for
-  measuring code coverage of Python programs. For bitmath we require a
-  minimum test coverage of **90%**. This is invoked by **nose**
-  automatically.
+* `PyTest <https://docs.pytest.org/en/latest/>`_ - Per the **pytest**
+  website: "`The pytest framework makes it easy to write small,
+  readable tests, and can scale to support complex functional testing
+  for applications and libraries`". **pytest** is used to run our unit
+  tests.
 
 * `pycodestyle <https://pypi.python.org/pypi/pycodestyle>`_ - A tool to check Python
   code against some of the style conventions in :pep:`0008`.
@@ -168,27 +171,18 @@ of `makefile targets`. For the purpose of this documentation, we can
 think of these `targets` as pre-defined commands coded in a
 makefile. bitmath testing targets include:
 
-* ``ci`` - Run the tests exactly how they are ran in Travis-CI. The
-  ``ci`` target automatically calls the ``pycodestyle``, ``pyflakes``,
-  ``uniquetestnames``, and ``unittests`` targets.
-* ``ci3`` - Is the same as the ``ci`` target, except it runs using the
-  Python 3.x interpreter.
-* ``unittests`` - Run the functional test suite.
-* ``pycodestyle`` - Run :pep:`0008` syntax checks.
-* ``pyflakes`` - Run `pyflakes` error checks.
+* ``ci`` - Run all of the tests
+* ``ci-pycodestyle`` - Run :pep:`0008` syntax checks
+* ``ci-pyflakes`` - Run `pyflakes` error checks
+* ``ci-unittests`` - Run the tests in a virtual env
 * ``clean`` - Remove temporary files and build artifacts from the
   checked-out repository.
 * ``uniquetestnames`` - Ensures no unit tests have the same name.
-* ``tests`` - A quicker version of ``ci``. Different from ``ci`` in
-  that ``tests`` uses libraries installed on the local development
-  workstation. ``tests`` runs the ``unittests``, ``pycodestyle``,
-  ``uniquetestnames``, and ``pyflakes`` tests automatically.
 
 To ensure the highest degree of confidence in test results you should
-**always use** the ``ci`` and ``ci3`` targets.
+**always use** the ``ci`` target, or make a pull request on GitHub and
+let it run the tests on all of the supported platforms.
 
-When Travis-CI runs an integration test, it calls the ``ci`` and
-``ci3`` targets.
 
 Running the Tests
 =================
