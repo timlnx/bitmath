@@ -43,7 +43,7 @@ setup(
     url='https://github.com/tbielawa/bitmath',
     license='MIT',
     package_dir={'bitmath': 'bitmath'},
-    packages=['bitmath'],
+    packages=['bitmath', 'bitmath/integrations'],
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
