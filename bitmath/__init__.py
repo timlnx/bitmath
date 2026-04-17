@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
 # Copyright © 2014-2016 Tim Case <timbielawa@gmail.com>
