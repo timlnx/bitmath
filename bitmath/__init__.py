@@ -304,7 +304,7 @@ For example:
    >>> Byte(1.1).unit == 'Bytes'
    >>> Gb(2).unit == 'Gbs'
         """
-        global format_plural
+        global format_plural  # noqa: F841
 
         if self.prefix_value == 1:
             # If it's a '1', return it singular, no matter what
@@ -383,12 +383,12 @@ instantiate the class ahead of time.
     def __repr__(self):
         """Representation of this object as you would expect to see in an
 interpreter"""
-        global _FORMAT_REPR
+        global _FORMAT_REPR  # noqa: F841
         return self.format(_FORMAT_REPR)
 
     def __str__(self):
         """String representation of this object"""
-        global format_string
+        global format_string  # noqa: F841
         return self.format(format_string)
 
     def format(self, fmt):

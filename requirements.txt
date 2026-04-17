@@ -1,4 +1,4 @@
-pyflakes
+flake8
 pycodestyle
 pytest
 pytest-cov
