@@ -30,7 +30,10 @@ Test reading block device capacities
 
 from . import TestCase
 import bitmath
-import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 import struct
 
 try:
