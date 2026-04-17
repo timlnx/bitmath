@@ -107,28 +107,23 @@ Mixed Types: Addition and Subtraction
 This describes the behavior of addition and subtraction operations
 where one operand is a bitmath type and the other is a number type.
 
-Mixed-math addition and subtraction **always** return a type from the
-:py:mod:`numbers` family (integer, float, etc...). This rule is
-true regardless of the placement of the operands, with respect to the
-operator.
+Mixed-math addition and subtraction return a type from the
+:py:mod:`numbers` family (integer, float, etc...) regardless of the
+placement of the operands, with one exception: when the left operand
+is exactly ``0``, the result is the bitmath instance itself.
 
-.. note::
+This exception exists so that Python's built-in :py:func:`sum`
+function works correctly with iterables of bitmath objects, since
+``sum()`` starts accumulation from ``0`` by default:
 
-   **Exception: zero as the left operand.** When the left operand is
-   exactly ``0`` (e.g. ``0 + KiB(1)``), the result is the bitmath
-   instance itself rather than a number. This special case exists so
-   that Python's built-in :py:func:`sum` function works correctly with
-   iterables of bitmath objects, since ``sum()`` starts accumulation
-   from ``0`` by default.
+.. code-block:: python
 
-   .. code-block:: python
+   >>> import bitmath
+   >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+   Byte(1074790401.0)
 
-      >>> import bitmath
-      >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
-      Byte(1074790401.0)
-
-   For all non-zero numeric left operands the documented behaviour
-   (returning a number) is unchanged.
+For all non-zero numeric operands the behaviour (returning a number)
+applies.
 
 **Discussion:** Why do ``100 - KiB(90)`` and ``KiB(100) - 90`` both
 yield a result of ``10.0`` and not another bitmath instance, such as
@@ -196,6 +191,26 @@ bitmath won't give us one back. There is no way for bitmath to guess
 what unit the operand was *intended* to carry. Therefore, the behavior
 of bitmath is **conservative**. It will meet us half way and do the
 math, but it will not return a unit in the result.
+
+**Keeping the result as a bitmath type**
+
+If the intent is to add or subtract a quantity of the *same unit* —
+for example, incrementing ``Byte(1)`` by one more byte — use an
+explicit bitmath operand on both sides:
+
+.. code-block:: python
+
+   >>> Byte(1) + Byte(1)
+   Byte(2.0)
+
+   >>> KiB(10) - KiB(3)
+   KiB(7.0)
+
+This makes the unit explicit rather than relying on implicit
+conversion, which eliminates ambiguity — ``KiB(10) - 3`` could mean
+"subtract 3 KiB" or "subtract the number 3 from the prefix value."
+bitmath does not guess; using a bitmath operand on both sides states
+the intent clearly.
 
 
 Mixed Types: Multiplication and Division
