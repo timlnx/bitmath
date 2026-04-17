@@ -229,9 +229,11 @@ bitmath.parse_string()
 
    :param str_repr: The value to parse. String inputs may include
                     whitespace between the value and the unit.
-   :param system: Unit system used when ``strict=False``. Ignored when
-                  ``strict=True``. One of :py:data:`bitmath.NIST`
-                  (default) or :py:data:`bitmath.SI`.
+   :param system: Unit system used when ``strict=False`` and the
+                  intended unit cannot be reliably determined from the
+                  input. Ignored when ``strict=True``. One of
+                  :py:data:`bitmath.NIST` (default) or
+                  :py:data:`bitmath.SI`.
    :param strict: When ``True`` (default) the unit must be an exact
                   bitmath type name such as ``"KiB"`` or ``"MB"``.
                   When ``False`` the parser accepts ambiguous input
