@@ -9,7 +9,7 @@ description = "Pythonic module for representing and manipulating file sizes with
 readme = "README.rst"
 requires-python = ">=3.11"
 authors = [
-  { name = "Tim Case", email = "timbielawa@gmail.com" },
+  { name = "Tim Case", email = "bitmath@lnx.cx" },
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
