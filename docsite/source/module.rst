@@ -342,26 +342,49 @@ parse_string with ``strict=False``
 -----------------------------------
 
 When ``strict=False`` the parser accepts ambiguous input that does not
-conform to exact bitmath type names. This is the behaviour that was
-previously provided by the now-deprecated
+conform to exact bitmath type names — for example, the single-letter
+units produced by tools like ``ls -h``, ``df``, and ``qemu-img``. This
+is the behaviour previously provided by the now-deprecated
 :py:func:`bitmath.parse_string_unsafe`.
 
-All inputs are assumed to be **byte-based** (not bit-based). The
-following additional rules apply:
+All inputs are treated as **byte-based**. Bit-based units are not
+supported in loose parsing mode. Capitalisation does not matter.
 
-* Plain numbers and numeric strings are interpreted as a number of bytes.
-* Single-letter units (``k``, ``M``, ``G``, etc.) default to NIST
-  (base-2) unless ``system=bitmath.SI`` is passed.
-* Inputs with an ``i`` after the leading letter (``Ki``, ``Mi``, …)
-  are always treated as NIST units regardless of ``system``.
-* Capitalisation does not matter.
+.. _parse-string-system-hint:
 
-The result is returned in the parsed unit system. To coerce it to a
-preferred system call ``.best_prefix(system=system)`` on the return
-value.
+Understanding the ``system`` parameter in loose mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. important::
+
+   In ``strict=False`` mode, ``system`` is a **tiebreaker**, not a
+   guarantee. It is only consulted when the parser cannot determine the
+   unit system from the input itself. Passing ``system=bitmath.SI``
+   does **not** force all results to be SI units.
+
+The parser resolves the unit system in the following order of
+precedence:
+
+1. **No unit present** — plain numbers and numeric strings (e.g.
+   ``100``, ``"2048"``) are always returned as :class:`bitmath.Byte`
+   regardless of ``system``.
+
+2. **Unit is self-describing** — inputs whose unit already contains an
+   ``i`` marker (e.g. ``"100 KiB"``, ``"4Gi"``) unambiguously identify
+   a NIST unit. ``system`` is ignored and the result is always NIST.
+
+3. **Unit is ambiguous** — single-letter units such as ``k``, ``M``,
+   ``G`` carry no inherent system information. Only here does
+   ``system`` act as the deciding hint: ``system=bitmath.NIST``
+   (the default) interprets ``"4G"`` as ``GiB(4)``; passing
+   ``system=bitmath.SI`` interprets it as ``GB(4)``.
+
+In summary: ``system`` resolves ambiguity — it does not override
+evidence already present in the input string.
 
 In this example we parse the output of ``df -H / /boot /home``,
-whose ``Used`` column contains SI units::
+whose ``Used`` column contains single-letter SI units. Because the
+units are ambiguous we pass ``system=bitmath.SI`` as a hint::
 
    Filesystem                                 Size  Used Avail Use% Mounted on
    /dev/mapper/luks-ca8d5493-72bb-4691-afe1   107G   64G   38G  63% /
@@ -386,10 +409,9 @@ whose ``Used`` column contains SI units::
    Filesystem: /dev/mapper/vg_deepfryer-lv_home
    - Used: 129.0 GB
 
-If the ``df`` command had been run with ``-h`` (NIST output) instead
-of ``-H`` the values differ slightly but still use the same single
-letter unit ``G``. Pass ``system=bitmath.NIST`` (or omit ``system``
-entirely, as NIST is the default) to interpret them correctly:
+If ``df`` is run with ``-h`` instead of ``-H`` it produces NIST-sized
+values but still prints the same single-letter units. Omit ``system``
+(NIST is the default) or pass ``system=bitmath.NIST`` explicitly:
 
 .. code-block:: python
    :linenos:
