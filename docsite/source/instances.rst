@@ -44,7 +44,7 @@ bitmath objects have several instance attributes:
 
 .. py:attribute:: BitMathInstance.bits
 
-   The number of bits in the object
+   The number of bits in the object, as a floating-point value.
 
    .. code-block:: python
 
@@ -52,15 +52,24 @@ bitmath objects have several instance attributes:
       >>> print(b.bits)
       10696.0
 
+   .. note::
+
+      Bit values are always floating-point. A whole-number input like
+      ``Byte(1337)`` produces an exact float (``10696.0``), but inputs
+      involving division or fractional bytes will produce fractional
+      bit counts. Use ``int(instance.bits)`` or :py:func:`math.floor`
+      to obtain an integer when needed. See :ref:`appendix_math` for
+      the design rationale behind floating-point values.
+
 .. py:attribute:: BitMathInstance.bytes
 
-   The number of bytes in the object
+   The number of bytes in the object, as a floating-point value.
 
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
       >>> print(b.bytes)
-      1337
+      1337.0
 
 .. py:attribute:: BitMathInstance.power
 
@@ -379,6 +388,61 @@ of how an attribute may be referenced multiple times.
 
 .. note:: On line **4** we print with 1 digit of precision, on line
           **16** we see the value has been rounded to **6.0**
+
+
+.. _instances_rounding:
+
+Rounding and Integer Conversion
+================================
+
+bitmath instances support Python's standard rounding protocol.
+:py:func:`math.floor`, :py:func:`math.ceil`, and the built-in
+:py:func:`round` all return a new bitmath instance of the **same
+type** with the prefix value rounded accordingly.
+
+.. code-block:: python
+
+   >>> import math, bitmath
+
+   >>> math.floor(bitmath.MiB(1.75))
+   MiB(1)
+
+   >>> math.ceil(bitmath.MiB(1.25))
+   MiB(2)
+
+   >>> round(bitmath.GiB(3.7))
+   GiB(4)
+
+   >>> round(bitmath.KiB(1.555), 2)
+   KiB(1.56)
+
+These methods round the *prefix value*. To obtain the nearest whole
+**byte** count, convert first:
+
+.. code-block:: python
+
+   >>> int(bitmath.KiB(1/3).bytes)
+   341
+
+To obtain the nearest whole **bit** count:
+
+.. code-block:: python
+
+   >>> int(bitmath.KiB(1/3).bits)
+   2730
+
+.. warning::
+
+   Rounding intermediate results is lossy.
+   ``math.floor(GiB(10) / 3) * 3`` yields ``GiB(9)``, not
+   ``GiB(10)``. Only round at the **final** output step, not
+   during calculation.
+
+.. seealso::
+
+   :ref:`appendix_math` — design rationale for floating-point values
+   and guidance on when rounding is appropriate.
+
 
 .. _instances_properties:
 

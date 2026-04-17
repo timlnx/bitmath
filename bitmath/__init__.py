@@ -851,6 +851,17 @@ equivalent of the this instances prefix Unix value. That is to say:
         """Return this instances prefix unit as a floating point number"""
         return float(self.prefix_value)
 
+    def __floor__(self):
+        return (type(self))(math.floor(self.prefix_value))
+
+    def __ceil__(self):
+        return (type(self))(math.ceil(self.prefix_value))
+
+    def __round__(self, ndigits=None):
+        if ndigits is None:
+            return (type(self))(round(self.prefix_value))
+        return (type(self))(round(self.prefix_value, ndigits))
+
     ##################################################################
     # Bitwise operations
     ##################################################################

@@ -239,6 +239,68 @@ yourself what you would expect to get if you did this:
 
 
 
+Design Philosophy: Floating-Point Measurements
+===============================================
+
+bitmath represents sizes as **floating-point measurements**, not as
+discrete counts of hardware bits. This is an intentional design choice.
+
+A file reported as ``1.7 GiB`` is a *measurement* — the same way
+``2.3 miles`` or ``1.7 liters`` are measurements. Physical storage is
+discrete (you cannot store half a bit), but the *measurement* of
+storage is legitimately continuous. Fractional values appear naturally
+in division, unit conversion chains, and proportional calculations:
+
+.. code-block:: python
+
+   >>> KiB(1) / 3
+   KiB(0.3333333333333333)
+
+   >>> MiB(1).to_Bit()
+   Bit(8388608.0)
+
+   >>> KiB(1/3).to_Bit()
+   Bit(2730.6666666666665)
+
+The last example is not a bug. The fractional bit count is the faithful
+representation of a fractional byte input. If you need integer results,
+Python's built-in :py:func:`math.floor`, :py:func:`math.ceil`, and
+:py:func:`round` all work on bitmath instances and return an instance
+of the same type:
+
+.. code-block:: python
+
+   >>> import math
+   >>> math.floor(KiB(1) / 3)
+   KiB(0)
+
+   >>> math.ceil(KiB(1) / 3)
+   KiB(1)
+
+   >>> round(MiB(1.75))
+   MiB(2)
+
+.. warning::
+
+   Rounding intermediate results is a lossy operation.
+   ``math.floor(GiB(10) / 3) * 3`` yields ``GiB(9)``, not
+   ``GiB(10)``. Only round at the **final** output step.
+
+**Floating-point accumulation:** Because bitmath uses IEEE 754 64-bit
+floats internally, arithmetic across many operations may accumulate
+small rounding errors — identical to ordinary Python float arithmetic.
+For the file-size domain (values up to exabyte scale), 64-bit float
+provides approximately 15 significant decimal digits of precision,
+which is sufficient for all practical purposes. If exact integer
+semantics are required at the byte level, use ``int(instance.bytes)``
+to work in raw integers.
+
+.. seealso::
+
+   :ref:`instances_rounding` — instance methods for rounding and
+   integer conversion.
+
+
 Footnotes
 =========
 
