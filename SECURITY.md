@@ -15,9 +15,22 @@ As of the 2.0.0 re-factor only versions ≥ 2.0.0 will receive support. Versions
 
 This list will be updated when future releases are made in the 2-version series that require specific callouts for supportability.
 
-## Reporting a Vulnerability
+If you have discovered what you think is a harmful bug with the potential for exploitation in a supported version series, and this bug may lead to loss of life or data, then you have two options for reporting available to you:
 
-If you have discovered what you think is a harmful bug with the potential for exploitation that will lead to loss of life or data, then reach out to the maintainer at this email address:
+## [1] Self-Reporting (GitHub)
+
+Consider using the new [Private Vulnerability Reporting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/privately-reporting-a-security-vulnerability) function if you want to get involved that way.
+
+* On GitHub, navigate to the main page of the repository.
+* Under the repository name, click the Security and quality tab. If you cannot see the " Security and quality" tab, select the dropdown menu, and then click Security and quality.
+* Click Report a vulnerability to open the advisory form.
+* Fill in the advisory details form.
+
+...as described in the linked GitHub documentation.
+
+## [2] Reporting a Vulnerability (Non-GitHub)
+
+You may also reach out to me at this email address:
 
 * `bitmath@lnx.cx`
 
