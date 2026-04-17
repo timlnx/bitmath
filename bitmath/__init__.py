@@ -768,18 +768,12 @@ is to be supported.object.__complex__(self)
             _self = self.prefix_value * self._base ** self._power
             return (type(self))(bytes=_other * _self)
 
-    """The division operator (/) is implemented by these methods. The
-__truediv__() method is used when __future__.division is in effect,
-otherwise __div__() is used. If only one of these two methods is
-defined, the object will not support division in the alternate
-context; TypeError will be raised instead."""
-
-    def __div__(self, other):
+    def __truediv__(self, other):
         """Division: Supported operations with result types:
 
 - bm1 / bm2 = num
 - bm / num = bm
-- num / bm = num (see rdiv)
+- num / bm = num (see rtruediv)
 """
         if isinstance(other, numbers.Number):
             # bm / num
@@ -788,10 +782,6 @@ context; TypeError will be raised instead."""
         else:
             # bm1 / bm2
             return self._byte_value / float(other.bytes)
-
-    def __truediv__(self, other):
-        # num / bm
-        return self.__div__(other)
 
     # def __floordiv__(self, other):
     #     return NotImplemented
@@ -832,10 +822,6 @@ RTYPE. E.g., 3 * MiB(3), or 10 / GB(42)
     def __rmul__(self, other):
         # num * bm = bm
         return self * other
-
-    def __rdiv__(self, other):
-        # num / bm = num
-        return other / float(self.value)
 
     def __rtruediv__(self, other):
         # num / bm = num
