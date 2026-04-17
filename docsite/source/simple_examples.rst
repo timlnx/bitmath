@@ -213,9 +213,9 @@ Now print them out in descending magnitude
 Parsing Strings
 ***************
 
-:py:func:`bitmath.parse_string` converts a human-readable string into a
-bitmath instance. By default (``strict=True``) the unit must be an exact
-bitmath type name:
+:py:func:`bitmath.parse_string` converts a human-readable string into
+a bitmath instance. By default the unit must be an exact bitmath type
+name:
 
 .. code-block:: python
 
@@ -227,10 +227,11 @@ bitmath type name:
    >>> bitmath.parse_string("1 Mio")   # octet alias
    MiB(1.0)
 
-When the input comes from a tool that produces ambiguous single-letter
-units, use ``strict=False``. Pass ``system=bitmath.SI`` or
-``system=bitmath.NIST`` to tell the parser which system to assume for
-those ambiguous units:
+When the input comes from a tool that produces ambiguous output
+(often-times single-letter units) use ``strict=False``. Pass
+``system=bitmath.SI`` or ``system=bitmath.NIST`` to tell the parser
+which system to use if the unit can not reliably be determined
+automatically:
 
 .. code-block:: python
 
@@ -251,15 +252,28 @@ those ambiguous units:
 Summing an Iterable
 *******************
 
-Python's built-in :py:func:`sum` starts accumulation from the integer
-``0``, which causes mixed-type addition to return a plain float rather
-than a bitmath instance. Use :py:func:`bitmath.sum` instead:
+The built-in :py:func:`sum` works with bitmath objects. Because
+``0 + bm`` returns ``bm`` itself (the identity element), accumulation
+starts correctly and the result type matches the **first element** in
+the iterable:
 
 .. code-block:: python
 
    >>> import bitmath
-   >>> bitmath.sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+   >>> sum([bitmath.KiB(1), bitmath.KiB(2)])
+   KiB(3.0)
+   >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
    Byte(1074790401.0)
+
+Use :py:func:`bitmath.sum` when you need the result **normalised to a
+specific unit** regardless of the input types. Without a ``start``
+argument it accumulates into :class:`bitmath.Byte`; pass ``start`` to
+choose a different accumulator:
+
+.. code-block:: python
+
+   >>> bitmath.sum([bitmath.MiB(1), bitmath.GiB(1)])
+   Byte(1074790400.0)
    >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
    MiB(0.0029296875)
 

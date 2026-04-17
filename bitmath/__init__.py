@@ -1608,15 +1608,16 @@ def parse_string_unsafe(s, system=NIST):
 
 
 def sum(iterable, start=None):
-    """Sum an iterable of bitmath instances correctly.
+    """Sum an iterable of bitmath instances, returning a Byte by default.
 
-The built-in sum() starts from integer 0, which causes __radd__ to
-return a plain float instead of a bitmath instance. This function
-starts from Byte(0) so all additions go through the bitmath __add__
-path with proper unit conversion.
+The built-in sum() also works with bitmath objects: the __radd__
+identity (0 + bm = bm) means sum() preserves the type of the first
+element. Use bitmath.sum() instead when you need the result normalised
+to a specific unit regardless of input types — it accumulates into
+Byte(0) by default, or into the provided start instance.
 
-- bitmath.sum([Byte(1), MiB(1), GiB(1)]) -> Byte(1074790401.0)
-- bitmath.sum([KiB(1), KiB(2)], start=MiB(0)) -> MiB(0.00292...)
+- bitmath.sum([MiB(1), GiB(1)]) -> Byte(1074790400.0)
+- bitmath.sum([KiB(1), KiB(2)], start=MiB(0)) -> MiB(0.0029296875)
 """
     result = Byte(0) if start is None else start
     for item in iterable:
