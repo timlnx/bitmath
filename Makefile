@@ -80,6 +80,8 @@ docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
 viewdocs: docs
 	@if [ "$$(uname)" = "Darwin" ]; then \
 		open docsite/build/html/index.html; \
+	elif echo "$$(uname)" | grep -qi "mingw\|cygwin\|msys"; then \
+		start docsite/build/html/index.html; \
 	else \
 		xdg-open docsite/build/html/index.html; \
 	fi
