@@ -87,7 +87,7 @@ bitmath-1.3.3-1
 ***************
 
 `bitmath-1.3.3-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.3.3.1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.3.3.1>`__ was
 published on 2018-08-23.
 
 
@@ -101,7 +101,7 @@ updates to keep up with changing standards.
 Minor bug fixes and documentation tweaks are included as well.
 
 The project now has an official `Code of Conduct
-<https://github.com/tbielawa/bitmath/blob/master/CODE_OF_CONDUCT.md>`_,
+<https://github.com/timlnx/bitmath/blob/master/CODE_OF_CONDUCT.md>`_,
 as well as issue and pull request templates.
 
 
@@ -116,7 +116,7 @@ Changes
 
 `Alexander Kapshuna <https://github.com/kapsh>`_ has submitted
 `several fixes
-<https://github.com/tbielawa/bitmath/pulls?q=is%3Apr+author%3Akapsh>`_
+<https://github.com/timlnx/bitmath/pulls?q=is%3Apr+author%3Akapsh>`_
 since the last release. Thanks!
 
 * Packaging requirements fixes
@@ -124,11 +124,11 @@ since the last release. Thanks!
 * Subclassing and Type checking fixes/improvements
 
 `Marcus Kazmierczak <https://github.com/mkaz>`_ submitted `a fix
-<https://github.com/tbielawa/bitmath/pull/75>`_ for some broken
+<https://github.com/timlnx/bitmath/pull/75>`_ for some broken
 documentation links.
 
 And `Dawid Gosławski <https://github.com/alkuzad>`_ make sure our
-`documentation <https://github.com/tbielawa/bitmath/pull/62/files>`_
+`documentation <https://github.com/timlnx/bitmath/pull/62/files>`_
 is accurate.
 
 
@@ -141,7 +141,7 @@ bitmath-1.3.1-1
 ***************
 
 `bitmath-1.3.1-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.3.1.1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.3.1.1>`__ was
 published on 2016-07-17.
 
 Changes
@@ -156,7 +156,7 @@ Changes
 
 * Inspired by `@darkblaze69 <https://github.com/darkblaze69>`_'s
   request in `#60 "Problems in parse_string"
-  <https://github.com/tbielawa/bitmath/issues/60>`_.
+  <https://github.com/timlnx/bitmath/issues/60>`_.
 
 
 Project
@@ -169,12 +169,12 @@ Project
 
 * Ubuntu builds inspired by `@hkraal <https://github.com/hkraal>`_
   reporting an `installation issue
-  <https://github.com/tbielawa/bitmath/issues/57>`_ on Ubuntu systems.
+  <https://github.com/timlnx/bitmath/issues/57>`_ on Ubuntu systems.
 
 
 **Documentation**
 
-* `Cleaned up a lot <https://github.com/tbielawa/bitmath/issues/59>`_
+* `Cleaned up a lot <https://github.com/timlnx/bitmath/issues/59>`_
   of broken or re-directing links using output from the Sphinx ``make
   linkcheck`` command.
 
@@ -185,7 +185,7 @@ bitmath-1.3.0-1
 ***************
 
 `bitmath-1.3.0-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.3.0.1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.3.0.1>`__ was
 published on 2016-01-08.
 
 Changes
@@ -194,7 +194,7 @@ Changes
 **Bug Fixes**
 
 * Closed `GitHub Issue #55
-  <https://github.com/tbielawa/bitmath/issues/55>`_ "best_prefix for
+  <https://github.com/timlnx/bitmath/issues/55>`_ "best_prefix for
   negative values". Now :func:`bitmath.best_prefix` returns correct
   prefix units for negative values. Thanks `mbdm
   <https://github.com/mbdm>`_!
@@ -206,7 +206,7 @@ bitmath-1.2.4-1
 ***************
 
 `bitmath-1.2.4-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.2.4-1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.2.4-1>`__ was
 published on 2015-11-30.
 
 Changes
@@ -220,17 +220,17 @@ Changes
 
 * The :func:`bitmath.parse_string` function now can parse 'octet'
   based units. Enhancement requested in `#53 parse french unit names
-  <https://github.com/tbielawa/bitmath/issues/53>`_ by `walidsa3d
+  <https://github.com/timlnx/bitmath/issues/53>`_ by `walidsa3d
   <https://github.com/walidsa3d>`_.
 
 **Bug Fixes**
 
-* `#49 <https://github.com/tbielawa/bitmath/pull/49>`_ - Fix handling
+* `#49 <https://github.com/timlnx/bitmath/pull/49>`_ - Fix handling
   unicode input in the `bitmath.parse_string
   <https://bitmath.readthedocs.io/en/latest/module.html#bitmath-parse-string>`__
   function. Thanks `drewbrew <https://github.com/drewbrew>`_!
 
-* `#50 <https://github.com/tbielawa/bitmath/pull/50>`_ - Update the
+* `#50 <https://github.com/timlnx/bitmath/pull/50>`_ - Update the
   ``setup.py`` script to be python3.x compat. Thanks `ssut
   <https://github.com/ssut>`_!
 
@@ -264,7 +264,7 @@ bitmath-1.2.3-1
 ***************
 
 `bitmath-1.2.3-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.2.3-1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.2.3-1>`__ was
 published on 2015-01-03.
 
 Changes
@@ -307,7 +307,7 @@ bitmath-1.2.0-1
 ***************
 
 `bitmath-1.2.0-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.2.0-1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.2.0-1>`__ was
 published on 2014-12-29.
 
 Changes
@@ -323,7 +323,7 @@ Documentation
 =============
 
 * The command-line ``bitmath`` tool now has a `proper manpage
-  <https://github.com/tbielawa/bitmath/blob/master/bitmath.1.asciidoc.in>`_
+  <https://github.com/timlnx/bitmath/blob/master/bitmath.1.asciidoc.in>`_
 
 Project
 =======
@@ -340,10 +340,10 @@ bitmath-1.1.0-1
 ***************
 
 `bitmath-1.1.0-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.1.0-1>`_ was
+<https://github.com/timlnx/bitmath/releases/tag/1.1.0-1>`_ was
 published on 2014-12-20.
 
-* `GitHub Milestone Tracker for 1.1.0 <https://github.com/tbielawa/bitmath/milestones/1.1.0>`_
+* `GitHub Milestone Tracker for 1.1.0 <https://github.com/timlnx/bitmath/milestones/1.1.0>`_
 
 Changes
 =======
@@ -351,12 +351,12 @@ Changes
 **Added Functionality**
 
 * New ``bitmath`` `command-line tool
-  <https://github.com/tbielawa/bitmath/issues/35>`_ added. Provides
+  <https://github.com/timlnx/bitmath/issues/35>`_ added. Provides
   CLI access to basic unit conversion functions
 * New utility function `bitmath.parse_string
   <http://bitmath.readthedocs.io/en/latest//module.html#bitmath-parse-string>`_
   for parsing a human-readable string into a bitmath object. `Patch
-  submitted <https://github.com/tbielawa/bitmath/pull/42>`_ by new
+  submitted <https://github.com/timlnx/bitmath/pull/42>`_ by new
   contributor `tonycpsu <https://github.com/tonycpsu>`_.
 
 .. _bitmath-1.0.8-1:
@@ -365,10 +365,10 @@ bitmath-1.0.5-1 through 1.0.8-1
 *******************************
 
 `bitmath-1.0.8-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.0.8-1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.0.8-1>`__ was
 published on 2014-08-14.
 
-* `GitHub Milestone Tracker for 1.0.8 <https://github.com/tbielawa/bitmath/issues?q=milestone%3A1.0.8>`_
+* `GitHub Milestone Tracker for 1.0.8 <https://github.com/timlnx/bitmath/issues?q=milestone%3A1.0.8>`_
 
 Major Updates
 =============
@@ -382,17 +382,17 @@ Major Updates
   (`pkg info
   <https://admin.fedoraproject.org/pkgdb/package/rpms/python-bitmath/>`_)
 * merged 6 `pull requests
-  <https://github.com/tbielawa/bitmath/pulls?q=is%3Apr+closed%3A%3C2014-08-28>`_
+  <https://github.com/timlnx/bitmath/pulls?q=is%3Apr+closed%3A%3C2014-08-28>`_
   from 3 `contributors
-  <https://github.com/tbielawa/bitmath/graphs/contributors>`_
+  <https://github.com/timlnx/bitmath/graphs/contributors>`_
 
 Bug Fixes
 =========
 
 * fixed some math implementation bugs
 
-  * `commutative multiplication <https://github.com/tbielawa/bitmath/issues/18>`_
-  * `true division <https://github.com/tbielawa/bitmath/issues/2>`_
+  * `commutative multiplication <https://github.com/timlnx/bitmath/issues/18>`_
+  * `true division <https://github.com/timlnx/bitmath/issues/2>`_
 
 Changes
 =======
@@ -427,13 +427,13 @@ Project
 **Tests**
 
 * Test suite is now implemented using `Python virtualenv's
-  <https://github.com/tbielawa/bitmath/blob/master/Makefile#L177>`_
+  <https://github.com/timlnx/bitmath/blob/master/Makefile#L177>`_
   for consistency across across platforms
 * Test suite now contains 150 unit tests. This is **110** more tests
   than the previous major release (`1.0.4-1 <bitmath-1.0.4-1>`__)
 * Test suite now runs on EPEL6 and EPEL7
 * `Code coverage
-  <https://coveralls.io/github/tbielawa/bitmath>`_ is stable
+  <https://coveralls.io/github/timlnx/bitmath>`_ is stable
   around 95-100%
 
 
@@ -443,7 +443,7 @@ bitmath-1.0.4-1
 ***************
 
 This is the first release of **bitmath**. `bitmath-1.0.4-1
-<https://github.com/tbielawa/bitmath/releases/tag/1.0.4-1>`__ was
+<https://github.com/timlnx/bitmath/releases/tag/1.0.4-1>`__ was
 published on 2014-03-20.
 
 Project

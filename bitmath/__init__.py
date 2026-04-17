@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # The MIT License (MIT)
 #
-# Copyright © 2014-2016 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014-2016 Tim Case <timbielawa@gmail.com>
 # See GitHub Contributors Graph for more information
 #
 # Permission is hereby granted, free of charge, to any person
@@ -1228,7 +1228,7 @@ ioctl's for querying block device sizes:
                 # The result should be true as long as your kernel
                 # headers define BLKGETSIZE64 as a u64 type (please
                 # file a bug report at
-                # https://github.com/tbielawa/bitmath/issues/new if
+                # https://github.com/timlnx/bitmath/issues/new if
                 # this does *not* work for you)
             ],
             # func is how the final result is decided. Because the

@@ -1,20 +1,20 @@
-.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
-   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
    :alt: Build Status on GitHub
 
-.. image:: https://img.shields.io/github/issues/tbielawa/bitmath?style=flat-square
-   :target: https://github.com/tbielawa/bitmath/issues
+.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/issues
    :alt: Open Issues
 
-.. image:: https://img.shields.io/github/issues-pr/tbielawa/bitmath?style=flat-square
-   :target: https://github.com/tbielawa/bitmath/pulls
+.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/pulls
    :alt: Open Pull Requests
 
 .. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: PyPI - Package Popularity
 
-.. image:: https://img.shields.io/github/stars/tbielawa/bitmath?style=flat-square
+.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: GitHub Project Popularity
 
@@ -61,10 +61,10 @@ bytes. When you see file sizes or transfer rates in your web browser,
 most of the time what you're really seeing are the base-2 sizes/rates.
 
 **Don't Forget!** The source for bitmath `is available on GitHub
-<https://github.com/tbielawa/bitmath>`_.
+<https://github.com/timlnx/bitmath>`_.
 
 And did we mention there's almost 200 unittests? `Check them out for
-yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
+yourself <https://github.com/timlnx/bitmath/tree/master/tests>`_.
 
 * :ref:`Examples <index_examples>` after the TOC.
 

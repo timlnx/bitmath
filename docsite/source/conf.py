@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'bitmath'
-copyright = u'2014-2023, Tim Bielawa'
+copyright = u'2014-2023, Tim Case'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -200,7 +200,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'bitmath.tex', u'bitmath Documentation',
-   u'Tim Bielawa', 'manual'),
+   u'Tim Case', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,7 +230,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'bitmath', u'bitmath Documentation',
-     [u'Tim Bielawa'], 1)
+     [u'Tim Case'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,7 +244,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'bitmath', u'bitmath Documentation',
-   u'Tim Bielawa', 'bitmath', 'One line description of project.',
+   u'Tim Case', 'bitmath', 'One line description of project.',
    'Miscellaneous'),
 ]
 

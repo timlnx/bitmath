@@ -19,7 +19,7 @@ Code of Conduct
 All persons submitting code or otherwise interacting with the bitmath
 project on GitHub must accept and abide by the terms of the `Code of
 Conduct
-<https://github.com/tbielawa/bitmath/blob/master/CODE_OF_CONDUCT.md>`_.
+<https://github.com/timlnx/bitmath/blob/master/CODE_OF_CONDUCT.md>`_.
 
 
 .. _contributing_issue_reporting:
@@ -30,8 +30,8 @@ Issue Reporting
 If you are encounter an issue with the bitmath library, please use the
 provided template.
 
-* `Open a new issue <https://github.com/tbielawa/bitmath/issues/new>`_
-* `View open issues <https://github.com/tbielawa/bitmath/issues>`_
+* `Open a new issue <https://github.com/timlnx/bitmath/issues/new>`_
+* `View open issues <https://github.com/timlnx/bitmath/issues>`_
 
 
 Code Style/Formatting
@@ -85,13 +85,13 @@ For example::
 Pull Requests
 *************
 
-After a `pull request <https://github.com/tbielawa/bitmath/pulls>`_ is
+After a `pull request <https://github.com/timlnx/bitmath/pulls>`_ is
 submitted on GitHub two automatic processes are started:
 
-#. `Travis-CI <https://travis-ci.org/tbielawa/bitmath>`_ clones the
+#. `Travis-CI <https://travis-ci.org/timlnx/bitmath>`_ clones the
    new pull request and runs the :ref:`automated test suite
    <contributing_automated_tests>`.
-#. `Coveralls <https://coveralls.io/github/tbielawa/bitmath>`_ clones
+#. `Coveralls <https://coveralls.io/github/timlnx/bitmath>`_ clones
    the new pull request and determines if the request would increase
    or decrease the overall code test coverage.
 
@@ -132,7 +132,7 @@ Components
 
 bitmath unit tests are integrated with/depend on the following items:
 
-* `GitHub Actions <https://github.com/tbielawa/bitmath/actions>`_ -
+* `GitHub Actions <https://github.com/timlnx/bitmath/actions>`_ -
   GitHub Actions provideFree online `continuous integration`
   functionality for projects. Tests are ran automatically on every git
   commit. In the past we used Travis for this functionality.

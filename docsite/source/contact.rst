@@ -3,7 +3,7 @@
 Contact
 #######
 
-Hi, I'm Tim Bielawa, the bitmath maintainer. Would you like to get in
+Hi, I'm Tim Case, the bitmath maintainer. Would you like to get in
 touch? Maybe you want to peek at other stuff I'm working on? Go right
 ahead:
 
@@ -18,7 +18,7 @@ ahead:
  Almost every project I work on, code or not, ends up on GitHub
  eventually. You can see what else I've been busy with on my profile.
 
- * `GitHub: tbielawa <https://github.com/tbielawa/>`_
+ * `GitHub: tbielawa <https://github.com/timlnx/>`_
 
 **Bugs/Issues/Requests**
  All contributions related directly to the bitmath project, i.e. bug
@@ -30,7 +30,7 @@ ahead:
 
 **E-Mail**
  If you want to contact me directly, `clone the project
- <https://github.com/tbielawa/bitmath>`_ and look at any of `my
+ <https://github.com/timlnx/bitmath>`_ and look at any of `my
  bitmath commits
- <https://github.com/tbielawa/bitmath/commits/master?author=tbielawa>`_
+ <https://github.com/timlnx/bitmath/commits/master?author=tbielawa>`_
  to find my email address.

@@ -9,7 +9,7 @@ description = "Pythonic module for representing and manipulating file sizes with
 readme = "README.rst"
 requires-python = ">=3.11"
 authors = [
-  { name = "Tim Bielawa", email = "timbielawa@gmail.com" },
+  { name = "Tim Case", email = "timbielawa@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -44,8 +44,8 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://bitmath.readthedocs.io/en/latest/index.html"
-"Bug Tracker" = "https://github.com/tbielawa/bitmath/issues"
-"Git Repo" = "https://github.com/tbielawa/bitmath"
+"Bug Tracker" = "https://github.com/timlnx/bitmath/issues"
+"Git Repo" = "https://github.com/timlnx/bitmath"
 
 [project.scripts]
 bitmath = "bitmath:cli_script"

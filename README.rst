@@ -4,22 +4,22 @@
    :height: 19
    :width: 77
 
-.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
-   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
 
-.. image:: https://img.shields.io/github/issues/tbielawa/bitmath?style=flat-square
-   :target: https://github.com/tbielawa/bitmath/issues
+.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/issues
    :alt: Open issues
 
-.. image:: https://img.shields.io/github/issues-pr/tbielawa/bitmath?style=flat-square
-   :target: https://github.com/tbielawa/bitmath/pulls
+.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/pulls
    :alt: Open pull requests
 
 .. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: PyPI - Package Downloads
 
-.. image:: https://img.shields.io/github/stars/tbielawa/bitmath?style=flat-square
+.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: GitHub Project Popularity
 
@@ -68,10 +68,10 @@ bytes. When you see file sizes or transfer rates in your web browser,
 most of the time what you're really seeing are the base-2 sizes/rates.
 
 **Don't Forget!** The source for bitmath `is available on GitHub
-<https://github.com/tbielawa/bitmath>`_.
+<https://github.com/timlnx/bitmath>`_.
 
 And did we mention there's almost 200 unittests? `Check them out for
-yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
+yourself <https://github.com/timlnx/bitmath/tree/master/tests>`_.
 
 Running the tests should be as simple as calling the ``ci`` target in
 the Makefile: ``make ci``. Please file a bug report if you run into
@@ -109,7 +109,7 @@ You could also install bitmath from `PyPi
    **pip** installs need pip >= 1.1. To workaround this, `download
    bitmath <https://pypi.python.org/pypi/bitmath/#downloads>`_, from
    PyPi and then ``pip install bitmath-x.y.z.tar.gz``. See `issue #57
-   <https://github.com/tbielawa/bitmath/issues/57#issuecomment-227018168>`_
+   <https://github.com/timlnx/bitmath/issues/57#issuecomment-227018168>`_
    for more information.
 
 

@@ -122,7 +122,7 @@ bitmath.listdir()
 
       * This function does **not** return tuples for directory
         entities. Including directories in results is `scheduled for
-        introduction <https://github.com/tbielawa/bitmath/issues/27>`_
+        introduction <https://github.com/timlnx/bitmath/issues/27>`_
         in an upcoming release.
       * Symlinks to **files** are followed automatically
 
@@ -294,7 +294,7 @@ bitmath.parse_string()
    .. versionchanged:: 1.2.4
       Added support for parsing *octet* units via issue `#53 - parse
       french units
-      <https://github.com/tbielawa/bitmath/issues/53>`_. The `usage
+      <https://github.com/timlnx/bitmath/issues/53>`_. The `usage
       <https://en.wikipedia.org/wiki/Octet_(computing)#Use>`_ of
       "octet" is still common in some `RFCs
       <https://en.wikipedia.org/wiki/Request_for_Comments>`_, as well
