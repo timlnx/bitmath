@@ -756,7 +756,7 @@ is to be supported.object.__complex__(self)
 
 - bm1 * bm2 = bm1
 - bm * num = bm
-- num * bm = num (see rmul)
+- num * bm = bm (see rmul)
 """
         if isinstance(other, numbers.Number):
             # bm * num

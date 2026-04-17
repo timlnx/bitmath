@@ -226,7 +226,7 @@ bitmath), the intention of ``MiB(100) / 10)`` is to separate
 .. code-block:: python
 
    In [4]: KiB(43) / 10
-   Out[4]: KiB(4.2998046875)
+   Out[4]: KiB(4.3)
 
 The reverse operation does not maintain semantic validity. Stated
 differently, it does not make logical sense to divide a constant by a
