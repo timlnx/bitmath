@@ -72,7 +72,7 @@ Math works mostly like you expect it to, except for a few edge-cases:
 +----------------+-------------------+---------------------+---------------------------------------+
 | Division       | ``bm1`` / ``bm2`` | ``type(num)``       | ``KiB(1) / KiB(2)`` = ``0.5``         |
 +----------------+-------------------+---------------------+---------------------------------------+
-| Division       | ``bm`` / ``num``  | ``type(bm)``        | ``KiB(1) / 3`` = ``0.3330078125KiB``  |
+| Division       | ``bm`` / ``num``  | ``type(bm)``        | ``KiB(6) / 4`` = ``KiB(1.5)``         |
 +----------------+-------------------+---------------------+---------------------------------------+
 | Division       | ``num`` / ``bm``  | ``type(num)``       | ``3 / KiB(2)`` = ``1.5``              |
 +----------------+-------------------+---------------------+---------------------------------------+
@@ -145,7 +145,7 @@ Rich Comparison
 ***************
 
 Rich Comparison (as per the `Python Basic Customization
-<https://docs.python.org/2.7/reference/datamodel.html#basic-customization>`_
+<https://docs.python.org/3/reference/datamodel.html#basic-customization>`_
 magic methods) ``<``, ``<=``, ``==``, ``!=``, ``>``, ``>=`` is fully
 supported:
 
@@ -207,4 +207,89 @@ Now print them out in descending magnitude
 .. code-block:: python
 
    >>> print(sorted(human_sizes, reverse=True))
-   [KiB(7892.0), KiB(7337.0), KiB(4190.0), KiB(4003.0), KiB(2326.0), KiB(2178.0), KiB(2126.0), KiB(1770.0), KiB(1441.0), KiB(48.0)]
+   [MiB(7.70703125), MiB(7.1650390625), MiB(4.091796875), MiB(3.9091796875), MiB(2.271484375), MiB(2.126953125), MiB(2.076171875), MiB(1.728515625), MiB(1.4072265625), KiB(48.0)]
+
+
+Parsing Strings
+***************
+
+:py:func:`bitmath.parse_string` converts a human-readable string into a
+bitmath instance. By default (``strict=True``) the unit must be an exact
+bitmath type name:
+
+.. code-block:: python
+
+   >>> import bitmath
+   >>> bitmath.parse_string("4.7 GiB")
+   GiB(4.7)
+   >>> bitmath.parse_string("1337 MB")
+   MB(1337.0)
+   >>> bitmath.parse_string("1 Mio")   # octet alias
+   MiB(1.0)
+
+When the input comes from a tool that produces ambiguous single-letter
+units, use ``strict=False``. Pass ``system=bitmath.SI`` or
+``system=bitmath.NIST`` to tell the parser which system to assume for
+those ambiguous units:
+
+.. code-block:: python
+
+   >>> bitmath.parse_string("4G", strict=False)             # NIST default
+   GiB(4.0)
+   >>> bitmath.parse_string("4G", strict=False, system=bitmath.SI)
+   GB(4.0)
+   >>> bitmath.parse_string("100", strict=False)            # plain number → bytes
+   Byte(100.0)
+   >>> bitmath.parse_string("100 GiB", strict=False, system=bitmath.SI)  # i-marker wins
+   GiB(100.0)
+
+.. seealso::
+
+   :py:func:`bitmath.parse_string` — full parameter reference and caveats.
+
+
+Summing an Iterable
+*******************
+
+Python's built-in :py:func:`sum` starts accumulation from the integer
+``0``, which causes mixed-type addition to return a plain float rather
+than a bitmath instance. Use :py:func:`bitmath.sum` instead:
+
+.. code-block:: python
+
+   >>> import bitmath
+   >>> bitmath.sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+   Byte(1074790401.0)
+   >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
+   MiB(0.0029296875)
+
+
+Rounding
+********
+
+bitmath represents sizes as floating-point measurements. When an integer
+result is needed, Python's :py:func:`math.floor`, :py:func:`math.ceil`,
+and :py:func:`round` all work directly on bitmath instances and return
+an instance of the same type:
+
+.. code-block:: python
+
+   >>> import math, bitmath
+   >>> math.floor(bitmath.KiB(1) / 3)
+   KiB(0)
+   >>> math.ceil(bitmath.KiB(1) / 3)
+   KiB(1)
+   >>> round(bitmath.MiB(1.75))
+   MiB(2)
+   >>> round(bitmath.GiB(1.23456), 2)
+   GiB(1.23)
+
+.. warning::
+
+   Rounding intermediate results is lossy. ``math.floor(GiB(10) / 3) * 3``
+   yields ``GiB(9)``, not ``GiB(10)``. Only round at the final output step.
+
+.. seealso::
+
+   :ref:`Appendix: Rules for Math <appendix_math>` — discussion of
+   floating-point representation and when rounding is appropriate.
