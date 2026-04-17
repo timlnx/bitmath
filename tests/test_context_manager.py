@@ -86,12 +86,12 @@ class TestContextManager(TestCase):
             self.assertEqual(expected_result, actual_result)
 
     def test_print_GiB_plural_fmt_in_mgr(self):
-        """TiB(1/3.0) prints out units in plural form, setting the fmt str in the mgr"""
-        expected_result = "3Bytes"
+        """GiB(3.0) prints out units in plural form, setting the fmt str in the mgr"""
+        expected_result = "3GiBs"
 
         with bitmath.format(fmt_str="{value:.1g}{unit}", plural=True):
-            three_Bytes = bitmath.Byte(3.0)
-            actual_result = str(three_Bytes)
+            three_GiB = bitmath.GiB(3.0)
+            actual_result = str(three_GiB)
             self.assertEqual(expected_result, actual_result)
 
     def test_print_GiB_singular_fmt_in_mgr(self):
@@ -102,3 +102,41 @@ class TestContextManager(TestCase):
             third_tibibyte = bitmath.TiB(1 / 3.0).best_prefix()
             actual_result = str(third_tibibyte)
             self.assertEqual(expected_result, actual_result)
+
+    def test_bestprefix_in_context_manager(self):
+        """bestprefix=True causes str() to render the best human-readable prefix"""
+        with bitmath.format(bestprefix=True):
+            result = str(bitmath.MiB(1024))
+        self.assertEqual(result, "1.0 GiB")
+
+    def test_bestprefix_restores_after_context(self):
+        """bestprefix is not active outside the context manager"""
+        with bitmath.format(bestprefix=True):
+            pass
+        self.assertEqual(str(bitmath.MiB(1024)), "1024.0 MiB")
+
+    def test_bestprefix_with_fmt_str(self):
+        """bestprefix=True combined with fmt_str applies the format to the converted unit"""
+        with bitmath.format(fmt_str="{value:.2f} {unit}", bestprefix=True):
+            result = str(bitmath.KiB(2048))
+        self.assertEqual(result, "2.00 MiB")
+
+    def test_format_restored_after_exception(self):
+        """format_string is restored to default even when an exception is raised"""
+        original = bitmath.format_string
+        try:
+            with bitmath.format(fmt_str="{value:.2f} {unit}"):
+                raise ValueError("boom")
+        except ValueError:
+            pass
+        self.assertEqual(bitmath.format_string, original)
+        self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")
+
+    def test_nested_context_managers(self):
+        """Nested format contexts correctly save and restore enclosing context state"""
+        with bitmath.format(fmt_str="{value:.1f} {unit}"):
+            self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")
+            with bitmath.format(fmt_str="{value:.3f} {unit}"):
+                self.assertEqual(str(bitmath.KiB(1)), "1.000 KiB")
+            self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")
+        self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")

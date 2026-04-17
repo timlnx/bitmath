@@ -51,6 +51,7 @@ import os
 import os.path
 import platform
 import sys
+import threading
 
 # For device capacity reading in query_device_capacity(). Only supported
 # on posix systems for now. Will be addressed in issue #52 on GitHub.
@@ -136,6 +137,24 @@ format_string = "{value} {unit}"
 
 #: Pluralization behavior
 format_plural = False
+
+# Thread-local storage for context manager overrides. When a thread is inside
+# a bitmath.format() context, these shadow the module globals above for that
+# thread only — other threads are unaffected.
+_thread_local = threading.local()
+_FMT_SENTINEL = object()  # distinguishes "not set" from any real value
+
+
+def _get_format_string():
+    return getattr(_thread_local, 'format_string', format_string)
+
+
+def _get_format_plural():
+    return getattr(_thread_local, 'format_plural', format_plural)
+
+
+def _get_bestprefix():
+    return getattr(_thread_local, 'bestprefix', False)
 
 
 def os_name():
@@ -308,12 +327,10 @@ For example:
    >>> Byte(1.1).unit == 'Bytes'
    >>> Gb(2).unit == 'Gbs'
         """
-        global format_plural  # noqa: F824
-
         if self.prefix_value == 1:
             # If it's a '1', return it singular, no matter what
             return self._name_singular
-        elif format_plural:
+        elif _get_format_plural():
             # Pluralization requested
             return self._name_plural
         else:
@@ -392,8 +409,9 @@ interpreter"""
 
     def __str__(self):
         """String representation of this object"""
-        global format_string  # noqa: F824
-        return self.format(format_string)
+        if _get_bestprefix():
+            return self.best_prefix().format(_get_format_string())
+        return self.format(_get_format_string())
 
     def format(self, fmt):
         """Return a representation of this instance formatted with user
@@ -1626,39 +1644,48 @@ Byte(0) by default, or into the provided start instance.
 
 
 ######################################################################
-# Contxt Managers
+# Context Managers
 @contextlib.contextmanager
 def format(fmt_str=None, plural=False, bestprefix=False):
-    """Context manager for printing bitmath instances.
+    """Thread-safe context manager for printing bitmath instances.
 
-``fmt_str`` - a formatting mini-language compat formatting string. See
+``fmt_str`` - a formatting mini-language compatible string. See
 the @properties (above) for a list of available items.
 
-``plural`` - True enables printing instances with 's's if they're
+``plural`` - True enables printing instances with 's' if they're
 plural. False (default) prints them as singular (no trailing 's').
 
-``bestprefix`` - True enables printing instances in their best
-human-readable representation. False, the default, prints instances
-using their current prefix unit.
+``bestprefix`` - True converts instances to their best human-readable
+prefix unit before formatting. False (default) formats the instance
+as its current prefix unit.
+
+All settings are thread-local: concurrent contexts in different threads
+are fully isolated from one another. Nested contexts within the same
+thread correctly save and restore the enclosing context's settings.
     """
-    if 'bitmath' not in globals():
-        import bitmath
+    prev_fmt = getattr(_thread_local, 'format_string', _FMT_SENTINEL)
+    prev_plural = getattr(_thread_local, 'format_plural', _FMT_SENTINEL)
+    prev_bestprefix = getattr(_thread_local, 'bestprefix', _FMT_SENTINEL)
 
-    if plural:
-        orig_fmt_plural = bitmath.format_plural
-        bitmath.format_plural = True
+    _thread_local.format_string = fmt_str if fmt_str is not None else format_string
+    _thread_local.format_plural = plural
+    _thread_local.bestprefix = bestprefix
 
-    if fmt_str:
-        orig_fmt_str = bitmath.format_string
-        bitmath.format_string = fmt_str
-
-    yield
-
-    if plural:
-        bitmath.format_plural = orig_fmt_plural
-
-    if fmt_str:
-        bitmath.format_string = orig_fmt_str
+    try:
+        yield
+    finally:
+        if prev_fmt is _FMT_SENTINEL:
+            del _thread_local.format_string
+        else:
+            _thread_local.format_string = prev_fmt
+        if prev_plural is _FMT_SENTINEL:
+            del _thread_local.format_plural
+        else:
+            _thread_local.format_plural = prev_plural
+        if prev_bestprefix is _FMT_SENTINEL:
+            del _thread_local.bestprefix
+        else:
+            _thread_local.bestprefix = prev_bestprefix
 
 
 def cli_script_main(cli_args):
