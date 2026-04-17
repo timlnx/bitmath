@@ -72,6 +72,18 @@ class TestParse(TestCase):
             bitmath.parse_string("654 Eio"),
             bitmath.EiB(654))
 
+    def test_parse_Zio(self):
+        """parse_string works on zebioctet strings"""
+        self.assertEqual(
+            bitmath.parse_string("654 Zio"),
+            bitmath.ZiB(654))
+
+    def test_parse_Yio(self):
+        """parse_string works on yobioctet strings"""
+        self.assertEqual(
+            bitmath.parse_string("654 Yio"),
+            bitmath.YiB(654))
+
     # SI 'octet' based units
     def test_parse_Mo(self):
         """parse_string works on megaoctet strings"""
@@ -84,6 +96,18 @@ class TestParse(TestCase):
         self.assertEqual(
             bitmath.parse_string("654 Eo"),
             bitmath.EB(654))
+
+    def test_parse_Zo(self):
+        """parse_string works on zettaoctet strings"""
+        self.assertEqual(
+            bitmath.parse_string("654 Zo"),
+            bitmath.ZB(654))
+
+    def test_parse_Yo(self):
+        """parse_string works on yottaoctet strings"""
+        self.assertEqual(
+            bitmath.parse_string("654 Yo"),
+            bitmath.YB(654))
 
     ######################################################################
 

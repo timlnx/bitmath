@@ -60,9 +60,9 @@ if os.name == 'posix':
     import struct
 
 
-__all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB',
+__all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB',
            'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'Kib',
-           'Mib', 'Gib', 'Tib', 'Pib', 'Eib', 'kb', 'Mb', 'Gb', 'Tb',
+           'Mib', 'Gib', 'Tib', 'Pib', 'Eib', 'Zib', 'Yib', 'kb', 'Mb', 'Gb', 'Tb',
            'Pb', 'Eb', 'Zb', 'Yb', 'getsize', 'listdir', 'format',
            'format_string', 'format_plural', 'parse_string', 'parse_string_unsafe',
            'sum', 'ALL_UNIT_TYPES', 'NIST', 'NIST_PREFIXES', 'NIST_STEPS',
@@ -73,7 +73,8 @@ __all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB',
 ALL_UNIT_TYPES = ['Bit', 'Byte', 'kb', 'kB', 'Mb', 'MB', 'Gb', 'GB', 'Tb',
                   'TB', 'Pb', 'PB', 'Eb', 'EB', 'Zb', 'ZB', 'Yb',
                   'YB', 'Kib', 'KiB', 'Mib', 'MiB', 'Gib', 'GiB',
-                  'Tib', 'TiB', 'Pib', 'PiB', 'Eib', 'EiB']
+                  'Tib', 'TiB', 'Pib', 'PiB', 'Eib', 'EiB', 'Zib', 'ZiB',
+                  'Yib', 'YiB']
 
 # #####################################################################
 # Set up our module variables/constants
@@ -114,7 +115,7 @@ SI_STEPS = {
 
 
 #: All of the NIST prefixes
-NIST_PREFIXES = ['Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei']
+NIST_PREFIXES = ['Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi']
 
 #: Byte values represented by each NIST prefix unit
 NIST_STEPS = {
@@ -125,7 +126,9 @@ NIST_STEPS = {
     'Gi': 1073741824,
     'Ti': 1099511627776,
     'Pi': 1125899906842624,
-    'Ei': 1152921504606846976
+    'Ei': 1152921504606846976,
+    'Zi': 1180591620717411303424,
+    'Yi': 1208925819614629174706176
 }
 
 #: String representation, ex: ``13.37 MiB``, or ``42.0 kB``
@@ -239,7 +242,7 @@ type.
    :raises ValueError: if the input value is not a type of real number
 """
         if isinstance(value, self.valid_types):
-            self._byte_value = value * self._unit_value
+            self._byte_value = float(value) * self._unit_value
             self._bit_value = self._byte_value * 8.0
         else:
             raise ValueError("Initialization value '%s' is of an invalid type: %s. "
@@ -656,8 +659,12 @@ always return a Byte-family result.
     Eb = property(lambda s: s.to_Eb())
 
     ##################################################################
-    # The SI units go beyond the NIST units. They also have the Zetta
-    # and Yotta prefixes.
+
+    def to_ZiB(self):
+        return ZiB(bits=self._bit_value)
+
+    def to_Zib(self):
+        return Zib(bits=self._bit_value)
 
     def to_ZB(self):
         return ZB(bits=self._bit_value)
@@ -665,11 +672,18 @@ always return a Byte-family result.
     def to_Zb(self):
         return Zb(bits=self._bit_value)
 
-    # Properties
+    ZiB = property(lambda s: s.to_ZiB())
+    Zib = property(lambda s: s.to_Zib())
     ZB = property(lambda s: s.to_ZB())
     Zb = property(lambda s: s.to_Zb())
 
     ##################################################################
+
+    def to_YiB(self):
+        return YiB(bits=self._bit_value)
+
+    def to_Yib(self):
+        return Yib(bits=self._bit_value)
 
     def to_YB(self):
         return YB(bits=self._bit_value)
@@ -677,7 +691,8 @@ always return a Byte-family result.
     def to_Yb(self):
         return Yb(bits=self._bit_value)
 
-    #: A new object representing this instance as a Yottabyte
+    YiB = property(lambda s: s.to_YiB())
+    Yib = property(lambda s: s.to_Yib())
     YB = property(lambda s: s.to_YB())
     Yb = property(lambda s: s.to_Yb())
 
@@ -1024,6 +1039,22 @@ class EiB(Byte):
 Eio = EiB
 
 
+class ZiB(Byte):
+    def _setup(self):
+        return (2, 70, 'ZiB', 'ZiBs')
+
+
+Zio = ZiB
+
+
+class YiB(Byte):
+    def _setup(self):
+        return (2, 80, 'YiB', 'YiBs')
+
+
+Yio = YiB
+
+
 ######################################################################
 # SI Prefixes for Byte based types
 class kB(Byte):
@@ -1138,6 +1169,16 @@ class Pib(Bit):
 class Eib(Bit):
     def _setup(self):
         return (2, 60, 'Eib', 'Eibs')
+
+
+class Zib(Bit):
+    def _setup(self):
+        return (2, 70, 'Zib', 'Zibs')
+
+
+class Yib(Bit):
+    def _setup(self):
+        return (2, 80, 'Yib', 'Yibs')
 
 
 ######################################################################

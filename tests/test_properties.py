@@ -57,3 +57,19 @@ class TestAttributeProperties(TestCase):
         """bitmath type's properties are read-only"""
         with self.assertRaises(AttributeError):
             self.kib.value += 42
+
+    def test_ZiB_property(self):
+        """ZiB property returns a ZiB instance"""
+        self.assertIsInstance(self.kib.ZiB, bitmath.ZiB)
+
+    def test_YiB_property(self):
+        """YiB property returns a YiB instance"""
+        self.assertIsInstance(self.kib.YiB, bitmath.YiB)
+
+    def test_Zib_property(self):
+        """Zib property returns a Zib instance"""
+        self.assertIsInstance(self.kib.Zib, bitmath.Zib)
+
+    def test_Yib_property(self):
+        """Yib property returns a Yib instance"""
+        self.assertIsInstance(self.kib.Yib, bitmath.Yib)
