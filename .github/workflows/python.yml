@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   build:
+    permissions:
+      pull-requests: write
     strategy:
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
@@ -35,4 +37,11 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered tests
+          pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered --cov-report xml:coverage.xml tests
+
+      - name: Coverage report on PR
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-xml-coverage-path: ./coverage.xml
+          title: "Test Coverage Report"

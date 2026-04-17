@@ -170,16 +170,18 @@ virtualenv:
 	@echo "#############################################"
 	@echo "# Creating a virtualenv"
 	@echo "#############################################"
-	virtualenv $(NAME)env3 --python=python3
-	. $(NAME)env3/bin/activate && pip install -r requirements.txt
+	@if [ ! -d "$(NAME)env3" ]; then \
+		python3 -m venv $(NAME)env3; \
+	fi
+	. $(NAME)env3/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
 
 ci-unittests:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Running Unit Tests in virtualenv"
-	@echo "# Using python: $(shell ./bitmathenv3/bin/python --version 2>&1)"
+	@echo "# Using python: $(shell ./$(NAME)env3/bin/python --version 2>&1)"
 	@echo "#############################################"
-	. $(NAME)env3/bin/activate && pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered tests
+	. $(NAME)env3/bin/activate && pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered --cov-report xml:coverage.xml tests
 
 ci-list-deps:
 	@echo ""
@@ -195,12 +197,12 @@ ci-pycodestyle:
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
 
-ci-pyflakes:
+ci-flake8:
 	@echo ""
 	@echo "#################################################"
-	@echo "# Running Pyflakes Compliance Tests in virtualenv"
+	@echo "# Running Flake8 Compliance Tests in virtualenv"
 	@echo "#################################################"
-	. $(NAME)env3/bin/activate && pyflakes bitmath/__init__.py tests/*.py
+	. $(NAME)env3/bin/activate && flake8 --select=F bitmath/__init__.py tests/*.py
 
-ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-pyflakes ci-unittests
+ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-flake8 ci-unittests
 	:
