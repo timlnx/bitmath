@@ -45,9 +45,17 @@ MANPAGES := bitmath.1
 ######################################################################
 
 # Documentation. YAY!!!!
-docs: conf.py $(MANPAGES) docsite/source/index.rst
-	pip3 install -q -r doc-requirements.txt
-	cd docsite; make html; cd -
+DOCSVENV := bitmath2
+
+docs-venv:
+	@if [ ! -d "$(DOCSVENV)" ]; then \
+		echo "Creating docs virtualenv '$(DOCSVENV)' with Python 3.12..."; \
+		python3.12 -m venv $(DOCSVENV); \
+	fi
+	. $(DOCSVENV)/bin/activate && pip install -q -r doc-requirements.txt
+
+docs: docs-venv conf.py $(MANPAGES) docsite/source/index.rst
+	. $(DOCSVENV)/bin/activate && cd docsite && make html
 
 # Add examples to the RTD docs by taking it from the README
 docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
