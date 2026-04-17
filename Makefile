@@ -84,7 +84,7 @@ viewdocs: docs
 		xdg-open docsite/build/html/index.html; \
 	fi
 
-viewcover:
+viewcover: ci-unittests
 	@if [ "$$(uname)" = "Darwin" ]; then \
 		open htmlcov/index.html; \
 	else \
@@ -179,7 +179,7 @@ virtualenv:
 	fi
 	. $(NAME)env3/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
 
-ci-unittests:
+ci-unittests: virtualenv
 	@echo ""
 	@echo "#############################################"
 	@echo "# Running Unit Tests in virtualenv"
