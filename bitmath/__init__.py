@@ -1520,7 +1520,7 @@ the return value::
             raise ValueError("Can't parse string %s into a bitmath object" % s)
 
     else:
-        # loose / non-strict path (formerly parse_string_unsafe)
+        # strict=False path (formerly parse_string_unsafe)
         if not isinstance(s, (str)) and \
            not isinstance(s, numbers.Number):
             raise ValueError("parse_string only accepts string/number inputs but a %s was given" %

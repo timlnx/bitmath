@@ -237,7 +237,7 @@ bitmath.parse_string()
                   When ``False`` the parser accepts ambiguous input
                   such as plain numbers, numeric strings, and
                   case-insensitive single-letter units. See
-                  :ref:`parse-string-loose` below.
+                  :ref:`parse-string-non-strict` below.
    :return: A bitmath object representing the input.
    :raises ValueError: if the input cannot be parsed.
 
@@ -259,7 +259,7 @@ bitmath.parse_string()
       Many applications (even ``/usr/bin/ls``) do not produce file
       size strings with valid prefix units unless `specially configured
       <https://www.gnu.org/software/coreutils/manual/html_node/Block-size.html#Block-size>`_.
-      Use ``strict=False`` for those cases — see :ref:`parse-string-loose`.
+      Use ``strict=False`` for those cases — see :ref:`parse-string-non-strict`.
 
    To protect your application from unexpected runtime errors, wrap
    calls in a ``try`` statement:
@@ -336,7 +336,7 @@ bitmath.parse_string()
    .. versionadded:: 1.1.0
 
 
-.. _parse-string-loose:
+.. _parse-string-non-strict:
 
 parse_string with ``strict=False``
 -----------------------------------
@@ -348,12 +348,12 @@ is the behaviour previously provided by the now-deprecated
 :py:func:`bitmath.parse_string_unsafe`.
 
 All inputs are treated as **byte-based**. Bit-based units are not
-supported in loose parsing mode. Capitalisation does not matter.
+supported in non-strict parsing mode. Capitalisation does not matter.
 
 .. _parse-string-system-hint:
 
-Understanding the ``system`` parameter in loose mode
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Understanding the ``system`` parameter in non-strict mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. important::
 
@@ -464,7 +464,7 @@ bitmath.parse_string_unsafe()
    A deprecated thin wrapper around
    ``parse_string(repr, strict=False, system=system)``. All behaviour,
    parameters, and caveats are identical to
-   :ref:`parse_string with strict=False <parse-string-loose>`.
+   :ref:`parse_string with strict=False <parse-string-non-strict>`.
 
    :param repr: The value to parse.
    :param system: :py:data:`bitmath.NIST` (default) or
