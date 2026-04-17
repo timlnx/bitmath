@@ -46,6 +46,7 @@ MANPAGES := bitmath.1
 
 # Documentation. YAY!!!!
 docs: conf.py $(MANPAGES) docsite/source/index.rst
+	pip3 install -q -r doc-requirements.txt
 	cd docsite; make html; cd -
 
 # Add examples to the RTD docs by taking it from the README
