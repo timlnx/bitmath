@@ -108,9 +108,27 @@ This describes the behavior of addition and subtraction operations
 where one operand is a bitmath type and the other is a number type.
 
 Mixed-math addition and subtraction **always** return a type from the
-:py:mod:`numbers` family (integer, float, long, etc...). This rule is
+:py:mod:`numbers` family (integer, float, etc...). This rule is
 true regardless of the placement of the operands, with respect to the
 operator.
+
+.. note::
+
+   **Exception: zero as the left operand.** When the left operand is
+   exactly ``0`` (e.g. ``0 + KiB(1)``), the result is the bitmath
+   instance itself rather than a number. This special case exists so
+   that Python's built-in :py:func:`sum` function works correctly with
+   iterables of bitmath objects, since ``sum()`` starts accumulation
+   from ``0`` by default.
+
+   .. code-block:: python
+
+      >>> import bitmath
+      >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+      Byte(1074790401.0)
+
+   For all non-zero numeric left operands the documented behaviour
+   (returning a number) is unchanged.
 
 **Discussion:** Why do ``100 - KiB(90)`` and ``KiB(100) - 90`` both
 yield a result of ``10.0`` and not another bitmath instance, such as

@@ -126,6 +126,13 @@ class TestBasicMath(TestCase):
         self.assertEqual(result, 3.0)
         self.assertIs(type(result), float)
 
+    def test_zero_add_bitmath_is_bitmath(self):
+        """0 + bitmath = bitmath (identity element enables built-in sum())"""
+        bm1 = bitmath.KiB(1)
+        result = 0 + bm1
+        self.assertIsInstance(result, bitmath.Bitmath)
+        self.assertEqual(result, bm1)
+
     ##################################################################
     # sub
     def test_bitmath_sub_bitmath_is_bitmath(self):

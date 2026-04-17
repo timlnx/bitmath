@@ -65,7 +65,7 @@ __all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB',
            'Mib', 'Gib', 'Tib', 'Pib', 'Eib', 'kb', 'Mb', 'Gb', 'Tb',
            'Pb', 'Eb', 'Zb', 'Yb', 'getsize', 'listdir', 'format',
            'format_string', 'format_plural', 'parse_string', 'parse_string_unsafe',
-           'ALL_UNIT_TYPES', 'NIST', 'NIST_PREFIXES', 'NIST_STEPS',
+           'sum', 'ALL_UNIT_TYPES', 'NIST', 'NIST_PREFIXES', 'NIST_STEPS',
            'SI', 'SI_PREFIXES', 'SI_STEPS']
 
 #: A list of all the valid prefix unit types. Mostly for reference,
@@ -812,6 +812,9 @@ RTYPE. E.g., 3 * MiB(3), or 10 / GB(42)
 """
 
     def __radd__(self, other):
+        # Special case: 0 + bm = bm (identity element, enables built-in sum())
+        if other == 0:
+            return self
         # num + bm = num
         return other + self.value
 
@@ -1517,6 +1520,23 @@ Note the following caveats:
         raise ValueError("The unit %s is not a valid bitmath unit" % unit)
 
     return unit_class(float(val))
+
+
+def sum(iterable, start=None):
+    """Sum an iterable of bitmath instances correctly.
+
+The built-in sum() starts from integer 0, which causes __radd__ to
+return a plain float instead of a bitmath instance. This function
+starts from Byte(0) so all additions go through the bitmath __add__
+path with proper unit conversion.
+
+- bitmath.sum([Byte(1), MiB(1), GiB(1)]) -> Byte(1074790401.0)
+- bitmath.sum([KiB(1), KiB(2)], start=MiB(0)) -> MiB(0.00292...)
+"""
+    result = Byte(0) if start is None else start
+    for item in iterable:
+        result = result + item
+    return result
 
 
 ######################################################################
