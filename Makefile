@@ -78,7 +78,11 @@ docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
 	$(ASCII2MAN)
 
 viewdocs: docs
-	xdg-open docsite/build/html/index.html
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		open docsite/build/html/index.html; \
+	else \
+		xdg-open docsite/build/html/index.html; \
+	fi
 
 viewcover:
 	xdg-open cover/index.html
