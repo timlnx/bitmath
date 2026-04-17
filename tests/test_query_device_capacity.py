@@ -41,6 +41,7 @@ def nested(*contexts):
     with ExitStack() as stack:
         yield tuple(stack.enter_context(c) for c in contexts)
 
+
 device_file_no = mock.Mock(return_value=4)
 device = mock.MagicMock('file')
 device.fileno = device_file_no
