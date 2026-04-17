@@ -18,7 +18,7 @@ ahead:
  Almost every project I work on, code or not, ends up on GitHub
  eventually. You can see what else I've been busy with on my profile.
 
- * `GitHub: tbielawa <https://github.com/timlnx/>`_
+ * `GitHub: timlnx <https://github.com/timlnx/>`_
 
 **Bugs/Issues/Requests**
  All contributions related directly to the bitmath project, i.e. bug
