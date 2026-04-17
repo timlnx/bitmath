@@ -390,6 +390,70 @@ of how an attribute may be referenced multiple times.
           **16** we see the value has been rounded to **6.0**
 
 
+.. _instances_dunder_format:
+
+Python Format Protocol (f-strings and format())
+================================================
+
+.. py:method:: BitMathInstance.__format__(fmt_spec)
+
+   Support Python's standard string formatting protocol (:pep:`3101`),
+   enabling bitmath instances to be used directly in f-strings and
+   :py:func:`format` calls.
+
+   When *fmt_spec* is **empty**, returns ``str(self)`` — the same as
+   the default string representation:
+
+   .. code-block:: python
+
+      >>> size = bitmath.MiB(2.847598437)
+      >>> f'{size}'
+      '2.847598437 MiB'
+
+   When *fmt_spec* is a **numeric format spec**, it is applied to
+   ``self.value`` only, returning the formatted number without a unit
+   suffix. The caller controls the surrounding string:
+
+   .. code-block:: python
+
+      >>> size = bitmath.MiB(2.847598437)
+      >>> f'{size:.1f} {size.unit}'
+      '2.8 MiB'
+
+   This makes it straightforward to build columnar output with
+   consistent alignment across mixed unit types:
+
+   .. code-block:: python
+
+      >>> disk_usage = [
+      ...     ("home", bitmath.GiB(127.3)),
+      ...     ("tmp",  bitmath.MiB(843.7)),
+      ...     ("var",  bitmath.GiB(2.1)),
+      ... ]
+      >>> for mount, size in disk_usage:
+      ...     print(f"{mount:<8} {size:>10.2f} {size.unit}")
+      home        127.30 GiB
+      tmp         843.70 MiB
+      var           2.10 GiB
+
+   Any standard Python numeric format spec works: ``:.2f``,
+   ``:.3e``, ``:.0f``, ``>10.2f``, and so on.
+
+   .. note::
+
+      The format spec applies to ``self.value`` — the numeric quantity
+      in the instance's current prefix unit. To render a different unit,
+      convert first: ``size.to_GiB()``, then format.
+
+   .. versionadded:: 2.0.0
+
+   .. rubric:: Credit
+
+   The original concept and implementation for this feature was
+   contributed by `Jonathan Eunice <https://github.com/jonathaneunice>`_
+   in `pull request #76 <https://github.com/timlnx/bitmath/pull/76>`_.
+
+
 .. _instances_rounding:
 
 Rounding and Integer Conversion

@@ -413,6 +413,25 @@ interpreter"""
             return self.best_prefix().format(_get_format_string())
         return self.format(_get_format_string())
 
+    def __format__(self, fmt_spec):
+        """Support Python's string formatting protocol.
+
+When *fmt_spec* is empty, returns ``str(self)`` — the same as the
+default string representation (e.g. ``"1.0 KiB"``).
+
+When *fmt_spec* is a standard numeric format spec (e.g. ``".2f"``,
+``">10.1f"``), it is applied to ``self.value`` only, returning the
+formatted number without a unit suffix. The caller controls the
+surrounding string::
+
+    size = bitmath.MiB(2.847598437)
+    f'size: {size:.1f} {size.unit}'   # -> 'size: 2.8 MiB'
+    f'size: {size}'                    # -> 'size: 2.847598437 MiB'
+        """
+        if fmt_spec == '':
+            return str(self)
+        return self.value.__format__(fmt_spec)
+
     def format(self, fmt):
         """Return a representation of this instance formatted with user
 supplied syntax"""
