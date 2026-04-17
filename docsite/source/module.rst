@@ -902,7 +902,7 @@ argument or option should be interpreted as.
    A feature found in many command-line utilities is the ability to
    specify some kind of file size using a string which roughly
    describes some kind of parameter. For example, let's look at the
-   :program:`du` (disk usage) command. Invoking it as :option:`du -B`
+   :program:`du` (disk usage) command. Invoking it as ``du -B``
    allows one to specify a desired block-size scaling factor in
    printed results.
 
