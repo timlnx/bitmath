@@ -237,12 +237,12 @@ bitmath.sum()
 
    .. note::
 
-      Python's built-in :py:func:`sum` also works with bitmath objects.
-      Because ``0 + bm`` returns ``bm`` itself (the ``__radd__`` identity
-      element), the built-in accumulates into the type of the **first
-      element** in the iterable. Use :py:func:`bitmath.sum` instead when
-      you need the result normalised to a **specific unit** regardless of
-      the input types.
+      Python's built-in :py:func:`sum` also works with bitmath
+      objects. Because ``0 + bm`` returns ``bm`` itself, the built-in
+      accumulates into the type of the **first element** in the
+      iterable. Use :py:func:`bitmath.sum` instead when you need the
+      result normalised to a **specific unit** regardless of the input
+      types.
 
    Sum a homogeneous list — result type matches ``start`` (``Byte`` by
    default):
@@ -878,7 +878,9 @@ behavior.
           'G': 1000000000,
           'T': 1000000000000,
           'P': 1000000000000000,
-          'E': 1000000000000000000
+          'E': 1000000000000000000,
+          'Z': 1000000000000000000000,
+          'Y': 1000000000000000000000000
       }
 
 
@@ -900,7 +902,9 @@ behavior.
           'Gi': 1073741824,
           'Ti': 1099511627776,
           'Pi': 1125899906842624,
-          'Ei': 1152921504606846976
+          'Ei': 1152921504606846976,
+          'Zi': 1180591620717411303424,
+          'Yi': 1208925819614629174706176
       }
 
 
@@ -911,10 +915,10 @@ behavior.
 
    .. code-block:: python
 
-      ALL_UNIT_TYPES = ['b', 'B', 'kb', 'kB', 'Mb', 'MB', 'Gb', 'GB',
-         'Tb', 'TB', 'Pb', 'PB', 'Eb', 'EB', 'Kib', 'KiB', 'Mib',
-         'MiB', 'Gib', 'GiB', 'Tib', 'TiB', 'Pib', 'PiB', 'Eib',
-         'EiB']
+      ALL_UNIT_TYPES = ['Bit', 'Byte', 'kb', 'kB', 'Mb', 'MB', 'Gb', 'GB',
+         'Tb', 'TB', 'Pb', 'PB', 'Eb', 'EB', 'Zb', 'ZB', 'Yb', 'YB',
+         'Kib', 'KiB', 'Mib', 'MiB', 'Gib', 'GiB', 'Tib', 'TiB',
+         'Pib', 'PiB', 'Eib', 'EiB', 'Zib', 'ZiB', 'Yib', 'YiB']
 
 .. py:module:: bitmath.integrations
 

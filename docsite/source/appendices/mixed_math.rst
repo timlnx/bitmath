@@ -100,6 +100,7 @@ Internally, this is implemented as:
 *Division*
    The result will be a number type due to unit cancellation.
 
+.. _appendix_math_mixed_types:
 
 Mixed Types: Addition and Subtraction
 =====================================
