@@ -1404,172 +1404,166 @@ def listdir(search_base, followlinks=False, filter='*',
                     yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
 
 
-def parse_string(s):
-    """Parse a string with units and try to make a bitmath object out of
-it.
+def parse_string(s, system=NIST, strict=True):
+    """Parse a string with units and return a bitmath instance.
 
 String inputs may include whitespace characters between the value and
 the unit.
+
+:param s: The string to parse.
+:param system: Unit system to use when ``strict=False``. Ignored when
+    ``strict=True`` (the default). Set to ``bitmath.NIST`` (default)
+    or ``bitmath.SI``.
+:param strict: When ``True`` (default), the unit must be an exact
+    bitmath type name (e.g. ``"KiB"``, ``"MB"``). When ``False``,
+    accepts ambiguous input such as plain numbers, numeric strings,
+    and case-insensitive single-letter units (e.g. ``"4k"``,
+    ``"2.7M"``); see caveats below.
+
+When ``strict=False`` the following rules apply:
+
+* All inputs are assumed to be byte-based (not bit-based)
+* Plain numbers and numeric strings are assumed to be bytes
+* Single-letter units (``k``, ``M``, ``G``, etc.) are assumed NIST
+  unless ``system=bitmath.SI``
+* Inputs with an ``i`` after the leading letter (``Ki``, ``Mi``)
+  are treated as NIST units
+* Capitalisation does not matter
+
+The result is returned in the parsed unit system. To coerce the result
+into a preferred unit system call ``.best_prefix(system=system)`` on
+the return value::
+
+    parse_string("4k", strict=False).best_prefix(system=bitmath.SI)
+
+.. versionchanged:: 2.0.0
+   Added ``strict`` and ``system`` parameters. When ``strict=True``
+   (default) behaviour is identical to the original function.
+   When ``strict=False`` the behaviour of the former
+   ``parse_string_unsafe`` is applied. The ``system`` parameter
+   defaults to ``bitmath.NIST`` and is ignored when ``strict=True``.
     """
-    # Strings only please
-    if not isinstance(s, (str)):
-        raise ValueError("parse_string only accepts string inputs but a %s was given" %
-                         type(s))
+    if strict:
+        # Strings only please
+        if not isinstance(s, (str)):
+            raise ValueError("parse_string only accepts string inputs but a %s was given" %
+                             type(s))
 
-    # get the index of the first alphabetic character
-    try:
-        index = list([i.isalpha() for i in s]).index(True)
-    except ValueError:
-        # If there's no alphabetic characters we won't be able to .index(True)
-        raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
-
-    # split the string into the value and the unit
-    val, unit = s[:index], s[index:]
-
-    # see if the unit exists as a type in our namespace
-
-    if unit == "b":
-        unit_class = Bit
-    elif unit == "B":
-        unit_class = Byte
-    else:
-        if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
-            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
-        unit_class = globals()[unit]
-
-    try:
-        val = float(val)
-    except ValueError:
-        raise
-    try:
-        return unit_class(val)
-    except:  # pragma: no cover
-        raise ValueError("Can't parse string %s into a bitmath object" % s)
-
-
-def parse_string_unsafe(s, system=SI):
-    """Attempt to parse a string with ambiguous units and try to make a
-bitmath object out of it.
-
-This may produce inaccurate results if parsing shell output. For
-example `ls` may say a 2730 Byte file is '2.7K'. 2730 Bytes == 2.73 kB
-~= 2.666 KiB. See the documentation for all of the important details.
-
-Note the following caveats:
-
-* All inputs are assumed to be byte-based (as opposed to bit based)
-
-* Numerical inputs (those without any units) are assumed to be a
-  number of bytes
-
-* Inputs with single letter units (k, M, G, etc) are assumed to be SI
-  units (base-10). Set the `system` parameter to `bitmath.NIST` to
-  change this behavior.
-
-* Inputs with an `i` character following the leading letter (Ki, Mi,
-  Gi) are assumed to be NIST units (base 2)
-
-* Capitalization does not matter
-
-    """
-    if not isinstance(s, (str)) and \
-       not isinstance(s, numbers.Number):
-        raise ValueError("parse_string_unsafe only accepts string/number inputs but a %s was given" %
-                         type(s))
-
-    ######################################################################
-    # Is the input simple to parse? Just a number, or a number
-    # masquerading as a string perhaps?
-
-    # Test case: raw number input (easy!)
-    if isinstance(s, numbers.Number):
-        # It's just a number. Assume bytes
-        return Byte(s)
-
-    # Test case: a number pretending to be a string
-    if isinstance(s, (str)):
+        # get the index of the first alphabetic character
         try:
-            # Can we turn it directly into a number?
-            return Byte(float(s))
+            index = list([i.isalpha() for i in s]).index(True)
         except ValueError:
-            # Nope, this is not a plain number
-            pass
+            # If there's no alphabetic characters we won't be able to .index(True)
+            raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
 
-    ######################################################################
-    # At this point:
-    # - the input is also not just a number wrapped in a string
-    # - nor is is just a plain number type
-    #
-    # We need to do some more digging around now to figure out exactly
-    # what we were given and possibly normalize the input into a
-    # format we can recognize.
+        # split the string into the value and the unit
+        val, unit = s[:index], s[index:]
 
-    # First we'll separate the number and the unit.
-    #
-    # Get the index of the first alphabetic character
-    try:
-        index = list([i.isalpha() for i in s]).index(True)
-    except ValueError:  # pragma: no cover
-        # If there's no alphabetic characters we won't be able to .index(True)
-        raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
-
-    # Split the string into the value and the unit
-    val, unit = s[:index], s[index:]
-
-    # Don't trust anything. We'll make sure the correct 'b' is in place.
-    unit = unit.rstrip('Bb')
-    unit += 'B'
-
-    # At this point we can expect `unit` to be either:
-    #
-    # - 2 Characters (for SI, ex: kB or GB)
-    # - 3 Caracters (so NIST, ex: KiB, or GiB)
-    #
-    # A unit with any other number of chars is not a valid unit
-
-    # SI
-    if len(unit) == 2:
-        # Has NIST parsing been requested?
-        if system == NIST:
-            # NIST units requested. Ensure the unit begins with a
-            # capital letter and is followed by an 'i' character.
-            unit = capitalize_first(unit)
-            # Insert an 'i' char after the first letter
-            _unit = list(unit)
-            _unit.insert(1, 'i')
-            # Collapse the list back into a 3 letter string
-            unit = ''.join(_unit)
-            unit_class = globals()[unit]
+        # see if the unit exists as a type in our namespace
+        if unit == "b":
+            unit_class = Bit
+        elif unit == "B":
+            unit_class = Byte
         else:
-            # Default parsing (SI format)
-            #
-            # Edge-case checking: SI 'thousand' is a lower-case K
-            if unit.startswith('K'):
-                unit = unit.replace('K', 'k')
-            elif not unit.startswith('k'):
-                # Otherwise, ensure the first char is capitalized
-                unit = capitalize_first(unit)
-
-            # This is an SI-type unit
-            if unit[0] in SI_PREFIXES:
-                unit_class = globals()[unit]
-    # NIST
-    elif len(unit) == 3:
-        unit = capitalize_first(unit)
-
-        # This is a NIST-type unit
-        if unit[:2] in NIST_PREFIXES:
+            if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
+                raise ValueError("The unit %s is not a valid bitmath unit" % unit)
             unit_class = globals()[unit]
+
+        try:
+            val = float(val)
+        except ValueError:
+            raise
+        try:
+            return unit_class(val)
+        except:  # pragma: no cover
+            raise ValueError("Can't parse string %s into a bitmath object" % s)
+
     else:
-        # This is not a unit we recognize
-        raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+        # loose / non-strict path (formerly parse_string_unsafe)
+        if not isinstance(s, (str)) and \
+           not isinstance(s, numbers.Number):
+            raise ValueError("parse_string only accepts string/number inputs but a %s was given" %
+                             type(s))
 
-    try:
-        unit_class
-    except UnboundLocalError:
-        raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+        # Test case: raw number input (easy!)
+        if isinstance(s, numbers.Number):
+            return Byte(s)
 
-    return unit_class(float(val))
+        # Test case: a number pretending to be a string
+        if isinstance(s, (str)):
+            try:
+                return Byte(float(s))
+            except ValueError:
+                pass
+
+        # At this point the input is a string with a unit component.
+        # Separate the number and the unit.
+        try:
+            index = list([i.isalpha() for i in s]).index(True)
+        except ValueError:  # pragma: no cover
+            raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
+
+        val, unit = s[:index], s[index:]
+
+        # Normalise: strip trailing b/B and append 'B' so we always
+        # work with byte-family units regardless of what was supplied.
+        unit = unit.rstrip('Bb')
+        unit += 'B'
+
+        if len(unit) == 2:
+            if system == NIST:
+                unit = capitalize_first(unit)
+                _unit = list(unit)
+                _unit.insert(1, 'i')
+                unit = ''.join(_unit)
+                if unit in globals():
+                    unit_class = globals()[unit]
+            else:
+                if unit.startswith('K'):
+                    unit = unit.replace('K', 'k')
+                elif not unit.startswith('k'):
+                    unit = capitalize_first(unit)
+                if unit[0] in SI_PREFIXES:
+                    unit_class = globals()[unit]
+        elif len(unit) == 3:
+            unit = capitalize_first(unit)
+            if unit[:2] in NIST_PREFIXES:
+                unit_class = globals()[unit]
+        else:
+            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+
+        try:
+            unit_class
+        except UnboundLocalError:
+            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+
+        return unit_class(float(val))
+
+
+def parse_string_unsafe(s, system=NIST):
+    """Deprecated wrapper for ``parse_string(s, strict=False, system=system)``.
+
+.. deprecated:: 2.0.0
+   ``parse_string_unsafe`` is deprecated and will be removed in a
+   future release. Use ``parse_string(s, strict=False,
+   system=system)`` instead.
+
+   To suppress this warning::
+
+       import warnings
+       warnings.filterwarnings('ignore', category=DeprecationWarning,
+                               module='bitmath')
+    """
+    import warnings
+    warnings.warn(
+        "parse_string_unsafe is deprecated as of 2.0.0 and will be removed "
+        "in a future release. Use parse_string(s, strict=False, system=system) "
+        "instead. To suppress: "
+        "warnings.filterwarnings('ignore', category=DeprecationWarning, module='bitmath')",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return parse_string(s, system=system, strict=False)
 
 
 def sum(iterable, start=None):
