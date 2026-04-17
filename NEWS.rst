@@ -6,6 +6,38 @@ NEWS
    :local:
 
 
+.. _bitmath-1.4.0-1:
+
+bitmath-1.4.0-1
+***************
+
+bitmath-1.4.0 was published on 2026-04-16.
+
+
+Project
+=======
+
+Version 1.4.0 is a maintenance release — the final release to support
+Python 2 era packaging infrastructure. It addresses two long-standing
+issues and makes no breaking changes.
+
+
+Changes
+=======
+
+**Bug Fixes**
+
+* Fixed packaging: ``bitmath.integrations`` subpackage was missing from
+  the ``packages`` list in ``setup.py.in``, causing the argparse, click,
+  and progressbar integrations to be absent from installed distributions.
+  Reported in `PR #107 <https://github.com/tbielawa/bitmath/pull/107>`_.
+
+* Modernized mock imports in the test suite: ``tests/test_progressbar.py``
+  and ``tests/test_query_device_capacity.py`` now prefer ``unittest.mock``
+  (stdlib, Python 3.3+) and fall back to the third-party ``mock`` package.
+  Based on `PR #105 <https://github.com/tbielawa/bitmath/pull/105>`_.
+
+
 .. _bitmath-1.3.3-1:
 
 bitmath-1.3.3-1
