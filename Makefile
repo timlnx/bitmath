@@ -85,7 +85,11 @@ viewdocs: docs
 	fi
 
 viewcover:
-	xdg-open cover/index.html
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		open htmlcov/index.html; \
+	else \
+		xdg-open htmlcov/index.html; \
+	fi
 
 conf.py: docsite/source/conf.py.in
 	sed "s/%VERSION%/$(VERSION)/" $< > docsite/source/conf.py
@@ -181,7 +185,7 @@ ci-unittests:
 	@echo "# Running Unit Tests in virtualenv"
 	@echo "# Using python: $(shell ./$(NAME)env3/bin/python --version 2>&1)"
 	@echo "#############################################"
-	. $(NAME)env3/bin/activate && pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered --cov-report xml:coverage.xml tests
+	. $(NAME)env3/bin/activate && pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered --cov-report xml:coverage.xml --cov-report html:htmlcov tests
 
 ci-list-deps:
 	@echo ""
