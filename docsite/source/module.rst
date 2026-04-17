@@ -218,6 +218,66 @@ bitmath.listdir()
    .. versionadded:: 1.0.7
 
 
+.. _bitmath_sum:
+
+bitmath.sum()
+=============
+
+.. function:: sum(iterable[, start=None])
+
+   Sum an iterable of bitmath instances into a single bitmath instance.
+
+   :param iterable: Any iterable of bitmath objects to sum.
+   :param start: **Default:** ``None`` (accumulates into
+                 :class:`bitmath.Byte`). Pass a bitmath instance to
+                 set both the starting value and the result type.
+   :type start: A bitmath instance, or ``None``
+   :returns: A bitmath instance whose type is determined by ``start``
+             (or :class:`bitmath.Byte` when ``start`` is ``None``).
+
+   .. note::
+
+      Python's built-in :py:func:`sum` also works with bitmath objects.
+      Because ``0 + bm`` returns ``bm`` itself (the ``__radd__`` identity
+      element), the built-in accumulates into the type of the **first
+      element** in the iterable. Use :py:func:`bitmath.sum` instead when
+      you need the result normalised to a **specific unit** regardless of
+      the input types.
+
+   Sum a homogeneous list — result type matches ``start`` (``Byte`` by
+   default):
+
+   .. code-block:: python
+
+      >>> import bitmath
+      >>> bitmath.sum([bitmath.MiB(1), bitmath.GiB(1)])
+      Byte(1074790400.0)
+
+   Pass ``start`` to choose a different accumulator unit:
+
+   .. code-block:: python
+
+      >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
+      MiB(0.0029296875)
+
+   Contrast with the built-in :py:func:`sum`, whose result type tracks the
+   first element:
+
+   .. code-block:: python
+
+      >>> sum([bitmath.KiB(1), bitmath.KiB(2)])
+      KiB(3.0)
+      >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+      Byte(1074790401.0)
+
+   .. seealso::
+
+      :ref:`Summing an Iterable <simple_examples_summing>` in *Getting Started*
+         Side-by-side examples of built-in :py:func:`sum` vs
+         :py:func:`bitmath.sum`.
+
+   .. versionadded:: 2.0.0
+
 
 bitmath.parse_string()
 ======================

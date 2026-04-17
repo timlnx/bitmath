@@ -249,6 +249,8 @@ automatically:
    :py:func:`bitmath.parse_string` — full parameter reference and caveats.
 
 
+.. _simple_examples_summing:
+
 Summing an Iterable
 *******************
 
@@ -265,10 +267,28 @@ the iterable:
    >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
    Byte(1074790401.0)
 
+Results from mixing plain numbers and numbers with units yields a
+result with no units.
+
+.. code-block:: python
+
+   >>> sum([bitmath.Byte(1), 0])
+   1.0
+   >>> sum([1, bitmath.KiB(2)])
+   3.0
+
+.. seealso::
+
+   :ref:`Appendix: Rules for Math <appendix_math_mixed_types>` — for a
+   thrilling discussion about the minute details when doing mixed-type
+   math math. What it all boils down to is this: if we don’t provide a
+   unit then bitmath won’t give us one back.
+
+
 Use :py:func:`bitmath.sum` when you need the result **normalised to a
 specific unit** regardless of the input types. Without a ``start``
 argument it accumulates into :class:`bitmath.Byte`; pass ``start`` to
-choose a different accumulator:
+choose a different accumulator (resultant unit):
 
 .. code-block:: python
 
@@ -276,7 +296,8 @@ choose a different accumulator:
    Byte(1074790400.0)
    >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
    MiB(0.0029296875)
-
+   >>> bitmath.sum([bitmath.MiB(100), bitmath.KiB(2000)], start=bitmath.GiB(0))
+   GiB(0.0995635986328125)
 
 Rounding
 ********
