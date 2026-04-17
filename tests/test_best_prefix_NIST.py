@@ -142,3 +142,58 @@ best_prefix() to it."""
         """bitmath.best_prefix return an exbibyte for a huge number of bytes"""
         result = bitmath.best_prefix(1152921504606846977)
         self.assertIs(type(result), bitmath.EiB)
+
+    ##################################################################
+    # Tests for bit-family inputs (issue #95)
+    #
+    # best_prefix() on a Bit-family instance should return a Bit-family
+    # result. Before the fix these all incorrectly return Byte-family
+    # units (e.g. MiB instead of Mib).
+
+    def test_bit_input_returns_bit_family(self):
+        """NIST: best_prefix on Bit() returns a Bit-family unit, not a Byte-family unit"""
+        # The exact value from issue #95
+        result = bitmath.Bit(30950093.15655963).best_prefix()
+        self.assertIsInstance(result, bitmath.Bit)
+
+    def test_bit_input_returns_mib_type(self):
+        """NIST: Bit(30950093) best_prefix is Mib, not MiB (issue #95)"""
+        result = bitmath.Bit(30950093.15655963).best_prefix()
+        self.assertIs(type(result), bitmath.Mib)
+
+    def test_kib_input_returns_mib_type(self):
+        """NIST: Kib(8192).best_prefix() returns Mib, not MiB
+
+Kib(8192) = 8,388,608 bits = 1,048,576 bytes; log(1048576, 1024) = 2 -> Mib.
+"""
+        result = bitmath.Kib(8192).best_prefix()
+        self.assertIs(type(result), bitmath.Mib)
+
+    def test_mib_input_returns_gib_type(self):
+        """NIST: Mib(8192).best_prefix() returns Gib, not GiB
+
+Mib(8192) = 8,589,934,592 bits = 1,073,741,824 bytes; log(1073741824, 1024) = 3 -> Gib.
+"""
+        result = bitmath.Mib(8192).best_prefix()
+        self.assertIs(type(result), bitmath.Gib)
+
+    def test_bit_multi_oom_round_up(self):
+        """NIST: A very large Kib rounds up into a Pib
+
+Pib(8) = 2^53 bits = 2^50 bytes; log(2^50, 1024) = 5 -> Pib.
+"""
+        large_Kib = bitmath.Kib.from_other(bitmath.Pib(8))
+        self.assertIs(type(large_Kib.best_prefix()), bitmath.Pib)
+
+    def test_bit_multi_oom_round_down(self):
+        """NIST: A very small Pib rounds down into a Kib
+
+Kib(8) = 8192 bits = 1024 bytes; log(1024, 1024) = 1 -> Kib.
+"""
+        small_Pib = bitmath.Pib.from_other(bitmath.Kib(8))
+        self.assertIs(type(small_Pib.best_prefix()), bitmath.Kib)
+
+    def test_bit_input_prefer_nist_returns_bit_family(self):
+        """NIST: best_prefix(system=NIST) on a Bit() still returns a Bit-family unit"""
+        result = bitmath.Bit(30950093.15655963).best_prefix(system=bitmath.NIST)
+        self.assertIs(type(result), bitmath.Mib)
