@@ -222,17 +222,24 @@ bitmath.listdir()
 bitmath.parse_string()
 ======================
 
-.. function:: parse_string(str_repr)
+.. function:: parse_string(str_repr, system=bitmath.NIST, strict=True)
 
-   Parse a string representing a unit into a proper bitmath
-   object. All non-string inputs are rejected and will raise a
-   :py:exc:`ValueError`. Strings without units are also rejected. See
-   the examples below for additional clarity.
+   Parse a string (or, when ``strict=False``, a string or number) into
+   a bitmath object.
 
-   :param string str_repr: The string to parse. May contain whitespace
-                           between the value and the unit.
-   :return: A bitmath object representing ``str_repr``
-   :raises ValueError: if ``str_repr`` can not be parsed
+   :param str_repr: The value to parse. String inputs may include
+                    whitespace between the value and the unit.
+   :param system: Unit system used when ``strict=False``. Ignored when
+                  ``strict=True``. One of :py:data:`bitmath.NIST`
+                  (default) or :py:data:`bitmath.SI`.
+   :param strict: When ``True`` (default) the unit must be an exact
+                  bitmath type name such as ``"KiB"`` or ``"MB"``.
+                  When ``False`` the parser accepts ambiguous input
+                  such as plain numbers, numeric strings, and
+                  case-insensitive single-letter units. See
+                  :ref:`parse-string-loose` below.
+   :return: A bitmath object representing the input.
+   :raises ValueError: if the input cannot be parsed.
 
    A simple usage example:
 
@@ -247,17 +254,15 @@ bitmath.parse_string()
 
    .. caution::
 
-      Caution is advised if you are reading values from an unverified
-      external source, such as output from a shell command or a
-      generated file. Many applications (even ``/usr/bin/ls``) still
-      do not produce file size strings with valid (or even correct)
-      prefix units unless `specially configured to do so
-      <https://www.gnu.org/software/coreutils/manual/html_node/Block-size.html#Block-size>`_. See
-      :py:func:`bitmath.parse_string_unsafe` as an alternative.
+      Caution is advised when reading values from an unverified
+      external source such as shell command output or a generated file.
+      Many applications (even ``/usr/bin/ls``) do not produce file
+      size strings with valid prefix units unless `specially configured
+      <https://www.gnu.org/software/coreutils/manual/html_node/Block-size.html#Block-size>`_.
+      Use ``strict=False`` for those cases — see :ref:`parse-string-loose`.
 
-   To protect your application from unexpected runtime errors it is
-   recommended that calls to :py:func:`bitmath.parse_string` are
-   wrapped in a ``try`` statement:
+   To protect your application from unexpected runtime errors, wrap
+   calls in a ``try`` statement:
 
    .. code-block:: python
 
@@ -270,8 +275,7 @@ bitmath.parse_string()
       Error while parsing string into bitmath object
 
 
-   Here we can see some more examples of invalid input, as well as two
-   acceptable inputs:
+   Here are some more examples of valid and invalid input:
 
    .. code-block:: python
 
@@ -318,157 +322,138 @@ bitmath.parse_string()
       >>> print(bitmath.parse_string("1337 Eio"))
       1337.0 EiB
 
-   Notice how on lines **4** and **5** that the variable
-   ``a_mebibyte`` from the input ``1 MiB`` is exactly equivalent to
-   ``a_mebioctet`` from the different input ``1 Mio``. This is because
-   after :py:mod:`bitmath` parses the octet units the results are
-   normalized into their **standard** NIST/SI equivalents
-   automatically.
+   Notice how on lines **4** and **5** the variable ``a_mebibyte``
+   from the input ``"1 MiB"`` is exactly equivalent to ``a_mebioctet``
+   from ``"1 Mio"``. After parsing, octet units are normalised into
+   their standard NIST/SI equivalents automatically.
 
-
-   .. note::
-
-      If your input isn't compatible with
-      :py:func:`bitmath.parse_string` you can try using
-      :py:func:`bitmath.parse_string_unsafe`
-      instead. :py:func:`bitmath.parse_string_unsafe` is more
-      forgiving with input. Please read the documentation carefully so
-      you understand the risks you assume using the ``unsafe`` parser.
+   .. versionchanged:: 2.0.0
+      Added ``strict`` and ``system`` parameters. The default
+      ``strict=True`` behaviour is identical to earlier versions.
+      ``system`` defaults to :py:data:`bitmath.NIST` and is only
+      consulted when ``strict=False``.
 
    .. versionadded:: 1.1.0
+
+
+.. _parse-string-loose:
+
+parse_string with ``strict=False``
+-----------------------------------
+
+When ``strict=False`` the parser accepts ambiguous input that does not
+conform to exact bitmath type names. This is the behaviour that was
+previously provided by the now-deprecated
+:py:func:`bitmath.parse_string_unsafe`.
+
+All inputs are assumed to be **byte-based** (not bit-based). The
+following additional rules apply:
+
+* Plain numbers and numeric strings are interpreted as a number of bytes.
+* Single-letter units (``k``, ``M``, ``G``, etc.) default to NIST
+  (base-2) unless ``system=bitmath.SI`` is passed.
+* Inputs with an ``i`` after the leading letter (``Ki``, ``Mi``, …)
+  are always treated as NIST units regardless of ``system``.
+* Capitalisation does not matter.
+
+The result is returned in the parsed unit system. To coerce it to a
+preferred system call ``.best_prefix(system=system)`` on the return
+value.
+
+In this example we parse the output of ``df -H / /boot /home``,
+whose ``Used`` column contains SI units::
+
+   Filesystem                                 Size  Used Avail Use% Mounted on
+   /dev/mapper/luks-ca8d5493-72bb-4691-afe1   107G   64G   38G  63% /
+   /dev/sda1                                  500M  391M   78M  84% /boot
+   /dev/mapper/vg_deepfryer-lv_home           129G  118G  4.7G  97% /home
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7
+
+   >>> with open('/tmp/df-output.txt', 'r') as fp:
+   ...     _ = fp.readline()   # skip header
+   ...     for line in fp.readlines():
+   ...         cols = line.split()[0:4]
+   ...         print("""Filesystem: %s
+   ... - Used: %s""" % (cols[0],
+   ...             bitmath.parse_string(cols[1], strict=False, system=bitmath.SI)))
+   Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
+   - Used: 107.0 GB
+   Filesystem: /dev/sda1
+   - Used: 500.0 MB
+   Filesystem: /dev/mapper/vg_deepfryer-lv_home
+   - Used: 129.0 GB
+
+If the ``df`` command had been run with ``-h`` (NIST output) instead
+of ``-H`` the values differ slightly but still use the same single
+letter unit ``G``. Pass ``system=bitmath.NIST`` (or omit ``system``
+entirely, as NIST is the default) to interpret them correctly:
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7
+
+   >>> with open('/tmp/df-output.txt', 'r') as fp:
+   ...     _ = fp.readline()   # skip header
+   ...     for line in fp.readlines():
+   ...         cols = line.split()[0:4]
+   ...         print("""Filesystem: %s
+   ... - Used: %s""" % (cols[0],
+   ...             bitmath.parse_string(cols[1], strict=False, system=bitmath.NIST)))
+   Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
+   - Used: 100.0 GiB
+   Filesystem: /dev/sda1
+   - Used: 477.0 MiB
+   Filesystem: /dev/mapper/vg_deepfryer-lv_home
+   - Used: 120.0 GiB
+
+The results now use the proper NIST prefix syntax: ``GiB``.
 
 
 bitmath.parse_string_unsafe()
 =============================
 
-.. function:: parse_string_unsafe(repr[, system=bitmath.SI])
+.. deprecated:: 2.0.0
 
-   Parse a string or number into a proper bitmath object. This is the
-   less strict version of the :py:func:`bitmath.parse_string`
-   function. While :py:func:`bitmath.parse_string` only accepts SI and
-   NIST defined unit prefixes, :py:func:`bitmath.parse_string_unsafe`
-   accepts *non-standard* units such as those often displayed in
-   command-line output. Examples following the description.
-
-   :param repr: The value to parse. May contain whitespace between the
-                value and the unit.
-
-   :param system: :py:func:`bitmath.parse_string_unsafe` defaults to
-                  parsing units as ``SI`` (base-10) units. Set the
-                  ``system`` parameter to :py:data:`bitmath.NIST` if
-                  you know your input is in ``NIST`` (base-2) format.
-
-   :return: A bitmath object representing ``repr``
-   :raises ValueError: if ``repr`` can not be parsed
-
-   Use of this function comes with several caveats:
-
-   * All inputs are assumed to be byte-based (as opposed to bit based)
-   * Numerical inputs (those without any units) are assumed to be a number of bytes
-   * Inputs with single letter units (``k``, ``M``, ``G``, etc) are
-     assumed to be SI units (base-10). See the ``system`` parameter
-     description **above** to change this behavior
-   * Inputs with an ``i`` character following the leading letter (``Ki``,
-     ``Mi``, ``Gi``) are assumed to be NIST units (base-2)
-   * Capitalization does not matter
-
-   What exactly are these *non-standard* units? Generally speaking
-   non-standard units will not include enough information to be able
-   to identify exactly which unit system is being used. This is caused
-   by mis-capitalized characters (capital ``k``'s for SI *kilo* units
-   when they should be lower case), or omitted Byte or Bit
-   suffixes. You can find examples of non-standard units in many
-   common command line functions or parameters. For example:
-
-   * The ``ls`` command will print out single-letter units when given
-     the ``-h`` option flag
-   * Running ``qemu-img info virtualdisk.img`` will also report with
-     single letter units
-   * The ``df`` command also uses single-letter units
-   * `Kubernetes
-     <http://kubernetes.io/docs/user-guide/compute-resources/>`_ will
-     display items like *memory limits* using two letter NIST units
-     (ex: ``memory: 2370Mi``)
-
-   Given those considerations, understanding exactly what values you
-   are feeding into this function is crucial to getting accurate
-   results. You can control the output of some commands with various
-   option flags. For example, you could ensure the GNU ``ls`` and
-   ``df`` commands print with SI values by providing the ``--si``
-   option flag. By default those commands will print out using NIST
-   (base-2) values.
-
-   In this example let's pretend we're parsing the output of running
-   ``df -H / /boot /home`` on our filesystems. Assume the output is
-   saved into a file called ``/tmp/df-output.txt`` and looks like
-   this::
-
-      Filesystem                                 Size  Used Avail Use% Mounted on
-      /dev/mapper/luks-ca8d5493-72bb-4691-afe1   107G   64G   38G  63% /
-      /dev/sda1                                  500M  391M   78M  84% /boot
-      /dev/mapper/vg_deepfryer-lv_home           129G  118G  4.7G  97% /home
-
-   Now let's read this file, parse the ``Used`` column, and then print
-   out the space used (line **7**):
+   ``parse_string_unsafe`` is deprecated and will be removed in a
+   future release. Use :py:func:`bitmath.parse_string` with
+   ``strict=False`` instead:
 
    .. code-block:: python
-      :linenos:
-      :emphasize-lines: 7
 
-      >>> with open('/tmp/df-output.txt', 'r') as fp:
-      ...     # Skip parsing the 'df' header column
-      ...     _ = fp.readline()
-      ...     for line in fp.readlines():
-      ...         cols = line.split()[0:4]
-      ...         print("""Filesystem: %s)
-      ... - Used: %s""" % (cols[0], bitmath.parse_string_unsafe(cols[1]))
-      Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
-      - Used: 107.0 GB
-      Filesystem: /dev/sda1
-      - Used: 500.0 MB
-      Filesystem: /dev/mapper/vg_deepfryer-lv_home
-      - Used: 129.0 GB
+      # old
+      bitmath.parse_string_unsafe(value, system=bitmath.NIST)
 
+      # new
+      bitmath.parse_string(value, strict=False, system=bitmath.NIST)
 
-   If we had ran the ``df`` command with the ``-h`` option (instead of
-   ``-H``) we will get base-2 (NIST) output. That would look like
-   this::
-
-     Filesystem                                 Size  Used Avail Use% Mounted on
-     /dev/mapper/luks-ca8d5493-72bb-4691-afe1   100G   59G   36G  63% /
-     /dev/sda1                                  477M  373M   75M  84% /boot
-     /dev/mapper/vg_deepfryer-lv_home           120G  110G  4.4G  97% /home
-
-   Because we switch from ``SI`` output to ``NIST`` output the values
-   displayed are slightly different. **However** they still print
-   using the same prefix unit, ``G``. We can tell
-   :py:func:`bitmath.parse_string_unsafe` that the input is ``NIST``
-   (base-2) by giving ``bitmath.NIST`` to the ``system`` parameter
-   like this (line **8**):
+   To suppress the deprecation warning in the interim:
 
    .. code-block:: python
-      :linenos:
-      :emphasize-lines: 8
 
-      >>> with open('/tmp/df-output.txt', 'r') as fp:
-      ...     # Skip parsing the 'df' header column
-      ...     _ = fp.readline()
-      ...     for line in fp.readlines():
-      ...         cols = line.split()[0:4]
-      ...         print("""Filesystem: %s
-      ... - Used: %s""" % (cols[0],
-      ...                  bitmath.parse_string_unsafe(cols[1], \
-      ...                      system=bitmath.NIST)))
-      Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
-      - Used: 100.0 GiB
-      Filesystem: /dev/sda1
-      - Used: 477.0 MiB
-      Filesystem: /dev/mapper/vg_deepfryer-lv_home
-      - Used: 120.0 GiB
+      import warnings
+      warnings.filterwarnings('ignore', category=DeprecationWarning,
+                              module='bitmath')
 
-   The results printed use the proper NIST prefix unit syntax now:
-   Capital **G** followed by a lower-case **i** ending with a capital
-   **B**, ``GiB``.
+.. function:: parse_string_unsafe(repr[, system=bitmath.NIST])
+
+   A deprecated thin wrapper around
+   ``parse_string(repr, strict=False, system=system)``. All behaviour,
+   parameters, and caveats are identical to
+   :ref:`parse_string with strict=False <parse-string-loose>`.
+
+   :param repr: The value to parse.
+   :param system: :py:data:`bitmath.NIST` (default) or
+                  :py:data:`bitmath.SI`.
+   :return: A bitmath object representing ``repr``.
+   :raises ValueError: if ``repr`` cannot be parsed.
+
+   .. versionchanged:: 2.0.0
+      Deprecated. Default ``system`` changed from ``bitmath.SI`` to
+      ``bitmath.NIST`` for consistency with
+      :py:func:`bitmath.parse_string`.
 
    .. versionadded:: 1.3.1
 
