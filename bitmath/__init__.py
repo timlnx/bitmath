@@ -851,13 +851,35 @@ equivalent of the this instances prefix Unix value. That is to say:
         """Return this instances prefix unit as a floating point number"""
         return float(self.prefix_value)
 
+    """floor/ceil/round operate on the prefix value and return the same unit
+type. They are explicit opt-in operations for when integer prefix values are
+needed. See the Rules for Math appendix in the bitmath documentation for the
+design rationale behind floating-point representation.
+"""
+
     def __floor__(self):
+        """Return the largest integer prefix value <= this instance as the same type.
+
+Rounds the prefix value down. math.floor(MiB(1.9)) -> MiB(1).
+"""
         return (type(self))(math.floor(self.prefix_value))
 
     def __ceil__(self):
+        """Return the smallest integer prefix value >= this instance as the same type.
+
+Rounds the prefix value up. math.ceil(MiB(1.1)) -> MiB(2).
+"""
         return (type(self))(math.ceil(self.prefix_value))
 
     def __round__(self, ndigits=None):
+        """Return this instance rounded to ndigits precision as the same type.
+
+round(MiB(1.75)) -> MiB(2); round(KiB(1.555), 2) -> KiB(1.56).
+
+Rounds the prefix value using Python's built-in round(). When ndigits
+is omitted the result has an integer prefix value. Only round at the
+final output step; rounding intermediate results loses precision.
+"""
         if ndigits is None:
             return (type(self))(round(self.prefix_value))
         return (type(self))(round(self.prefix_value, ndigits))
