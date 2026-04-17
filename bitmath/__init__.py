@@ -379,7 +379,7 @@ instantiate the class ahead of time.
     ######################################################################
     # The following implement the Python datamodel customization methods
     #
-    # Reference: http://docs.python.org/2.7/reference/datamodel.html#basic-customization
+    # Reference: https://docs.python.org/3/reference/datamodel.html#basic-customization
 
     def __repr__(self):
         """Representation of this object as you would expect to see in an
@@ -430,7 +430,8 @@ instance.
 Else, begin by recording the unit system the instance is defined
 by. This determines which steps (NIST_STEPS/SI_STEPS) we iterate over.
 
-If the instance is not already a ``Byte`` instance, convert it to one.
+If the instance is not already a ``Byte`` instance, convert it to one
+for the purpose of the log calculation.
 
 NIST units step up by powers of 1024, SI units step up by powers of
 1000.
@@ -444,9 +445,19 @@ value. E.g.:
 This will return a value >= 0. The following determines the 'best
 prefix unit' for representation:
 
-* result == 0, best represented as a Byte
+* result == 0, best represented as a Byte (or Bit for Bit-family inputs)
 * result >= len(SYSTEM_STEPS), best represented as an Exbi/Exabyte
 * 0 < result < len(SYSTEM_STEPS), best represented as SYSTEM_PREFIXES[result-1]
+
+Unit family is preserved: Bit-family instances (Bit, Kib, Mib, kb,
+Mb, etc.) always return a Bit-family result. Byte-family instances
+always return a Byte-family result.
+
+.. versionchanged:: 2.0.0
+   Bit-family instances now return Bit-family results. Previously,
+   ``best_prefix()`` always returned a Byte-family unit regardless of
+   the input type (e.g. ``Bit(30950093).best_prefix()`` returned
+   ``MiB`` instead of ``Mib``). See GitHub issue #95.
 
         """
 
@@ -455,7 +466,7 @@ prefix unit' for representation:
         if abs(self) < Byte(1):
             return Bit.from_other(self)
         else:
-            if type(self) is Byte:  # pylint: disable=unidiomatic-typecheck
+            if isinstance(self, Byte):
                 _inst = self
             else:
                 _inst = Byte.from_other(self)
@@ -491,7 +502,10 @@ prefix unit' for representation:
         # in the list.
 
         if _index == 0:
-            # Already a Byte() type, so return it.
+            # Below the first prefix threshold. Bit-family inputs return as
+            # Bit to preserve family; Byte-family inputs return as Byte.
+            if isinstance(self, Bit):
+                return Bit.from_other(self)
             return _inst
         elif _index >= len(_STEPS):
             # This is a really big number. Use the biggest prefix we've got
@@ -500,9 +514,12 @@ prefix unit' for representation:
             # There is an appropriate prefix unit to represent this
             _best_prefix = _STEPS[_index - 1]
 
-        _conversion_method = getattr(
-            self,
-            'to_%sB' % _best_prefix)
+        # Preserve unit family: Bit-family -> 'to_Xib'/'to_Xb',
+        # Byte-family -> 'to_XiB'/'to_XB'.
+        if isinstance(self, Bit):
+            _conversion_method = getattr(self, 'to_%sb' % _best_prefix)
+        else:
+            _conversion_method = getattr(self, 'to_%sB' % _best_prefix)
 
         return _conversion_method()
 

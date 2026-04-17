@@ -42,11 +42,15 @@ class TestBestPrefixBASE(TestCase):
         self.assertIs(type(half_byte.best_prefix()), bitmath.Bit)
 
     def test_bit_round_up(self):
-        """best_prefix_base: 2 Bytes (as a Bit()) round up into a Byte()"""
+        """best_prefix_base: 2 Bytes (as a Bit()) stays as Bit() — family preserved
+
+Bit(16) is 2 bytes, below the Kib/kb threshold. There is no sub-kibibit
+prefix unit, so best_prefix returns Bit to preserve the Bit family.
+Prior to 2.0.0 this returned Byte(2).
+"""
         # Two bytes is 16 bits
         two_bytes = bitmath.Bit(bytes=2)
-        # Bit(16) should round up into Byte(2)
-        self.assertIs(type(two_bytes.best_prefix()), bitmath.Byte)
+        self.assertIs(type(two_bytes.best_prefix()), bitmath.Bit)
 
     def test_byte_no_rounding(self):
         """best_prefix_base: 1 Byte (as a Byte()) best prefix is still a Byte()"""
