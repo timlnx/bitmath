@@ -54,14 +54,14 @@ Library Improvements
 ====================
 
 The core API is unchanged — every bitmath object you created before
-still works exactly the same way.
+still works exactly the same way. What 2.0.0 adds on top of that:
 
 **Full NIST unit coverage**
    The four largest NIST prefix units — :class:`~bitmath.ZiB`,
    :class:`~bitmath.YiB`, :class:`~bitmath.Zib`, and
    :class:`~bitmath.Yib` — are now first-class bitmath types. All
-   constants (``NIST_PREFIXES``, ``NIST_STEPS``, ``ALL_UNIT_TYPES``)
-   reflect reality.
+   constants (:ref:`NIST_PREFIXES, NIST_STEPS, ALL_UNIT_TYPES
+   <module_class_variables>`) reflect reality.
 
 **f-string and format() support**
    bitmath objects now implement the Python format protocol
@@ -102,11 +102,16 @@ still works exactly the same way.
 Project Infrastructure
 ======================
 
+The project infrastructure has been rebuilt to reflect how Python
+projects are actually maintained in 2026:
+
 **Packaging**
    ``pyproject.toml`` with a hatchling backend replaces the old
-   ``setup.py``/``setup.py.in`` template system. The package is PEP
-   517/518 compliant. ``MANIFEST.in`` is gone; sdist content is
-   declared explicitly in ``pyproject.toml``.
+   ``setup.py``/``setup.py.in`` template system. The package is
+   `PEP 517 <https://peps.python.org/pep-0517/>`_/`PEP 518
+   <https://peps.python.org/pep-0518/>`_ compliant. ``MANIFEST.in``
+   is gone; sdist content is declared explicitly in
+   ``pyproject.toml``.
 
 **GitHub Actions**
    CI now runs against Python 3.11, 3.12, and 3.13 on both Ubuntu and
@@ -129,16 +134,18 @@ Project Infrastructure
    old ``make sdist upload`` pattern.
 
 
-Looking Forward
-===============
+Closing Thoughts
+================
 
 bitmath started as a small utility for thinking clearly about file
 sizes, and that's still exactly what it is. The 2.0.0 release doesn't
 change what the library does — it changes what it's built on, so it
 can keep doing it for the next eight years. The test suite sits at 288
-tests and 100% coverage. If you've been holding off on adopting
-bitmath because the last release predated your Python version — now's
-the time.
+tests and 100% coverage. The documentation has been comprehensively
+reviewed and updated. The packaging is clean enough to pass ``twine
+check`` on the first attempt (well, the second). If you've been
+holding off on adopting bitmath because the last release predated your
+Python version — now's the time.
 
 
 .. _bitmath-1.4.0-1:
