@@ -48,12 +48,12 @@ focusing on file size unit conversion, functionality now includes:
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
 * Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
-* Rounding via :py:func:`math.floor`, :py:func:`math.ceil`, and :py:func:`round`
+* Rounding via ``math.floor``, ``math.ceil``, and ``round``
 * Reading a device's storage capacity (Linux/macOS support only)
 * String parsing, including flexible non-strict parsing of ambiguous input
 * Sorting
-* Summing iterables via built-in :py:func:`sum` or :py:func:`bitmath.sum` for unit-normalised results
-* f-string and :py:func:`format` support via the standard Python formatting protocol
+* Summing iterables via built-in ``sum`` or ``bitmath.sum`` for unit-normalised results
+* f-string and ``format`` support via the standard Python formatting protocol
 * `argparse <https://docs.python.org/3/library/argparse.html>`_
   integration as a custom type
 
