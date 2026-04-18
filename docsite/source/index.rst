@@ -1,20 +1,20 @@
-.. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
-   :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
+.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
    :alt: Build Status on GitHub
 
-.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
-   :target: https://github.com/timlnx/bitmath/issues
+.. image:: https://img.shields.io/github/issues/tbielawa/bitmath?style=flat-square
+   :target: https://github.com/tbielawa/bitmath/issues
    :alt: Open Issues
 
-.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
-   :target: https://github.com/timlnx/bitmath/pulls
+.. image:: https://img.shields.io/github/issues-pr/tbielawa/bitmath?style=flat-square
+   :target: https://github.com/tbielawa/bitmath/pulls
    :alt: Open Pull Requests
 
 .. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: PyPI - Package Popularity
 
-.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
+.. image:: https://img.shields.io/github/stars/tbielawa/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: GitHub Project Popularity
 
@@ -37,13 +37,17 @@ focusing on file size unit conversion, functionality now includes:
 
 * Converting between **SI** and **NIST** prefix units (``kB`` to ``GiB``)
 * Converting between units of the same type (SI to SI, or NIST to NIST)
+* Full NIST unit coverage including **ZiB**, **YiB**, **Zib**, and **Yib**
 * Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_)
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
-* bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
-* Reading a device's storage capacity (Linux/OS X support only)
-* String parsing
+* Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
+* Rounding via :py:func:`math.floor`, :py:func:`math.ceil`, and :py:func:`round`
+* Reading a device's storage capacity (Linux/macOS support only)
+* String parsing, including flexible non-strict parsing of ambiguous input
 * Sorting
+* Summing iterables via built-in :py:func:`sum` or :py:func:`bitmath.sum` for unit-normalised results
+* f-string and :py:func:`format` support via the standard Python formatting protocol
 * `argparse <https://docs.python.org/3/library/argparse.html>`_
   integration as a custom type
 
@@ -63,8 +67,8 @@ most of the time what you're really seeing are the base-2 sizes/rates.
 **Don't Forget!** The source for bitmath `is available on GitHub
 <https://github.com/timlnx/bitmath>`_.
 
-And did we mention there's almost 200 unittests? `Check them out for
-yourself <https://github.com/timlnx/bitmath/tree/master/tests>`_.
+And did we mention there are nearly 300 unit tests? `Check them out for
+yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
 
 * :ref:`Examples <index_examples>` after the TOC.
 
