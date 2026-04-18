@@ -3,11 +3,12 @@
 # Makefile for bitmath
 #
 # useful targets:
-#   make sdist ---------------- produce a tarball
+#   make build ---------------- build sdist + wheel (output in dist/)
+#   make pypitest ------------- upload to TestPyPI (requires: pip install twine)
+#   make pypi ----------------- upload to PyPI     (requires: pip install twine)
 #   make rpm  ----------------- produce RPMs
-#   make docs ----------------- rebuild the manpages (results are checked in)
-#   make pyflakes, make pycodestyle -- source code checks
-#   make test ----------------- run all unit tests (export LOG=true for /tmp/ logging)
+#   make docs ----------------- rebuild the docs
+#   make ci   ----------------- run full test suite in virtualenv
 
 ########################################################
 
@@ -101,16 +102,23 @@ conf.py: docsite/source/conf.py.in
 python-bitmath.spec: python-bitmath.spec.in
 	sed "s/%VERSION%/$(VERSION)/" $< > $@
 
-# Build the distutils setup file on the fly.
-setup.py: setup.py.in VERSION python-bitmath.spec.in
-	sed -e "s/%VERSION%/$(VERSION)/" -e "s/%RELEASE%/$(RPMRELEASE)/" $< > $@
+build: clean
+	@echo "#############################################"
+	@echo "# Building sdist + wheel"
+	@echo "#############################################"
+	python -m build
 
-# Upload sources to pypi/pypi-test
-pypi:
-	python ./setup.py sdist upload
+pypi: build
+	@echo "#############################################"
+	@echo "# Uploading to PyPI"
+	@echo "#############################################"
+	twine upload dist/*
 
-pypitest:
-	python ./setup.py sdist upload -r test
+pypitest: build
+	@echo "#############################################"
+	@echo "# Uploading to TestPyPI"
+	@echo "#############################################"
+	twine upload --repository testpypi dist/*
 
 # usage example: make tag TAG=1.1.0-1
 tag:
@@ -127,18 +135,18 @@ uniquetestnames:
 	@echo "#############################################"
 	./tests/test_unique_testcase_names.sh
 
-install: clean
-	python ./setup.py install
+install:
+	pip install .
 	mkdir -p /usr/share/man/man1/
 	gzip -9 -c bitmath.1 > /usr/share/man/man1/bitmath.1.gz
 
-sdist: setup.py clean
+sdist: clean
 	@echo "#############################################"
 	@echo "# Creating SDIST"
 	@echo "#############################################"
-	python setup.py sdist
+	python -m build --sdist
 
-rpmcommon: sdist python-bitmath.spec setup.py
+rpmcommon: sdist python-bitmath.spec
 	@echo "#############################################"
 	@echo "# Building (S)RPM Now"
 	@echo "#############################################"

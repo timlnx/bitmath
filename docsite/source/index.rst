@@ -90,18 +90,21 @@ developed, tested, and supported for `currently supported
    $ pip install --user bitmath
 
 
-**Source**::
+**Source**
 
-    NOTE: UPDATE THIS FOR THE NEW HATCH.TOML THING
-
-Or, if you want to install from source:
+To install from source, clone the repository and use pip:
 
 .. code-block:: bash
 
-   $ sudo python ./setup.py install
+   $ git clone https://github.com/timlnx/bitmath.git
+   $ cd bitmath
+   $ pip install .
 
-If you want the ``/bin/bitmath`` manpage too, then ``sudo make
-install`` will install the Python library and the manpage.
+To also install the ``bitmath`` manpage:
+
+.. code-block:: bash
+
+   $ sudo make install
 
 
 Contents

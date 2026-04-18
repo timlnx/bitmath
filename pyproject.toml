@@ -50,6 +50,29 @@ Homepage = "https://bitmath.readthedocs.io/en/latest/index.html"
 [project.scripts]
 bitmath = "bitmath:cli_script"
 
+[tool.hatch.build.targets.sdist]
+include = [
+  "bitmath/",
+  "tests/",
+  "docsite/source/",
+  "README.rst",
+  "LICENSE",
+  "NEWS.rst",
+  "bitmath.1",
+  ".coveragerc",
+  "requirements.txt",
+]
+exclude = [
+  # local-only dirs hatchling sees but git does not track
+  "bmintegrations/",
+  "bmintegrations311/",
+  ".claude/",
+  "docs/",
+  ".remember/",
+  "*.claude",
+  "CLAUDE.md",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["bitmath"]
 

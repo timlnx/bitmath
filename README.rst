@@ -120,13 +120,15 @@ You could also install bitmath from `PyPi
 
 **Source**:
 
-Or, if you want to install from source:
+To install from source, clone the repository and use pip:
 
 .. code-block:: bash
 
-   $ sudo python ./setup.py install
+   $ git clone https://github.com/timlnx/bitmath.git
+   $ cd bitmath
+   $ pip install .
 
-If you want the bitmath manpage installed as well:
+To also install the ``bitmath`` manpage:
 
 .. code-block:: bash
 
