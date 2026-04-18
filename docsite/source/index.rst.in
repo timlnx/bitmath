@@ -44,7 +44,7 @@ focusing on file size unit conversion, functionality now includes:
 * Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
 * Rounding via :py:func:`math.floor`, :py:func:`math.ceil`, and :py:func:`round`
 * Reading a device's storage capacity (Linux/macOS support only)
-* String parsing, including flexible non-strict parsing of ambiguous input (``parse_string(s, strict=False)``)
+* String parsing, including flexible non-strict parsing of ambiguous input
 * Sorting
 * Summing iterables via built-in :py:func:`sum` or :py:func:`bitmath.sum` for unit-normalised results
 * f-string and :py:func:`format` support via the standard Python formatting protocol
