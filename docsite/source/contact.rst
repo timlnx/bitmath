@@ -29,8 +29,4 @@ ahead:
  * :ref:`Contributing <contributing>`
 
 **E-Mail**
- If you want to contact me directly, `clone the project
- <https://github.com/timlnx/bitmath>`_ and look at any of `my
- bitmath commits
- <https://github.com/timlnx/bitmath/commits/master?author=tbielawa>`_
- to find my email address.
+ You can reach me directly at `bitmath@lnx.cx <mailto:bitmath@lnx.cx>`_.
