@@ -8,7 +8,7 @@ dist
 rpm-build
 
 # python
-*.py[cod]
+*.pyc
 
 # C extensions
 *.so
@@ -36,7 +36,6 @@ pip-log.txt
 .coverage
 coverage.xml
 .tox
-nosetests.xml
 
 # Translations
 *.mo
