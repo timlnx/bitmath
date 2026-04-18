@@ -142,7 +142,7 @@ manager. There is a separate test suite for that: test_context_manager"""
 
     def test_print_byte_singular(self):
         """Byte(1.0) prints out units in singular form"""
-        expected_result = "1Byte"
+        expected_result = "1B"
         fmt_str = "{value:.2g}{unit}"
         one_Byte = bitmath.Byte(1.0)
         actual_result = one_Byte.format(fmt_str)

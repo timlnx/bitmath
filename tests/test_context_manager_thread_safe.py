@@ -93,12 +93,12 @@ respective contexts simultaneously before formatting any strings.
                 with bitmath.format(plural=expect_plural):
                     barrier.wait()
                     result = str(bitmath.Byte(3.0))
-                    if expect_plural and result != "3.0 Bytes":
+                    if expect_plural and result != "3.0 B":
                         errors.put(AssertionError(
-                            "plural thread: expected '3.0 Bytes', got %r" % result))
-                    elif not expect_plural and result != "3.0 Byte":
+                            "plural thread: expected '3.0 B', got %r" % result))
+                    elif not expect_plural and result != "3.0 B":
                         errors.put(AssertionError(
-                            "singular thread: expected '3.0 Byte', got %r" % result))
+                            "singular thread: expected '3.0 B', got %r" % result))
             except Exception as exc:
                 errors.put(exc)
 

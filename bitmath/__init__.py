@@ -1022,7 +1022,7 @@ bit of x AND of y is 0, otherwise it's 1."""
 class Byte(Bitmath):
     """Byte based types fundamentally operate on self._bit_value"""
     def _setup(self):
-        return (2, 0, 'Byte', 'Bytes')
+        return (2, 0, 'B', 'B')
 
 ######################################################################
 # NIST Prefixes for Byte based types
@@ -1167,7 +1167,7 @@ class Bit(Bitmath):
         self.prefix_value = self._to_prefix_value(self._bit_value)
 
     def _setup(self):
-        return (2, 0, 'Bit', 'Bits')
+        return (2, 0, 'b', 'b')
 
     def _norm(self, value):
         """Normalize the input value into the fundamental unit for this prefix
@@ -1584,7 +1584,7 @@ the return value::
         val, unit = s[:index], s[index:]
 
         # Explicit base-unit and word-form checks: handle B, b, bit(s),
-        # byte(s) before the prefix-normalisation logic below.
+        # byte(s) before the prefix-normalization logic below.
         _unit_lower = unit.lower()
         if unit == 'B' or _unit_lower in ('byte', 'bytes'):
             return Byte(float(val))
