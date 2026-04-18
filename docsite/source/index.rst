@@ -364,8 +364,9 @@ Formatting
 ------------------------
 
 A self-contained example showing how to use bitmath as an argparse
-argument type is available in the :ref:`integration_examples_argparse`
-section of the *Integration Examples* chapter.
+argument type is available in the `Integration Examples
+<https://bitmath.readthedocs.io/en/latest/integration_examples.html#argparse>`_
+chapter of the documentation.
 
 .. code-block:: python
 
