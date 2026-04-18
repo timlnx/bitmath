@@ -108,14 +108,6 @@ You could also install bitmath from `PyPi
 
    $ sudo pip install bitmath
 
-.. note::
-
-   **pip** installs need pip >= 1.1. To workaround this, `download
-   bitmath <https://pypi.python.org/pypi/bitmath/#downloads>`_, from
-   PyPi and then ``pip install bitmath-x.y.z.tar.gz``. See `issue #57
-   <https://github.com/timlnx/bitmath/issues/57#issuecomment-227018168>`_
-   for more information.
-
 
 
 **Source**:
