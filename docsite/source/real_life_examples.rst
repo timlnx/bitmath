@@ -384,12 +384,10 @@ connections.
 Creating Download Progress Bars
 *******************************
 
-
-.. literalinclude:: ../../full_demo.py
-
-* View the the source for the `demo suite
-  <https://raw.githubusercontent.com/timlnx/bitmath/master/full_demo.py>`_
-  on GitHub
+For a self-contained, copy-paste example of a progress bar that
+displays transfer speed using bitmath, see
+:ref:`integration_examples_progressbar2` in the
+*Integration Examples* chapter.
 
 
 .. _real_life_examples_read_device_storage_capacity:

@@ -424,27 +424,25 @@ Formatting
 ``argparse`` Integration
 ------------------------
 
-Example script using ``bitmath.integrations.bmargparse.BitmathType`` as an
-argparser argument type:
+A self-contained example showing how to use bitmath as an argparse
+argument type is available in the `Integration Examples
+<https://bitmath.readthedocs.io/en/latest/integration_examples.html#argparse>`_
+chapter of the documentation.
 
 .. code-block:: python
 
    import argparse
-   from bitmath.integrations.bmargparse import BitmathType
-   parser = argparse.ArgumentParser(
-       description="Arg parser with a bitmath type argument")
-   parser.add_argument('--block-size',
-                       type=BitmathType,
-                       required=True)
+   import bitmath
 
-   results = parser.parse_args()
-   print("Parsed in: {PARSED}; Which looks like {TOKIB} as a Kibibit".format(
-       PARSED=results.block_size,
-       TOKIB=results.block_size.Kib))
+   def BitmathType(value):
+       try:
+           return bitmath.parse_string(value)
+       except ValueError:
+           raise argparse.ArgumentTypeError(
+               f"{value!r} is not a recognised bitmath unit string"
+           )
 
-If ran as a script the results would be similar to this:
-
-.. code-block:: bash
-
-   $ python ./bmargparse.py --block-size 100MiB
-   Parsed in: 100.0 MiB; Which looks like 819200.0 Kib as a Kibibit
+   parser = argparse.ArgumentParser()
+   parser.add_argument('--block-size', type=BitmathType, required=True)
+   args = parser.parse_args(['--block-size', '10MiB'])
+   print(args.block_size)  # 10.0 MiB

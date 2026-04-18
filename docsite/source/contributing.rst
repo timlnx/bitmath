@@ -209,21 +209,19 @@ output omitted for brevity):
    # Running Unit Tests
    #############################################
    ============================= test session starts ==============================
-   tests/test_argparse_type.py::TestArgparseType::test_BitmathType_bad_spaces_in_value PASSED [  0%]
-   tests/test_argparse_type.py::TestArgparseType::test_BitmathType_bad_wtfareyoudoing PASSED [  0%]
-   tests/test_argparse_type.py::TestArgparseType::test_BitmathType_good_one_arg PASSED [  1%]
-
-   ... (285 tests total) ...
+   tests/test_arithmetic.py::TestArithmetic::test_add_bitmath_to_bitmath PASSED [  0%]
+   tests/test_arithmetic.py::TestArithmetic::test_sub_bitmath_from_bitmath PASSED [  0%]
+   ... (hundreds more) ...
 
    ================================ tests coverage ================================
    Name    Stmts   Miss  Cover   Missing
    -------------------------------------
    TOTAL     623      0   100%
 
-   ======================== 285 passed, 1 warning in 0.23s ========================
+   ======================== NNN passed in Xs ========================
 
-A passing run shows **285 passed** and **100% coverage**. Any
-deviation from this is a failure.
+A passing run shows 100% coverage. The exact test count grows as new
+tests are added. Any regression in coverage is a failure.
 
 The definitive pass/fail verdict comes from the GitHub Actions workflow
 on your pull request, which runs the suite across all supported Python

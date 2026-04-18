@@ -920,94 +920,12 @@ behavior.
          'Kib', 'KiB', 'Mib', 'MiB', 'Gib', 'GiB', 'Tib', 'TiB',
          'Pib', 'PiB', 'Eib', 'EiB', 'Zib', 'ZiB', 'Yib', 'YiB']
 
-.. py:module:: bitmath.integrations
-
 .. _bitmath_3rd_party_module_integrations:
 
 3rd Party Module Integrations
 *****************************
 
-This section describes the various ways in which :py:mod:`bitmath` can
-be integrated with other 3rd pary modules.
-
-To see a full demo of the :mod:`argparse` and :mod:`progressbar`
-integrations, as well as a comprehensive demonstrations of the full
-capabilities of the bitmath library, see :ref:`Creating Download
-Progress Bars <real_life_examples_download_progress_bars>` in the
-*Real Life Examples* section.
-
-.. _bitmath_BitmathType:
-
-argparse
-========
-
-.. versionadded:: 1.2.0
-
-The `argparse module
-<https://docs.python.org/3/library/argparse.html>`_ (part of stdlib)
-is used to parse command line arguments. By default, parsed options
-and arguments are turned into strings. However, one useful feature
-:py:mod:`argparse` provides is the ability to `specify what datatype
-<https://docs.python.org/3/library/argparse.html#type>`_ any given
-argument or option should be interpreted as.
-
-.. function:: BitmathType(bmstring)
-
-   The :func:`BitmathType` factory creates objects that can be passed
-   to the type argument of `ArgumentParser.add_argument()
-   <https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument>`_. Arguments
-   that have :func:`BitmathType` objects as their type will
-   automatically parse the command line argument into a matching
-   :ref:`bitmath object <classes>`.
-
-   :param str bmstring: The command-line option to parse into a
-                        bitmath object
-   :returns: A bitmath object representing ``bmstring``
-   :raises ValueError: on any input that
-                       :py:func:`bitmath.parse_string` already rejects
-   :raises ValueError: on **unquoted inputs** with whitespace
-                       separating the value from the unit (e.g.,
-                       ``--some-option 10 MiB`` is bad, but
-                       ``--some-option '10 MiB'`` is good)
-
-   Let's take a look at a more in-depth example.
-
-   A feature found in many command-line utilities is the ability to
-   specify some kind of file size using a string which roughly
-   describes some kind of parameter. For example, let's look at the
-   :program:`du` (disk usage) command. Invoking it as ``du -B``
-   allows one to specify a desired block-size scaling factor in
-   printed results.
-
-   Let's say we wanted to implement a similar mechanism in an
-   application of our own. Except, instead of abbreviating down to
-   ambiguous capital letters, we accept scaling factors as
-   :ref:`properly written values <appendix_on_units>` with associated
-   units. Such as **10 MiB**, or **1 MB**.
-
-   To accomplish this, we'll use :py:mod:`argparse` to create an
-   argument parser and add one option to it, ``--block-size``. This
-   option will have a type of :func:`BitmathType` set.
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 3,6,7
-
-      >>> import argparse, bitmath
-      >>> parser = argparse.ArgumentParser()
-      >>> parser.add_argument('--block-size', type=bitmath.BitmathType)
-      >>> args = "--block-size 1MiB"
-      >>> results = parser.parse_args(args.split())
-      >>> print(type(results.block_size))
-      <class 'bitmath.MiB'>
-
-   On line **3** we add the ``--block-size`` option to the parser,
-   explicitly defining it's type as :func:`BitmathType`. In lines
-   **6** and **7** when we parse the provided arguments we find that
-   :py:mod:`argparse` has automatically created a bitmath object for
-   us.
-
-   If an invalid scaling factor is provided by the user, such as one
-   which does not represent a recognizable unit, the bitmath library
-   will automatically detect this for us and signal to the argument
-   parser that an error has occurred.
+Self-contained, copy-paste examples for integrating :mod:`bitmath` with
+:mod:`argparse`, `click <https://click.palletsprojects.com/>`_, and
+`progressbar2 <https://progressbar-2.readthedocs.io/>`_ are collected in
+the :ref:`Integration Examples <integration_examples>` chapter.

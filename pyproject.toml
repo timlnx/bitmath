@@ -51,7 +51,7 @@ Homepage = "https://bitmath.readthedocs.io/en/latest/index.html"
 bitmath = "bitmath:cli_script"
 
 [tool.hatch.build.targets.wheel]
-packages = ["bitmath", "bitmath.integrations"]
+packages = ["bitmath"]
 
 [tool.hatch.publish.index]
 disable = true
