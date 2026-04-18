@@ -23,7 +23,7 @@ as such:
    :linenos:
 
    >>> import bitmath
-   >>> downstream = bitmath.Mib(50)
+   >>> downstream = bitmath.Mb(50)
    >>> print(downstream.to_MB())
    MB(6.25)
 
@@ -111,7 +111,7 @@ returns). We can use ``bitmath`` to do that too:
 
 
 Alternatively, we could simplify things and use
-:ref:`bitmath.getsize() <bitmath_getsize>` to read the file size
+:func:`bitmath.getsize` to read the file size
 directly into a bitmath object:
 
 .. code-block:: python
@@ -249,7 +249,7 @@ using the :py:mod:`bitmath` library. Let's see how:
 
    >>> from bitmath import GB
 
-   >>> tx = 1/8.0
+   >>> tx = 1/8
 
    >>> rtt = 0.199 * 10**-3
 
@@ -259,14 +259,12 @@ using the :py:mod:`bitmath` library. Let's see how:
 
    KiB(24.2919921875)
 
-.. note::
-   To avoid integer rounding during division, don't forget to divide by ``8.0`` rather than ``8``
 
 We could shorten that even further:
 
 .. code-block:: python
 
-   >>> print((GB((1/8.0) * (0.199 * 10**-3))).to_Byte())
+   >>> print((GB((1/8) * (0.199 * 10**-3))).to_Byte())
    24875.0Byte
 
 **Get the current kernel parameters**
@@ -363,8 +361,8 @@ Set the **core-network** buffer sizes:
 .. code-block:: console
 
    $ sudo sysctl net.core.rmem_max=24875  net.core.wmem_max=24875
-   net.core.rmem_max = 4235
-   net.core.wmem_max = 4235
+   net.core.rmem_max = 24875
+   net.core.wmem_max = 24875
 
 Set the **per-socket** buffer sizes:
 
