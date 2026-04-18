@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -25,16 +26,11 @@
 
 
 """
-Test to verify the int/float/long conversions work correctly
+Test to verify the int/float conversions work correctly
 """
 
 from . import TestCase
 import bitmath
-import sys
-
-# Python 3.x compat
-if sys.version > '3':
-    long = int
 
 
 class TestToBuiltInConversion(TestCase):
@@ -48,8 +44,3 @@ class TestToBuiltInConversion(TestCase):
         """float(bitmath) returns a float"""
         gib = bitmath.GiB(1337.8)
         self.assertIs(type(float(gib)), float)
-
-    def test_to_long(self):
-        """long(bitmath) returns a long"""
-        gib = bitmath.GiB(1337.8)
-        self.assertIs(type(long(gib)), long)

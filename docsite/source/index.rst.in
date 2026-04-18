@@ -1,15 +1,32 @@
-.. image:: https://api.travis-ci.org/tbielawa/bitmath.png
-   :target: https://travis-ci.org/tbielawa/bitmath/
-   :align: right
-   :height: 19
-   :width: 77
+.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
+   :alt: Build Status on GitHub
 
-.. image:: https://coveralls.io/repos/tbielawa/bitmath/badge.png?branch=master
-   :target: https://coveralls.io/github/tbielawa/bitmath
-   :align: right
-   :height: 19
-   :width: 77
+.. image:: https://img.shields.io/github/issues/tbielawa/bitmath?style=flat-square
+   :target: https://github.com/tbielawa/bitmath/issues
+   :alt: Open Issues
 
+.. image:: https://img.shields.io/github/issues-pr/tbielawa/bitmath?style=flat-square
+   :target: https://github.com/tbielawa/bitmath/pulls
+   :alt: Open Pull Requests
+
+.. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
+   :target: https://pypistats.org/packages/bitmath
+   :alt: PyPI - Package Popularity
+
+.. image:: https://img.shields.io/github/stars/tbielawa/bitmath?style=flat-square
+   :target: https://pypistats.org/packages/bitmath
+   :alt: GitHub Project Popularity
+
+.. image:: https://img.shields.io/pypi/l/bitmath?style=flat-square
+   :target: https://opensource.org/licenses/MIT
+   :alt: PyPI - License
+
+.. image:: https://img.shields.io/pypi/implementation/bitmath?style=flat-square
+   :alt: PyPI - Implementation
+
+.. image:: https://img.shields.io/pypi/pyversions/bitmath?style=flat-square
+   :alt: PyPI - Python Version
 
 bitmath
 #######
@@ -20,25 +37,26 @@ focusing on file size unit conversion, functionality now includes:
 
 * Converting between **SI** and **NIST** prefix units (``kB`` to ``GiB``)
 * Converting between units of the same type (SI to SI, or NIST to NIST)
+* Full NIST unit coverage including **ZiB**, **YiB**, **Zib**, and **Yib**
 * Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_)
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
-* bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
-* Reading a device's storage capacity (Linux/OS X support only)
-* `argparse <https://docs.python.org/2/library/argparse.html>`_
-  integration as a custom type
-* `progressbar <https://github.com/niltonvolpato/python-progressbar>`_
-  integration as a better file transfer speed widget
-* String parsing
+* Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
+* Rounding via :py:func:`math.floor`, :py:func:`math.ceil`, and :py:func:`round`
+* Reading a device's storage capacity (Linux/macOS support only)
+* String parsing, including flexible non-strict parsing of ambiguous input
 * Sorting
-
+* Summing iterables via built-in :py:func:`sum` or :py:func:`bitmath.sum` for unit-normalised results
+* f-string and :py:func:`format` support via the standard Python formatting protocol
+* `argparse <https://docs.python.org/3/library/argparse.html>`_
+  integration as a custom type
 
 In addition to the conversion and math operations, `bitmath` provides
 human readable representations of values which are suitable for use in
 interactive shells as well as larger scripts and applications. The
 format produced for these representations is customizable via the
 functionality included in stdlibs `string.format
-<https://docs.python.org/2/library/string.html>`_.
+<https://docs.python.org/3/library/string.html>`_.
 
 In discussion we will refer to the NIST units primarily. I.e., instead
 of "megabyte" we will refer to "mebibyte". The former is ``10^3 =
@@ -47,9 +65,9 @@ bytes. When you see file sizes or transfer rates in your web browser,
 most of the time what you're really seeing are the base-2 sizes/rates.
 
 **Don't Forget!** The source for bitmath `is available on GitHub
-<https://github.com/tbielawa/bitmath>`_.
+<https://github.com/timlnx/bitmath>`_.
 
-And did we mention there's almost 200 unittests? `Check them out for
+And did we mention there are nearly 300 unit tests? `Check them out for
 yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
 
 * :ref:`Examples <index_examples>` after the TOC.
@@ -58,72 +76,31 @@ yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
 Installation
 ############
 
-The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
-you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as the EPEL6 and EPEL7
-repositories. There are now dual python2.x and python3.x releases
-available.
+bitmath is available in Fedora and EPEL repositories, as well as
+directly available via `PyPI
+<https://pypi.python.org/pypi/bitmath>`_. As of 2023 bitmath is only
+developed, tested, and supported for `currently supported
+<https://devguide.python.org/versions/>`_ Python releases.
 
-
-**Python 2.x**:
-
-.. code-block:: bash
-
-   $ sudo dnf install python2-bitmath
-
-**Python 3.x**:
+**Package Managers**
 
 .. code-block:: bash
 
    $ sudo dnf install python3-bitmath
-
-.. note::
-
-   **Upgrading**: If you have the old *python-bitmath* package
-   installed presently, you could also run ``sudo dnf update
-   python-bitmath`` instead
+   $ pip install --user bitmath
 
 
-**PyPi**:
+**Source**
 
-You could also install bitmath from `PyPi
-<https://pypi.python.org/pypi/bitmath>`_ if you like:
+To install from source, clone the repository and use pip:
 
 .. code-block:: bash
 
-   $ sudo pip install bitmath
+   $ git clone https://github.com/timlnx/bitmath.git
+   $ cd bitmath
+   $ pip install .
 
-.. note::
-
-   **pip** installs need pip >= 1.1. To workaround this, `download
-   bitmath <https://pypi.python.org/pypi/bitmath/#downloads>`_, from
-   PyPi and then ``pip install bitmath-x.y.z.tar.gz``. See `issue #57
-   <https://github.com/tbielawa/bitmath/issues/57#issuecomment-227018168>`_
-   for more information.
-
-
-**PPA**:
-
-Ubuntu Xenial, Wily, Vivid, Trusty, and Precise users can install
-bitmath from the `launchpad PPA
-<https://launchpad.net/~tbielawa/+archive/ubuntu/bitmath>`_:
-
-.. code-block:: bash
-
-   $ sudo add-apt-repository ppa:tbielawa/bitmath
-   $ sudo apt-get update
-   $ sudo apt-get install python-bitmath
-
-
-**Source**:
-
-Or, if you want to install from source:
-
-.. code-block:: bash
-
-   $ sudo python ./setup.py install
-
-If you want the bitmath manpage installed as well:
+To also install the ``bitmath`` manpage:
 
 .. code-block:: bash
 
@@ -143,6 +120,7 @@ Contents
    instances.rst
    simple_examples.rst
    real_life_examples.rst
+   integration_examples.rst
    contributing.rst
    appendices.rst
    NEWS.rst

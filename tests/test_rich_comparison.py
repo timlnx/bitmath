@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -105,3 +106,48 @@ class TestRichComparison(TestCase):
     def test_equal_false_num(self):
         """Unequal objects aren't equal with numbers"""
         self.assertNotEqual(self.kib, 42)
+
+    ##################################################################
+    # Equality for large NIST units (regression for issue #54)
+    # Python 2 had a float vs long comparison bug for these sizes.
+    # Python 3 unifies integers, so these must compare equal.
+
+    def test_ZiB_equal_direct(self):
+        """ZiB(654) == ZiB(654)"""
+        self.assertEqual(bitmath.ZiB(654), bitmath.ZiB(654))
+
+    def test_ZiB_equal_parsed(self):
+        """parse_string('654 ZiB') == ZiB(654)"""
+        self.assertEqual(bitmath.parse_string("654 ZiB"), bitmath.ZiB(654))
+
+    def test_YiB_equal_direct(self):
+        """YiB(654) == YiB(654)"""
+        self.assertEqual(bitmath.YiB(654), bitmath.YiB(654))
+
+    def test_YiB_equal_parsed(self):
+        """parse_string('654 YiB') == YiB(654)"""
+        self.assertEqual(bitmath.parse_string("654 YiB"), bitmath.YiB(654))
+
+    def test_Zib_equal_direct(self):
+        """Zib(654) == Zib(654)"""
+        self.assertEqual(bitmath.Zib(654), bitmath.Zib(654))
+
+    def test_Zib_equal_parsed(self):
+        """parse_string('654 Zib') == Zib(654)"""
+        self.assertEqual(bitmath.parse_string("654 Zib"), bitmath.Zib(654))
+
+    def test_Yib_equal_direct(self):
+        """Yib(654) == Yib(654)"""
+        self.assertEqual(bitmath.Yib(654), bitmath.Yib(654))
+
+    def test_Yib_equal_parsed(self):
+        """parse_string('654 Yib') == Yib(654)"""
+        self.assertEqual(bitmath.parse_string("654 Yib"), bitmath.Yib(654))
+
+    def test_ZiB_to_YiB_conversion(self):
+        """1024 ZiB == 1 YiB"""
+        self.assertEqual(bitmath.ZiB(1024).YiB, bitmath.YiB(1))
+
+    def test_Zib_to_Yib_conversion(self):
+        """1024 Zib == 1 Yib"""
+        self.assertEqual(bitmath.Zib(1024).Yib, bitmath.Yib(1))

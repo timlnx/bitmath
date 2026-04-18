@@ -3,7 +3,7 @@
 Contact
 #######
 
-Hi, I'm Tim Bielawa, the bitmath maintainer. Would you like to get in
+Hi, I'm Tim Case, the bitmath maintainer. Would you like to get in
 touch? Maybe you want to peek at other stuff I'm working on? Go right
 ahead:
 
@@ -18,13 +18,7 @@ ahead:
  Almost every project I work on, code or not, ends up on GitHub
  eventually. You can see what else I've been busy with on my profile.
 
- * `GitHub: tbielawa <https://github.com/tbielawa/>`_
-
-**Tweet-Tweet**
- I have been known to tweet from time to time.
-
- * `@tbielawa <https://twitter.com/tbielawa>`_
-
+ * `GitHub: timlnx <https://github.com/timlnx/>`_
 
 **Bugs/Issues/Requests**
  All contributions related directly to the bitmath project, i.e. bug
@@ -34,17 +28,5 @@ ahead:
 
  * :ref:`Contributing <contributing>`
 
-**Saying hello**
- I'm on the `freenode <https://freenode.net/>`_ IRC network Monday
- through Friday, from around 9am EST through 5pm EST.
-
- * Issue a ``/who tbielawa*`` command to the server, a handle with the
-   netmask ``~tbielawa@redhat/tbielawa`` will appear for you to
-   ``/query`` if I'm online.
-
 **E-Mail**
- If you want to contact me directly, `clone the project
- <https://github.com/tbielawa/bitmath>`_ and look at any of `my
- bitmath commits
- <https://github.com/tbielawa/bitmath/commits/master?author=tbielawa>`_
- to find my email address.
+ You can reach me directly at `bitmath@lnx.cx <mailto:bitmath@lnx.cx>`_.

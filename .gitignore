@@ -34,6 +34,7 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+coverage.xml
 .tox
 nosetests.xml
 
@@ -51,3 +52,4 @@ docsite/build/html
 docsite/build/doctrees
 bitmathenv3
 bitmathenv2
+bitmath2

@@ -1,4 +1,0 @@
-include README.rst LICENSE bitmath.1 NEWS.rst
-graft bitmath
-graft tests
-recursive-include docsite/source *.rst

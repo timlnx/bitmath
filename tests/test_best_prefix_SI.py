@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -141,3 +142,52 @@ best_prefix() to it. again"""
         """bitmath.best_prefix return a yottabyte for a huge number of bytes"""
         result = bitmath.best_prefix(1000000000000000000000001, system=bitmath.SI)
         self.assertIs(type(result), bitmath.YB)
+
+    ##################################################################
+    # Tests for bit-family inputs (issue #95)
+    #
+    # best_prefix() on a Bit-family SI instance should return a
+    # Bit-family SI result. Before the fix these incorrectly return
+    # Byte-family units (e.g. MB instead of Mb).
+
+    def test_bit_input_returns_bit_family_si(self):
+        """SI: best_prefix on Bit() returns a Bit-family unit, not a Byte-family unit"""
+        result = bitmath.Bit.from_other(bitmath.Mb(1)).best_prefix(system=bitmath.SI)
+        self.assertIsInstance(result, bitmath.Bit)
+
+    def test_kb_input_returns_mb_type(self):
+        """SI: kb(8000).best_prefix() returns Mb, not MB
+
+kb(8000) = 8,000,000 bits = 1,000,000 bytes; log(1000000, 1000) = 2 -> Mb.
+"""
+        result = bitmath.kb(8000).best_prefix()
+        self.assertIs(type(result), bitmath.Mb)
+
+    def test_mb_input_returns_gb_type(self):
+        """SI: Mb(8000).best_prefix() returns Gb, not GB
+
+Mb(8000) = 8,000,000,000 bits = 1,000,000,000 bytes; log(1000000000, 1000) = 3 -> Gb.
+"""
+        result = bitmath.Mb(8000).best_prefix()
+        self.assertIs(type(result), bitmath.Gb)
+
+    def test_bit_multi_oom_round_up_si(self):
+        """SI: A very large kb rounds up into a Pb
+
+Pb(8) = 8*10^15 bits = 10^15 bytes; log(10^15, 1000) = 5 -> Pb.
+"""
+        large_kb = bitmath.kb.from_other(bitmath.Pb(8))
+        self.assertIs(type(large_kb.best_prefix()), bitmath.Pb)
+
+    def test_bit_multi_oom_round_down_si(self):
+        """SI: A very small Pb rounds down into a kb
+
+kb(8) = 8000 bits = 1000 bytes; log(1000, 1000) = 1 -> kb.
+"""
+        small_Pb = bitmath.Pb.from_other(bitmath.kb(8))
+        self.assertIs(type(small_Pb.best_prefix()), bitmath.kb)
+
+    def test_bit_input_prefer_si_returns_bit_family(self):
+        """SI: best_prefix(system=SI) on a kb() still returns a Bit-family unit"""
+        result = bitmath.kb(8000).best_prefix(system=bitmath.SI)
+        self.assertIs(type(result), bitmath.Mb)

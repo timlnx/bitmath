@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -146,3 +147,52 @@ manager. There is a separate test suite for that: test_context_manager"""
         one_Byte = bitmath.Byte(1.0)
         actual_result = one_Byte.format(fmt_str)
         self.assertEqual(expected_result, actual_result)
+
+    ##################################################################
+    # Test __format__ (PEP 3101 / format() / f-string support)
+    # Original concept from PR #76 by Jonathan Eunice
+    def test_dunder_format_empty_spec_returns_str(self):
+        """__format__ with no spec returns str(instance)"""
+        size = bitmath.MiB(2.847598437)
+        self.assertEqual(format(size, ''), str(size))
+
+    def test_dunder_format_fstring_empty_spec(self):
+        """f'{size}' with no spec returns the default string representation"""
+        size = bitmath.KiB(1)
+        self.assertEqual(f'{size}', '1.0 KiB')
+
+    def test_dunder_format_precision(self):
+        """__format__ with a precision spec formats self.value only"""
+        size = bitmath.MiB(2.847598437)
+        self.assertEqual(format(size, '.1f'), '2.8')
+
+    def test_dunder_format_fstring_with_unit(self):
+        """f-string with precision spec and explicit unit gives full representation"""
+        size = bitmath.MiB(2.847598437)
+        self.assertEqual(f'{size:.1f} {size.unit}', '2.8 MiB')
+
+    def test_dunder_format_width_and_precision(self):
+        """__format__ respects width and alignment specs"""
+        size = bitmath.GiB(127.3)
+        self.assertEqual(format(size, '>10.2f'), '    127.30')
+
+    def test_dunder_format_columnar_table(self):
+        """__format__ produces correct columnar output across mixed units"""
+        rows = [
+            (bitmath.GiB(127.3), 'GiB'),
+            (bitmath.MiB(843.7), 'MiB'),
+        ]
+        results = [f'{size:>10.2f} {unit}' for size, unit in rows]
+        self.assertEqual(results[0], '    127.30 GiB')
+        self.assertEqual(results[1], '    843.70 MiB')
+
+    def test_dunder_format_zero_precision(self):
+        """__format__ with .0f formats as integer-looking value"""
+        size = bitmath.KiB(1.9)
+        self.assertEqual(format(size, '.0f'), '2')
+
+    def test_dunder_format_scientific(self):
+        """__format__ with 'e' spec formats in scientific notation"""
+        size = bitmath.GiB(1)
+        result = format(size, '.2e')
+        self.assertEqual(result, '1.00e+00')

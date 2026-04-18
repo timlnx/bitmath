@@ -1,0 +1,49 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    permissions:
+      pull-requests: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+        os: ["macos-latest", "ubuntu-latest"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: "GitHub Checks it out :sunglasses-face:"
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Verify Test Case Names Unique
+        run: |
+          ./tests/test_unique_testcase_names.sh
+
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Pre-Tests code smell validation
+        run: |
+          pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
+          flake8 --select=F bitmath/__init__.py tests/*.py
+
+      - name: Run Unit Tests
+        run: |
+          pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered --cov-report xml:coverage.xml tests
+
+      - name: Coverage report on PR
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-xml-coverage-path: ./coverage.xml
+          title: "Test Coverage Report"

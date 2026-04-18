@@ -1,20 +1,37 @@
-.. image:: https://api.travis-ci.org/tbielawa/bitmath.png
-   :target: https://travis-ci.org/tbielawa/bitmath/
-   :align: right
-   :height: 19
-   :width: 77
-
-.. image:: https://coveralls.io/repos/tbielawa/bitmath/badge.png?branch=master
-   :target: https://coveralls.io/r/tbielawa/bitmath?branch=master
-   :align: right
-   :height: 19
-   :width: 77
-
 .. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
    :target: http://bitmath.rtfd.org/
    :align: right
    :height: 19
    :width: 77
+
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
+
+.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/issues
+   :alt: Open issues
+
+.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/pulls
+   :alt: Open pull requests
+
+.. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
+   :target: https://pypistats.org/packages/bitmath
+   :alt: PyPI - Package Downloads
+
+.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
+   :target: https://pypistats.org/packages/bitmath
+   :alt: GitHub Project Popularity
+
+.. image:: https://img.shields.io/pypi/l/bitmath?style=flat-square
+   :target: https://opensource.org/licenses/MIT
+   :alt: PyPI - License
+
+.. image:: https://img.shields.io/pypi/implementation/bitmath?style=flat-square
+   :alt: PyPI - Implementation
+
+.. image:: https://img.shields.io/pypi/pyversions/bitmath?style=flat-square
+   :alt: PyPI - Python Version
 
 
 bitmath
@@ -26,19 +43,19 @@ focusing on file size unit conversion, functionality now includes:
 
 * Converting between **SI** and **NIST** prefix units (``kB`` to ``GiB``)
 * Converting between units of the same type (SI to SI, or NIST to NIST)
+* Full NIST unit coverage including **ZiB**, **YiB**, **Zib**, and **Yib**
 * Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_)
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
-* bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
-* Reading a device's storage capacity (Linux/OS X support only)
-* `argparse <https://docs.python.org/2/library/argparse.html>`_
-  integration as a custom type
-* `click <https://click.palletsprojects.com/>`_
-  integration as a custom parameter type
-* `progressbar <https://code.google.com/p/python-progressbar/>`_
-  integration as a better file transfer speed widget
-* String parsing
+* Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
+* Rounding via ``math.floor``, ``math.ceil``, and ``round``
+* Reading a device's storage capacity (Linux/macOS support only)
+* String parsing, including flexible non-strict parsing of ambiguous input
 * Sorting
+* Summing iterables via built-in ``sum`` or ``bitmath.sum`` for unit-normalised results
+* f-string and ``format`` support via the standard Python formatting protocol
+* `argparse <https://docs.python.org/3/library/argparse.html>`_
+  integration as a custom type
 
 
 In addition to the conversion and math operations, `bitmath` provides
@@ -46,7 +63,7 @@ human readable representations of values which are suitable for use in
 interactive shells as well as larger scripts and applications. The
 format produced for these representations is customizable via the
 functionality included in stdlibs `string.format
-<https://docs.python.org/2/library/string.html>`_.
+<https://docs.python.org/3/library/string.html>`_.
 
 In discussion we will refer to the NIST units primarily. I.e., instead
 of "megabyte" we will refer to "mebibyte". The former is ``10^3 =
@@ -55,14 +72,14 @@ bytes. When you see file sizes or transfer rates in your web browser,
 most of the time what you're really seeing are the base-2 sizes/rates.
 
 **Don't Forget!** The source for bitmath `is available on GitHub
-<https://github.com/tbielawa/bitmath>`_.
+<https://github.com/timlnx/bitmath>`_.
 
-And did we mention there's almost 200 unittests? `Check them out for
-yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
+And did we mention there are nearly 300 unit tests? `Check them out for
+yourself <https://github.com/timlnx/bitmath/tree/master/tests>`_.
 
-Running the tests should be as simple as calling the ``ci-all`` target
-in the Makefile: ``make ci-all``. Please file a bug report if you run
-into issues.
+Running the tests should be as simple as calling the ``ci`` target in
+the Makefile: ``make ci``. Please file a bug report if you run into
+issues.
 
 
 
@@ -72,32 +89,14 @@ Installation
 
 The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
 you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as the `EPEL6
-<http://download.fedoraproject.org/pub/epel/6/i386/repoview/epel-release.html>`_
-and `EPEL7
-<http://download.fedoraproject.org/pub/epel/7/x86_64/repoview/epel-release.html>`_
-repositories. There are now dual python2.x and python3.x releases
-available.
+the main Fedora repositories, as well as EPEL Repositories. As of 2023
+bitmath is only developed, tested, and supported for `currently
+supported <https://devguide.python.org/versions/>`_ Python releases.
 
-
-**Python 2.x**:
-
-.. code-block:: bash
-
-   $ sudo dnf install python2-bitmath
-
-**Python 3.x**:
 
 .. code-block:: bash
 
    $ sudo dnf install python3-bitmath
-
-
-.. note::
-
-   **Upgrading**: If you have the old *python-bitmath* package
-   installed presently, you could also run ``sudo dnf update
-   python-bitmath`` instead
 
 
 **PyPi**:
@@ -109,37 +108,19 @@ You could also install bitmath from `PyPi
 
    $ sudo pip install bitmath
 
-.. note::
-
-   **pip** installs need pip >= 1.1. To workaround this, `download
-   bitmath <https://pypi.python.org/pypi/bitmath/#downloads>`_, from
-   PyPi and then ``pip install bitmath-x.y.z.tar.gz``. See `issue #57
-   <https://github.com/tbielawa/bitmath/issues/57#issuecomment-227018168>`_
-   for more information.
-
-
-**PPA**:
-
-Ubuntu Xenial, Wily, Vivid, Trusty, and Precise users can install
-bitmath from the `launchpad PPA
-<https://launchpad.net/~tbielawa/+archive/ubuntu/bitmath>`_:
-
-.. code-block:: bash
-
-   $ sudo add-apt-repository ppa:tbielawa/bitmath
-   $ sudo apt-get update
-   $ sudo apt-get install python-bitmath
 
 
 **Source**:
 
-Or, if you want to install from source:
+To install from source, clone the repository and use pip:
 
 .. code-block:: bash
 
-   $ sudo python ./setup.py install
+   $ git clone https://github.com/timlnx/bitmath.git
+   $ cd bitmath
+   $ pip install .
 
-If you want the bitmath manpage installed as well:
+To also install the ``bitmath`` manpage:
 
 .. code-block:: bash
 
@@ -161,8 +142,6 @@ Topics include:
   * Context Managers
   * Module Variables
   * ``argparse`` integration
-  * ``click`` integration
-  * ``progressbar`` integration
 
 * The ``bitmath`` command-line Tool
 
@@ -219,12 +198,12 @@ Arithmetic
    >>> import bitmath
    >>> log_size = bitmath.kB(137.4)
    >>> log_zipped_size = bitmath.Byte(987)
-   >>> print "Compression saved %s space" % (log_size - log_zipped_size)
+   >>> print("Compression saved %s space" % (log_size - log_zipped_size))
    Compression saved 136.413kB space
    >>> thumb_drive = bitmath.GiB(12)
    >>> song_size = bitmath.MiB(5)
    >>> songs_per_drive = thumb_drive / song_size
-   >>> print songs_per_drive
+   >>> print(songs_per_drive)
    2457.6
 
 
@@ -237,7 +216,7 @@ File size unit conversion:
 
    >>> from bitmath import *
    >>> dvd_size = GiB(4.7)
-   >>> print "DVD Size in MiB: %s" % dvd_size.to_MiB()
+   >>> print("DVD Size in MiB: %s" % dvd_size.to_MiB())
    DVD Size in MiB: 4812.8 MiB
 
 
@@ -249,9 +228,9 @@ Select a human-readable unit
    >>> small_number = kB(100)
    >>> ugly_number = small_number.to_TiB()
 
-   >>> print ugly_number
+   >>> print(ugly_number)
    9.09494701773e-08 TiB
-   >>> print ugly_number.best_prefix()
+   >>> print(ugly_number.best_prefix())
    97.65625 KiB
 
 
@@ -279,7 +258,7 @@ Sorting
                      KiB(2326.0), KiB(4003.0), KiB(48.0), KiB(1770.0),
                      KiB(7892.0), KiB(4190.0)]
 
-   >>> print sorted(sizes)
+   >>> print(sorted(sizes))
    [KiB(48.0), KiB(1441.0), KiB(1770.0), KiB(2126.0), KiB(2178.0),
    KiB(2326.0), KiB(4003.0), KiB(4190.0), KiB(7337.0), KiB(7892.0)]
 
@@ -305,7 +284,7 @@ Example:
       ...: The instance is {bits} bits large
       ...: bytes/bits without trailing decimals: {bytes:.0f}/{bits:.0f}""" % str(ugly_number)
 
-   >>> print ugly_number.format(longer_format)
+   >>> print(ugly_number.format(longer_format))
    Formatting attributes for 5.96046447754 MiB
    This instances prefix unit is MiB, which is a NIST type unit
    The unit value is 5.96046447754
@@ -324,7 +303,7 @@ Utility Functions
 
 .. code-block:: python
 
-   >>> print bitmath.getsize('python-bitmath.spec')
+   >>> print(bitmath.getsize('python-bitmath.spec'))
    3.7060546875 KiB
 
 **bitmath.parse_string()**
@@ -335,9 +314,9 @@ Parse a string with standard units:
 
    >>> import bitmath
    >>> a_dvd = bitmath.parse_string("4.7 GiB")
-   >>> print type(a_dvd)
+   >>> print(type(a_dvd))
    <class 'bitmath.GiB'>
-   >>> print a_dvd
+   >>> print(a_dvd)
    4.7 GiB
 
 **bitmath.parse_string_unsafe()**
@@ -348,7 +327,7 @@ Parse a string with ambiguous units:
 
    >>> import bitmath
    >>> a_gig = bitmath.parse_string_unsafe("1gb")
-   >>> print type(a_gig)
+   >>> print(type(a_gig))
    <class 'bitmath.GB'>
    >>> a_gig == bitmath.GB(1)
    True
@@ -363,7 +342,7 @@ Parse a string with ambiguous units:
    >>> import bitmath
    >>> with open('/dev/sda') as fp:
    ...     root_disk = bitmath.query_device_capacity(fp)
-   ...     print root_disk.best_prefix()
+   ...     print(root_disk.best_prefix())
    ...
    238.474937439 GiB
 
@@ -372,7 +351,7 @@ Parse a string with ambiguous units:
 .. code-block:: python
 
    >>> for i in bitmath.listdir('./tests/', followlinks=True, relpath=True, bestprefix=True):
-   ...     print i
+   ...     print(i)
    ...
    ('tests/test_file_size.py', KiB(9.2900390625))
    ('tests/test_basic_math.py', KiB(7.1767578125))
@@ -408,7 +387,7 @@ Formatting
 
    >>> with bitmath.format(fmt_str="[{value:.3f}@{unit}]"):
    ...     for i in bitmath.listdir('./tests/', followlinks=True, relpath=True, bestprefix=True):
-   ...         print i[1]
+   ...         print(i[1])
    ...
    [9.290@KiB]
    [7.177@KiB]
@@ -439,88 +418,25 @@ Formatting
 ``argparse`` Integration
 ------------------------
 
-Example script using ``bitmath.integrations.bmargparse.BitmathType`` as an
-argparser argument type:
+A self-contained example showing how to use bitmath as an argparse
+argument type is available in the `Integration Examples
+<https://bitmath.readthedocs.io/en/latest/integration_examples.html#argparse>`_
+chapter of the documentation.
 
 .. code-block:: python
 
    import argparse
-   from bitmath.integrations.bmargparse import BitmathType
-   parser = argparse.ArgumentParser(
-       description="Arg parser with a bitmath type argument")
-   parser.add_argument('--block-size',
-                       type=BitmathType,
-                       required=True)
-
-   results = parser.parse_args()
-   print "Parsed in: {PARSED}; Which looks like {TOKIB} as a Kibibit".format(
-       PARSED=results.block_size,
-       TOKIB=results.block_size.Kib)
-
-If ran as a script the results would be similar to this:
-
-.. code-block:: bash
-
-   $ python ./bmargparse.py --block-size 100MiB
-   Parsed in: 100.0 MiB; Which looks like 819200.0 Kib as a Kibibit
-
-``click`` Integration
----------------------
-
-Example script using ``bitmath.integrations.bmclick.BitmathType`` as an
-click parameter type:
-
-.. code-block:: python
-
-   import click
-   from bitmath.integrations.bmclick import BitmathType
-
-   @click.command()
-   @click.argument('size', type=BitmathType())
-   def best_prefix(size):
-      click.echo(size.best_prefix())
-
-If ran as a script the results should be similar to this:
-
-.. code-block:: bash
-
-   $ python ./bestprefix.py "1024 KiB"
-   1.0 MiB
-
-``progressbar`` Integration
----------------------------
-
-Use ``bitmath.integrations.bmprogressbar.BitmathFileTransferSpeed`` as a
-``progressbar`` file transfer speed widget to monitor download speeds:
-
-.. code-block:: python
-
-   import requests
-   import progressbar
    import bitmath
-   from bitmath.integrations.bmprogressbar import BitmathFileTransferSpeed
 
-   FETCH = 'https://www.kernel.org/pub/linux/kernel/v3.0/patch-3.16.gz'
-   widgets = ['Bitmath Progress Bar Demo: ', ' ',
-              progressbar.Bar(marker=progressbar.RotatingMarker()), ' ',
-              BitmathFileTransferSpeed()]
+   def BitmathType(value):
+       try:
+           return bitmath.parse_string(value)
+       except ValueError:
+           raise argparse.ArgumentTypeError(
+               f"{value!r} is not a recognised bitmath unit string"
+           )
 
-   r = requests.get(FETCH, stream=True)
-   size = bitmath.Byte(int(r.headers['Content-Length']))
-   pbar = progressbar.ProgressBar(widgets=widgets, maxval=int(size),
-                                  term_width=80).start()
-   chunk_size = 2048
-   with open('/dev/null', 'wb') as fd:
-       for chunk in r.iter_content(chunk_size):
-           fd.write(chunk)
-           if (pbar.currval + chunk_size) < pbar.maxval:
-               pbar.update(pbar.currval + chunk_size)
-   pbar.finish()
-
-
-If ran as a script the results would be similar to this:
-
-.. code-block:: bash
-
-   $ python ./smalldl.py
-   Bitmath Progress Bar Demo:  ||||||||||||||||||||||||||||||||||||||||| 1.58 MiB/s
+   parser = argparse.ArgumentParser()
+   parser.add_argument('--block-size', type=BitmathType, required=True)
+   args = parser.parse_args(['--block-size', '10MiB'])
+   print(args.block_size)  # 10.0 MiB

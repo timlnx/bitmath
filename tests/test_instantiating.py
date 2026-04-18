@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -102,3 +103,38 @@ class TestInstantiating(TestCase):
         """Instantiation fails if we try to instantiate bitmath.Bitmath"""
         with self.assertRaises(NotImplementedError):
             bitmath.Bitmath(1337)
+
+    ##################################################################
+    # ZiB, YiB, Zib, Yib — NIST large units added in 2.0.0
+
+    def test_ZiB_instantiation(self):
+        """ZiB can be instantiated"""
+        self.assertIsInstance(bitmath.ZiB(1), bitmath.ZiB)
+
+    def test_YiB_instantiation(self):
+        """YiB can be instantiated"""
+        self.assertIsInstance(bitmath.YiB(1), bitmath.YiB)
+
+    def test_Zib_instantiation(self):
+        """Zib can be instantiated"""
+        self.assertIsInstance(bitmath.Zib(1), bitmath.Zib)
+
+    def test_Yib_instantiation(self):
+        """Yib can be instantiated"""
+        self.assertIsInstance(bitmath.Yib(1), bitmath.Yib)
+
+    def test_ZiB_in_all_unit_types(self):
+        """ZiB is listed in ALL_UNIT_TYPES"""
+        self.assertIn('ZiB', bitmath.ALL_UNIT_TYPES)
+
+    def test_YiB_in_all_unit_types(self):
+        """YiB is listed in ALL_UNIT_TYPES"""
+        self.assertIn('YiB', bitmath.ALL_UNIT_TYPES)
+
+    def test_Zib_in_all_unit_types(self):
+        """Zib is listed in ALL_UNIT_TYPES"""
+        self.assertIn('Zib', bitmath.ALL_UNIT_TYPES)
+
+    def test_Yib_in_all_unit_types(self):
+        """Yib is listed in ALL_UNIT_TYPES"""
+        self.assertIn('Yib', bitmath.ALL_UNIT_TYPES)

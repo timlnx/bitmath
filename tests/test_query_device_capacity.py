@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2015 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2015 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -30,29 +31,16 @@ Test reading block device capacities
 
 from . import TestCase
 import bitmath
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 import struct
+from contextlib import ExitStack, contextmanager
 
-try:
-    # Python 3.3+
-    from contextlib import ExitStack, contextmanager
-except ImportError:
-    # Python 2.x
-    from contextlib import nested
-else:
-    @contextmanager
-    def nested(*contexts):
-        """Emulation of contextlib.nested in terms of ExitStack
 
-        Has the problems for which "nested" was removed from Python; see:
-            https://docs.python.org/2/library/contextlib.html#contextlib.nested
-        But for mock.patch, these do not matter.
-        """
-        with ExitStack() as stack:
-            yield tuple(stack.enter_context(c) for c in contexts)
+@contextmanager
+def nested(*contexts):
+    with ExitStack() as stack:
+        yield tuple(stack.enter_context(c) for c in contexts)
+
 
 device_file_no = mock.Mock(return_value=4)
 device = mock.MagicMock('file')

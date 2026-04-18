@@ -21,20 +21,21 @@ bitmath objects have several instance attributes:
 
    .. code-block:: python
 
-      >>> b = bitmath.Byte(1337)
-      >>> print b.base
+      >>> print(bitmath.Byte(1337).base)
       2
+      >>> print(bitmath.kB(1337).base)
+      10
 
 .. py:attribute:: BitMathInstance.binary
 
    The `Python binary representation
-   <https://docs.python.org/2/library/functions.html#bin>`_ of the
+   <https://docs.python.org/3/library/functions.html#bin>`_ of the
    instance's value (in bits)
 
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.binary
+      >>> print(b.binary)
       0b10100111001000
 
 .. py:attribute:: BitMathInstance.bin
@@ -43,23 +44,32 @@ bitmath objects have several instance attributes:
 
 .. py:attribute:: BitMathInstance.bits
 
-   The number of bits in the object
+   The number of bits in the object, as a floating-point value.
 
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.bits
+      >>> print(b.bits)
       10696.0
+
+   .. note::
+
+      Bit values are always floating-point. A whole-number input like
+      ``Byte(1337)`` produces an exact float (``10696.0``), but inputs
+      involving division or fractional bytes will produce fractional
+      bit counts. Use ``int(instance.bits)`` or :py:func:`math.floor`
+      to obtain an integer when needed. See :ref:`appendix_math` for
+      the design rationale behind floating-point values.
 
 .. py:attribute:: BitMathInstance.bytes
 
-   The number of bytes in the object
+   The number of bytes in the object, as a floating-point value.
 
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.bytes
-      1337
+      >>> print(b.bytes)
+      1337.0
 
 .. py:attribute:: BitMathInstance.power
 
@@ -68,7 +78,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.power
+      >>> print(b.power)
       0
 
 .. py:attribute:: BitMathInstance.system
@@ -78,7 +88,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.system
+      >>> print(b.system)
       NIST
 
 .. py:attribute:: BitMathInstance.value
@@ -88,7 +98,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.value
+      >>> print(b.value)
       1337.0
 
 .. py:attribute:: BitMathInstance.unit
@@ -98,7 +108,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.unit
+      >>> print(b.unit)
       Byte
 
 .. py:attribute:: BitMathInstance.unit_plural
@@ -108,7 +118,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.unit_plural
+      >>> print(b.unit_plural)
       Bytes
 
 .. py:attribute:: BitMathInstance.unit_singular
@@ -119,7 +129,7 @@ bitmath objects have several instance attributes:
    .. code-block:: python
 
       >>> b = bitmath.Byte(1337)
-      >>> print b.unit_singular
+      >>> print(b.unit_singular)
       Byte
 
 
@@ -136,8 +146,8 @@ and what you can expect their printed representation to look like:
    :linenos:
 
    >>> dvd_capacity = GB(4.7)
-   >>> print "Capacity in bits: %s\nbytes: %s\n" % \
-                (dvd_capacity.bits, dvd_capacity.bytes)
+   >>> print("Capacity in bits: %s\nbytes: %s\n" % \
+                (dvd_capacity.bits, dvd_capacity.bytes))
 
    Capacity in bits: 37600000000.0
    bytes: 4700000000.0
@@ -181,12 +191,12 @@ classes. You can even ``to_THING()`` an instance into itself again:
    True
 
    >>> another_mib = one_mib.to_MiB()
-   >>> print one_mib, one_mib_in_kb, another_mib
+   >>> print(one_mib, one_mib_in_kb, another_mib)
    1.0 MiB 8388.608 kb 1.0 MiB
 
    >>> six_TB = TB(6)
    >>> six_TB_in_bits = six_TB.to_Bit()
-   >>> print six_TB, six_TB_in_bits
+   >>> print(six_TB, six_TB_in_bits)
    6.0 TB 4.8e+13 Bit
 
    >>> six_TB == six_TB_in_bits
@@ -239,7 +249,7 @@ even easier to read.
 
 
    >>> for _rate in tx_rate():
-   ...    print "Rate: %s/second" % Bit(_rate)
+   ...    print("Rate: %s/second" % Bit(_rate))
    ...    time.sleep(1)
 
    Rate: 100.0 Bit/sec
@@ -258,7 +268,7 @@ And now using a custom formatting definition:
 .. code-block:: python
 
    >>> for _rate in tx_rate():
-   ...    print Bit(_rate).best_prefix().format("Rate: {value:.3f} {unit}/sec")
+   ...    print(Bit(_rate).best_prefix().format("Rate: {value:.3f} {unit}/sec"))
    ...    time.sleep(1)
 
    Rate: 12.500 Byte/sec
@@ -293,7 +303,7 @@ bitmath instances come with a verbose built-in string representation:
 .. code-block:: python
 
    >>> leet_bits = Bit(1337)
-   >>> print leet_bits
+   >>> print(leet_bits)
    1337.0 Bit
 
 However, for instances which aren't whole numbers (as in ``MiB(1/3.0)
@@ -327,7 +337,7 @@ First, for reference, the default formatting:
 .. code-block:: python
 
    >>> ugly_number = MB(50).to_MiB() / 8.0
-   >>> print ugly_number
+   >>> print(ugly_number)
    5.96046447754 MiB
 
 Now, let's use the :py:meth:`format` method to limit that to two
@@ -335,7 +345,7 @@ digits of precision:
 
 .. code-block:: python
 
-   >>> print ugly_number.format("{value:.2f}{unit}")
+   >>> print(ugly_number.format("{value:.2f}{unit}"))
    5.96 MiB
 
 By changing the **2** character, you increase or decrease the
@@ -364,7 +374,7 @@ of how an attribute may be referenced multiple times.
       ...: The instance is {bits} bits large
       ...: bytes/bits without trailing decimals: {bytes:.0f}/{bits:.0f}""" % str(ugly_number)
 
-   >>> print ugly_number.format(longer_format)
+   >>> print(ugly_number.format(longer_format))
    Formatting attributes for 5.96046447754 MiB
    This instances prefix unit is MiB, which is a NIST type unit
    The unit value is 5.96046447754
@@ -378,6 +388,125 @@ of how an attribute may be referenced multiple times.
 
 .. note:: On line **4** we print with 1 digit of precision, on line
           **16** we see the value has been rounded to **6.0**
+
+
+.. _instances_dunder_format:
+
+Python Format Protocol (f-strings and format())
+================================================
+
+.. py:method:: BitMathInstance.__format__(fmt_spec)
+
+   Support Python's standard string formatting protocol (:pep:`3101`),
+   enabling bitmath instances to be used directly in f-strings and
+   :py:func:`format` calls.
+
+   When *fmt_spec* is **empty**, returns ``str(self)`` — the same as
+   the default string representation:
+
+   .. code-block:: python
+
+      >>> size = bitmath.MiB(2.847598437)
+      >>> f'{size}'
+      '2.847598437 MiB'
+
+   When *fmt_spec* is a **numeric format spec**, it is applied to
+   ``self.value`` only, returning the formatted number without a unit
+   suffix. The caller controls the surrounding string:
+
+   .. code-block:: python
+
+      >>> size = bitmath.MiB(2.847598437)
+      >>> f'{size:.1f} {size.unit}'
+      '2.8 MiB'
+
+   This makes it straightforward to build columnar output with
+   consistent alignment across mixed unit types:
+
+   .. code-block:: python
+
+      >>> disk_usage = [
+      ...     ("home", bitmath.GiB(127.3)),
+      ...     ("tmp",  bitmath.MiB(843.7)),
+      ...     ("var",  bitmath.GiB(2.1)),
+      ... ]
+      >>> for mount, size in disk_usage:
+      ...     print(f"{mount:<8} {size:>10.2f} {size.unit}")
+      home        127.30 GiB
+      tmp         843.70 MiB
+      var           2.10 GiB
+
+   Any standard Python numeric format spec works: ``:.2f``,
+   ``:.3e``, ``:.0f``, ``>10.2f``, and so on.
+
+   .. note::
+
+      The format spec applies to ``self.value`` — the numeric quantity
+      in the instance's current prefix unit. To render a different unit,
+      convert first: ``size.to_GiB()``, then format.
+
+   .. versionadded:: 2.0.0
+
+   .. rubric:: Credit
+
+   The original concept and implementation for this feature was
+   contributed by `Jonathan Eunice <https://github.com/jonathaneunice>`_
+   in `pull request #76 <https://github.com/timlnx/bitmath/pull/76>`_.
+
+
+.. _instances_rounding:
+
+Rounding and Integer Conversion
+================================
+
+bitmath instances support Python's standard rounding protocol.
+:py:func:`math.floor`, :py:func:`math.ceil`, and the built-in
+:py:func:`round` all return a new bitmath instance of the **same
+type** with the prefix value rounded accordingly.
+
+.. code-block:: python
+
+   >>> import math, bitmath
+
+   >>> math.floor(bitmath.MiB(1.75))
+   MiB(1)
+
+   >>> math.ceil(bitmath.MiB(1.25))
+   MiB(2)
+
+   >>> round(bitmath.GiB(3.7))
+   GiB(4)
+
+   >>> round(bitmath.KiB(1.555), 2)
+   KiB(1.56)
+
+These methods round the *prefix value*. To obtain the nearest whole
+**byte** count, convert first:
+
+.. code-block:: python
+
+   >>> int(bitmath.KiB(1/3).bytes)
+   341
+
+To obtain the nearest whole **bit** count:
+
+.. code-block:: python
+
+   >>> int(bitmath.KiB(1/3).bits)
+   2730
+
+.. warning::
+
+   Rounding intermediate results is lossy.
+   ``math.floor(GiB(10) / 3) * 3`` yields ``GiB(9)``, not
+   ``GiB(10)``. Only round at the **final** output step, not
+   during calculation.
+
+.. seealso::
+
+   :ref:`appendix_math` — design rationale for floating-point values
+   and guidance on when rounding is appropriate.
+
 
 .. _instances_properties:
 
@@ -401,11 +530,11 @@ classes. Under the covers these properties call ``to_THING``.
    >>> one_mib == one_mib.kb
    True
 
-   >>> print one_mib, one_mib.kb, one_mib.MiB
+   >>> print(one_mib, one_mib.kb, one_mib.MiB)
    1.0 MiB 8388.608 kb 1.0 MiB
 
    >>> six_TB = TB(6)
-   >>> print six_TB, six_TB.Bit
+   >>> print(six_TB, six_TB.Bit)
    6.0 TB 4.8e+13 Bit
 
    >>> six_TB == six_TB.Bit
@@ -426,7 +555,7 @@ mini-language, read on.
 You may be asking yourself where these ``{value:.2f}`` and ``{unit}``
 strings came from. These are part of the `Format Specification
 Mini-Language
-<https://docs.python.org/2/library/string.html#format-specification-mini-language>`_
+<https://docs.python.org/3/library/string.html#format-specification-mini-language>`_
 which is part of the Python standard library. To be explicitly clear
 about what's going on here, let's break the first specifier
 (``{value:.2f}``) down into it's component parts::

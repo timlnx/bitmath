@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -56,3 +57,19 @@ class TestAttributeProperties(TestCase):
         """bitmath type's properties are read-only"""
         with self.assertRaises(AttributeError):
             self.kib.value += 42
+
+    def test_ZiB_property(self):
+        """ZiB property returns a ZiB instance"""
+        self.assertIsInstance(self.kib.ZiB, bitmath.ZiB)
+
+    def test_YiB_property(self):
+        """YiB property returns a YiB instance"""
+        self.assertIsInstance(self.kib.YiB, bitmath.YiB)
+
+    def test_Zib_property(self):
+        """Zib property returns a Zib instance"""
+        self.assertIsInstance(self.kib.Zib, bitmath.Zib)
+
+    def test_Yib_property(self):
+        """Yib property returns a Yib instance"""
+        self.assertIsInstance(self.kib.Yib, bitmath.Yib)

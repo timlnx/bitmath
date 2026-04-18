@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -124,6 +125,13 @@ class TestBasicMath(TestCase):
         result = num1 + bm1
         self.assertEqual(result, 3.0)
         self.assertIs(type(result), float)
+
+    def test_zero_add_bitmath_is_bitmath(self):
+        """0 + bitmath = bitmath (identity element enables built-in sum())"""
+        bm1 = bitmath.KiB(1)
+        result = 0 + bm1
+        self.assertIsInstance(result, bitmath.Bitmath)
+        self.assertEqual(result, bm1)
 
     ##################################################################
     # sub

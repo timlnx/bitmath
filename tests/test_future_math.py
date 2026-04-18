@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -30,7 +31,6 @@ Test for "future" math operations.
 Reference: http://legacy.python.org/dev/peps/pep-0238/
 """
 
-from __future__ import division
 from . import TestCase
 import bitmath
 
@@ -61,9 +61,9 @@ class TestFutureMath(TestCase):
         self.assertIs(type(result), float)
 
     def test_number_truediv_bitmath_is_number(self):
-        """truediv: number // bitmath = number"""
+        """truediv: number / bitmath = number"""
         num1 = 2
         bm1 = bitmath.KiB(1)
-        result = bm1.__rdiv__(num1)
+        result = bm1.__rtruediv__(num1)
         self.assertEqual(result, 2.0)
         self.assertIs(type(result), float)

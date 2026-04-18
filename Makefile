@@ -3,11 +3,12 @@
 # Makefile for bitmath
 #
 # useful targets:
-#   make sdist ---------------- produce a tarball
+#   make build ---------------- build sdist + wheel (output in dist/)
+#   make pypitest ------------- upload to TestPyPI (requires: pip install twine)
+#   make pypi ----------------- upload to PyPI     (requires: pip install twine)
 #   make rpm  ----------------- produce RPMs
-#   make docs ----------------- rebuild the manpages (results are checked in)
-#   make pyflakes, make pycodestyle -- source code checks
-#   make test ----------------- run all unit tests (export LOG=true for /tmp/ logging)
+#   make docs ----------------- rebuild the docs
+#   make ci   ----------------- run full test suite in virtualenv
 
 ########################################################
 
@@ -45,8 +46,17 @@ MANPAGES := bitmath.1
 ######################################################################
 
 # Documentation. YAY!!!!
-docs: conf.py $(MANPAGES) docsite/source/index.rst
-	cd docsite; make html; cd -
+DOCSVENV := bitmath2
+
+docs-venv:
+	@if [ ! -d "$(DOCSVENV)" ]; then \
+		echo "Creating docs virtualenv '$(DOCSVENV)' with Python 3.12..."; \
+		python3.12 -m venv $(DOCSVENV); \
+	fi
+	. $(DOCSVENV)/bin/activate && pip install -q -r doc-requirements.txt
+
+docs: docs-venv conf.py $(MANPAGES) docsite/source/index.rst
+	. $(DOCSVENV)/bin/activate && cd docsite && make html
 
 # Add examples to the RTD docs by taking it from the README
 docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
@@ -54,7 +64,6 @@ docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
 	@echo "# Building $@ Now"
 	@echo "#############################################"
 	awk 'BEGIN{P=0} /^Examples/ { P=1} { if (P == 1) print $$0 }' README.rst | cat $< - > $@
-
 
 # Regenerate %.1.asciidoc if %.1.asciidoc.in has been modified more
 # recently than %.1.asciidoc.
@@ -70,10 +79,20 @@ docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
 	$(ASCII2MAN)
 
 viewdocs: docs
-	xdg-open docsite/build/html/index.html
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		open docsite/build/html/index.html; \
+	elif echo "$$(uname)" | grep -qi "mingw\|cygwin\|msys"; then \
+		start docsite/build/html/index.html; \
+	else \
+		xdg-open docsite/build/html/index.html; \
+	fi
 
-viewcover:
-	xdg-open cover/index.html
+viewcover: ci-unittests
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		open htmlcov/index.html; \
+	else \
+		xdg-open htmlcov/index.html; \
+	fi
 
 conf.py: docsite/source/conf.py.in
 	sed "s/%VERSION%/$(VERSION)/" $< > docsite/source/conf.py
@@ -83,47 +102,32 @@ conf.py: docsite/source/conf.py.in
 python-bitmath.spec: python-bitmath.spec.in
 	sed "s/%VERSION%/$(VERSION)/" $< > $@
 
-# Build the distutils setup file on the fly.
-setup.py: setup.py.in VERSION python-bitmath.spec.in
-	sed -e "s/%VERSION%/$(VERSION)/" -e "s/%RELEASE%/$(RPMRELEASE)/" $< > $@
+build: clean
+	@echo "#############################################"
+	@echo "# Building sdist + wheel"
+	@echo "#############################################"
+	python -m build
 
-# Upload sources to pypi/pypi-test
-pypi:
-	python ./setup.py sdist upload
+pypi: build
+	@echo "#############################################"
+	@echo "# Uploading to PyPI"
+	@echo "#############################################"
+	twine upload dist/*
 
-pypitest:
-	python ./setup.py sdist upload -r test
+pypitest: build
+	@echo "#############################################"
+	@echo "# Uploading to TestPyPI"
+	@echo "#############################################"
+	twine upload --repository testpypi dist/*
 
 # usage example: make tag TAG=1.1.0-1
 tag:
 	git tag -s -m $(TAG) $(TAG)
 
-tests: uniquetestnames unittests pycodestyle pyflakes
-	:
-
-unittests:
-	@echo "#############################################"
-	@echo "# Running Unit Tests"
-	@echo "#############################################"
-	nosetests -v --with-coverage --cover-html --cover-package=bitmath --cover-min-percentage=90
-
 clean:
 	@find . -type f -regex ".*\.py[co]$$" -delete
 	@find . -type f \( -name "*~" -or -name "#*" \) -delete
-	@rm -fR build cover dist rpm-build MANIFEST htmlcov .coverage bitmathenv bitmathenv2 bitmathenv3 docsite/build/html/ docsite/build/doctrees/ bitmath.egg-info
-
-pycodestyle:
-	@echo "#############################################"
-	@echo "# Running PEP8 Compliance Tests"
-	@echo "#############################################"
-	pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
-
-pyflakes:
-	@echo "#############################################"
-	@echo "# Running Pyflakes Sanity Tests"
-	@echo "# Note: most import errors may be ignored"
-	@echo "#############################################"
-	-pyflakes bitmath/__init__.py tests/*.py
+	@rm -fR build cover dist rpm-build MANIFEST htmlcov .coverage bitmathenv3 docsite/build/html/ docsite/build/doctrees/ bitmath.egg-info
 
 uniquetestnames:
 	@echo "#############################################"
@@ -131,46 +135,23 @@ uniquetestnames:
 	@echo "#############################################"
 	./tests/test_unique_testcase_names.sh
 
-install: clean
-	python ./setup.py install
+install:
+	pip install .
 	mkdir -p /usr/share/man/man1/
 	gzip -9 -c bitmath.1 > /usr/share/man/man1/bitmath.1.gz
 
-sdist: setup.py clean
+sdist: clean
 	@echo "#############################################"
 	@echo "# Creating SDIST"
 	@echo "#############################################"
-	python setup.py sdist
+	python -m build --sdist
 
-deb: setup.py clean
-	git archive --format=tar --prefix=bitmath/ HEAD | gzip -9 > ../bitmath_$(VERSION).$(RPMRELEASE).orig.tar.gz
-	debuild -us -uc
-
-rpmcommon: sdist python-bitmath.spec setup.py
+rpmcommon: sdist python-bitmath.spec
 	@echo "#############################################"
 	@echo "# Building (S)RPM Now"
 	@echo "#############################################"
 	@mkdir -p rpm-build
 	@cp dist/$(NAME)-$(VERSION).$(RPMRELEASE).tar.gz rpm-build/$(VERSION).$(RPMRELEASE).tar.gz
-
-srpm5: rpmcommon
-	rpmbuild --define "_topdir %(pwd)/rpm-build" \
-	--define 'dist .el5' \
-	--define "_builddir %{_topdir}" \
-	--define "_rpmdir %{_topdir}" \
-	--define "_srcrpmdir %{_topdir}" \
-	--define "_specdir $(RPMSPECDIR)" \
-	--define "_sourcedir %{_topdir}" \
-	--define "_source_filedigest_algorithm 1" \
-	--define "_binary_filedigest_algorithm 1" \
-	--define "_binary_payload w9.gzdio" \
-	--define "_source_payload w9.gzdio" \
-	--define "_default_patch_fuzz 2" \
-	-bs $(RPMSPEC)
-	@echo "#############################################"
-	@echo "$(PKGNAME) SRPM is built:"
-	@find rpm-build -maxdepth 2 -name '$(PKGNAME)*src.rpm' | awk '{print "    " $$1}'
-	@echo "#############################################"
 
 srpm: rpmcommon
 	rpmbuild --define "_topdir %(pwd)/rpm-build" \
@@ -198,88 +179,44 @@ rpm: rpmcommon
 	@find rpm-build -maxdepth 2 -name '$(PKGNAME)*.rpm' | awk '{print "    " $$1}'
 	@echo "#############################################"
 
-virtualenv2:
-	@echo "#############################################"
-	@echo "# Creating a virtualenv"
-	@echo "#############################################"
-	virtualenv $(NAME)env2 --python=python2
-	. $(NAME)env2/bin/activate && pip install -r requirements.txt
-
-ci-unittests2:
-	@echo "#############################################"
-	@echo "# Running Unit Tests in virtualenv"
-	@echo "# Using python: $(shell ./bitmathenv2/bin/python --version 2>&1)"
-	@echo "#############################################"
-	. $(NAME)env2/bin/activate && export PYVER=PY2X && nosetests -v --with-coverage --cover-html --cover-min-percentage=90 --cover-package=bitmath tests/
-	@echo "Testing argparse integration without progressbar dependency (#86)"
-	. $(NAME)env2/bin/activate && pip uninstall -y progressbar231 click
-	. $(NAME)env2/bin/activate && export PYVER=PY2X && nosetests -v --with-coverage --cover-html --cover-min-percentage=90 --cover-package=bitmath tests/test_argparse_type.py
-
-ci-list-deps2:
-	@echo "#############################################"
-	@echo "# Listing all pip deps"
-	@echo "#############################################"
-	. $(NAME)env2/bin/activate && pip freeze
-
-ci-pycodestyle2:
-	@echo "#############################################"
-	@echo "# Running PEP8 Compliance Tests in virtualenv"
-	@echo "#############################################"
-	. $(NAME)env2/bin/activate && pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
-
-ci-pyflakes2:
-	@echo "#################################################"
-	@echo "# Running Pyflakes Compliance Tests in virtualenv"
-	@echo "#################################################"
-	. $(NAME)env2/bin/activate && pyflakes bitmath/__init__.py tests/*.py
-
-ci2: clean uniquetestnames virtualenv2 ci-list-deps2 ci-pycodestyle2 ci-pyflakes2 ci-unittests2
-	:
-
-virtualenv3:
+virtualenv:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Creating a virtualenv"
 	@echo "#############################################"
-	virtualenv $(NAME)env3 --python=python3
-	. $(NAME)env3/bin/activate && pip install -r requirements-py3.txt
+	@if [ ! -d "$(NAME)env3" ]; then \
+		python3 -m venv $(NAME)env3; \
+	fi
+	. $(NAME)env3/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
 
-ci-unittests3:
+ci-unittests: virtualenv
 	@echo ""
 	@echo "#############################################"
 	@echo "# Running Unit Tests in virtualenv"
-	@echo "# Using python: $(shell ./bitmathenv3/bin/python --version 2>&1)"
+	@echo "# Using python: $(shell ./$(NAME)env3/bin/python --version 2>&1)"
 	@echo "#############################################"
-	. $(NAME)env3/bin/activate && export PYVER=PY3X && nosetests -v --with-coverage --cover-html --cover-package=bitmath tests/
-	@echo "Testing argparse integration without progressbar dependency (#86)"
-	. $(NAME)env3/bin/activate && pip uninstall -y progressbar33 click
-	. $(NAME)env3/bin/activate && export PYVER=PY3X && nosetests -v --with-coverage --cover-html --cover-package=bitmath tests/test_argparse_type.py
+	. $(NAME)env3/bin/activate && pytest -v --cov=bitmath --cov-report term-missing --cov-report term:skip-covered --cov-report xml:coverage.xml --cov-report html:htmlcov tests
 
-ci-list-deps3:
+ci-list-deps:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Listing all pip deps"
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pip freeze
 
-ci-pycodestyle3:
+ci-pycodestyle:
 	@echo ""
 	@echo "#############################################"
 	@echo "# Running PEP8 Compliance Tests in virtualenv"
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
 
-ci-pyflakes3:
+ci-flake8:
 	@echo ""
 	@echo "#################################################"
-	@echo "# Running Pyflakes Compliance Tests in virtualenv"
+	@echo "# Running Flake8 Compliance Tests in virtualenv"
 	@echo "#################################################"
-	. $(NAME)env3/bin/activate && pyflakes bitmath/__init__.py tests/*.py
+	. $(NAME)env3/bin/activate && flake8 --select=F bitmath/__init__.py tests/*.py
 
-ci3: clean uniquetestnames virtualenv3 ci-list-deps3 ci-pycodestyle3 ci-pyflakes3 ci-unittests3
+ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-flake8 ci-unittests
 	:
-
-ci: ci2
-	:
-
-ci-all: ci2 ci3

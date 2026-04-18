@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014 Tim Bielawa <timbielawa@gmail.com>
+# Copyright © 2014 Tim Case <timbielawa@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -99,7 +100,7 @@ Bytes and 1024 Bytes in size, respectively.
 Then:
 
     >>> for f in bitmath.listdir('./tests/listdir_nosymlinks'):
-    ...     print f
+    ...     print(f)
 
 Would yield 2-tuple's of:
 

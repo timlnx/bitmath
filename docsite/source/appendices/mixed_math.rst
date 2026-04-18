@@ -20,7 +20,7 @@ When coercion happens is determined by the following conditions and
 rules:
 
 1. `Precedence and Associativity of Operators
-   <https://docs.python.org/2/reference/expressions.html#operator-precedence>`_
+   <https://docs.python.org/3/reference/expressions.html#operator-precedence>`_
    in Python\ [#precedence]_
 2. Situational semantics -- some operations, though mathematically
    valid, do not make logical sense when applied to context.
@@ -100,6 +100,7 @@ Internally, this is implemented as:
 *Division*
    The result will be a number type due to unit cancellation.
 
+.. _appendix_math_mixed_types:
 
 Mixed Types: Addition and Subtraction
 =====================================
@@ -107,10 +108,23 @@ Mixed Types: Addition and Subtraction
 This describes the behavior of addition and subtraction operations
 where one operand is a bitmath type and the other is a number type.
 
-Mixed-math addition and subtraction **always** return a type from the
-:py:mod:`numbers` family (integer, float, long, etc...). This rule is
-true regardless of the placement of the operands, with respect to the
-operator.
+Mixed-math addition and subtraction return a type from the
+:py:mod:`numbers` family (integer, float, etc...) regardless of the
+placement of the operands, with one exception: when the left operand
+is exactly ``0``, the result is the bitmath instance itself.
+
+This exception exists so that Python's built-in :py:func:`sum`
+function works correctly with iterables of bitmath objects, since
+``sum()`` starts accumulation from ``0`` by default:
+
+.. code-block:: python
+
+   >>> import bitmath
+   >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+   Byte(1074790401.0)
+
+For all non-zero numeric operands the behaviour (returning a number)
+applies.
 
 **Discussion:** Why do ``100 - KiB(90)`` and ``KiB(100) - 90`` both
 yield a result of ``10.0`` and not another bitmath instance, such as
@@ -160,7 +174,7 @@ Let's look at an example of this in action:
 
    In [9]: bm = PiB(24)
 
-   In [10]: print num + bm
+   In [10]: print(num + bm)
    66.0
 
 Equivalently, divorcing the bitmath instance from it's value (this is
@@ -170,7 +184,7 @@ coercion):
 
    In [12]: bm_value = bm.value
 
-   In [13]: print num + bm_value
+   In [13]: print(num + bm_value)
    66.0
 
 What it all boils down to is this: if we don't provide a unit then
@@ -178,6 +192,26 @@ bitmath won't give us one back. There is no way for bitmath to guess
 what unit the operand was *intended* to carry. Therefore, the behavior
 of bitmath is **conservative**. It will meet us half way and do the
 math, but it will not return a unit in the result.
+
+**Keeping the result as a bitmath type**
+
+If the intent is to add or subtract a quantity of the *same unit* —
+for example, incrementing ``Byte(1)`` by one more byte — use an
+explicit bitmath operand on both sides:
+
+.. code-block:: python
+
+   >>> Byte(1) + Byte(1)
+   Byte(2.0)
+
+   >>> KiB(10) - KiB(3)
+   KiB(7.0)
+
+This makes the unit explicit rather than relying on implicit
+conversion, which eliminates ambiguity — ``KiB(10) - 3`` could mean
+"subtract 3 KiB" or "subtract the number 3 from the prefix value."
+bitmath does not guess; using a bitmath operand on both sides states
+the intent clearly.
 
 
 Mixed Types: Multiplication and Division
@@ -208,7 +242,7 @@ bitmath), the intention of ``MiB(100) / 10)`` is to separate
 .. code-block:: python
 
    In [4]: KiB(43) / 10
-   Out[4]: KiB(4.2998046875)
+   Out[4]: KiB(4.3)
 
 The reverse operation does not maintain semantic validity. Stated
 differently, it does not make logical sense to divide a constant by a
@@ -219,6 +253,68 @@ yourself what you would expect to get if you did this:
 
    \dfrac{100}{kB(33)} = x
 
+
+
+Design Philosophy: Floating-Point Measurements
+===============================================
+
+bitmath represents sizes as **floating-point measurements**, not as
+discrete counts of hardware bits. This is an intentional design choice.
+
+A file reported as ``1.7 GiB`` is a *measurement* — the same way
+``2.3 miles`` or ``1.7 liters`` are measurements. Physical storage is
+discrete (you cannot store half a bit), but the *measurement* of
+storage is legitimately continuous. Fractional values appear naturally
+in division, unit conversion chains, and proportional calculations:
+
+.. code-block:: python
+
+   >>> KiB(1) / 3
+   KiB(0.3333333333333333)
+
+   >>> MiB(1).to_Bit()
+   Bit(8388608.0)
+
+   >>> KiB(1/3).to_Bit()
+   Bit(2730.6666666666665)
+
+The last example is not a bug. The fractional bit count is the faithful
+representation of a fractional byte input. If you need integer results,
+Python's built-in :py:func:`math.floor`, :py:func:`math.ceil`, and
+:py:func:`round` all work on bitmath instances and return an instance
+of the same type:
+
+.. code-block:: python
+
+   >>> import math
+   >>> math.floor(KiB(1) / 3)
+   KiB(0)
+
+   >>> math.ceil(KiB(1) / 3)
+   KiB(1)
+
+   >>> round(MiB(1.75))
+   MiB(2)
+
+.. warning::
+
+   Rounding intermediate results is a lossy operation.
+   ``math.floor(GiB(10) / 3) * 3`` yields ``GiB(9)``, not
+   ``GiB(10)``. Only round at the **final** output step.
+
+**Floating-point accumulation:** Because bitmath uses IEEE 754 64-bit
+floats internally, arithmetic across many operations may accumulate
+small rounding errors — identical to ordinary Python float arithmetic.
+For the file-size domain (values up to exabyte scale), 64-bit float
+provides approximately 15 significant decimal digits of precision,
+which is sufficient for all practical purposes. If exact integer
+semantics are required at the byte level, use ``int(instance.bytes)``
+to work in raw integers.
+
+.. seealso::
+
+   :ref:`instances_rounding` — instance methods for rounding and
+   integer conversion.
 
 
 Footnotes

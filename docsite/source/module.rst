@@ -30,7 +30,7 @@ bitmath.getsize()
    :param bool bestprefix: **Default:** ``True``, the returned
                            instance will be in the best human-readable
                            prefix unit. If set to ``False`` the result
-                           is a ``bitmath.Byte`` instance.
+                           is a :class:`.Byte` instance.
    :param system: **Default:** :py:data:`bitmath.NIST`. The preferred
                   system of units for the returned instance.
    :type system: One of :py:data:`bitmath.NIST` or :py:data:`bitmath.SI`
@@ -46,7 +46,7 @@ bitmath.getsize()
    .. code-block:: python
 
       >>> import bitmath
-      >>> print bitmath.getsize('./bitmath/__init__.py')
+      >>> print(bitmath.getsize('./bitmath/__init__.py'))
       33.3583984375 KiB
 
    Let's say we want to see the results in bytes. We can do this by
@@ -55,7 +55,7 @@ bitmath.getsize()
    .. code-block:: python
 
       >>> import bitmath
-      >>> print bitmath.getsize('./bitmath/__init__.py', bestprefix=False)
+      >>> print(bitmath.getsize('./bitmath/__init__.py', bestprefix=False))
       34159.0 Byte
 
    Recall, the default for representation is with the best
@@ -67,11 +67,11 @@ bitmath.getsize()
       :linenos:
       :emphasize-lines: 1-4
 
-      >>> print bitmath.getsize('./bitmath/__init__.py')
+      >>> print(bitmath.getsize('./bitmath/__init__.py'))
       33.3583984375 KiB
-      >>> print bitmath.getsize('./bitmath/__init__.py', system=bitmath.NIST)
+      >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.NIST))
       33.3583984375 KiB
-      >>> print bitmath.getsize('./bitmath/__init__.py', system=bitmath.SI)
+      >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.SI))
       34.159 kB
 
    We can see in lines **1** → **4** that the same result is returned
@@ -86,7 +86,7 @@ bitmath.listdir()
 .. function:: listdir(search_base[, followlinks=False[, filter='*'[, relpath=False[, bestprefix=False[, system=NIST]]]]])
 
    This is a `generator
-   <https://docs.python.org/2/tutorial/classes.html#generators>`_
+   <https://docs.python.org/3/tutorial/classes.html#generators>`_
    which recurses a directory tree yielding 2-tuples of:
 
    * The absolute/relative path to a discovered file
@@ -99,7 +99,7 @@ bitmath.listdir()
                             enables directory link following
    :param string filter: **Default:** ``*`` (everything). A glob to
                          filter results with. See `fnmatch
-                         <https://docs.python.org/2/library/fnmatch.html>`_
+                         <https://docs.python.org/3/library/fnmatch.html>`_
                          for more details about *globs*
    :param bool relpath: **Default:** ``False``, returns the fully
                         qualified to each discovered file. ``True`` to
@@ -110,7 +110,7 @@ bitmath.listdir()
                         :py:func:`os.path.realpath` to normalize path
                         references
    :param bool bestprefix: **Default:** ``False``, returns
-                           ``bitmath.Byte`` instances. Set to ``True``
+                           :class:`.Byte` instances. Set to ``True``
                            to return the best human-readable prefix
                            unit for representation
    :param system: **Default:** :py:data:`bitmath.NIST`. Set a prefix
@@ -122,8 +122,8 @@ bitmath.listdir()
 
       * This function does **not** return tuples for directory
         entities. Including directories in results is `scheduled for
-        introduction <https://github.com/tbielawa/bitmath/issues/27>`_
-        in the upcoming 1.1.0 release.
+        introduction <https://github.com/timlnx/bitmath/issues/27>`_
+        in an upcoming release.
       * Symlinks to **files** are followed automatically
 
 
@@ -163,12 +163,12 @@ bitmath.listdir()
 
       >>> import bitmath
       >>> for f in bitmath.listdir('./some_files'):
-      ...     print f
+      ...     print(f)
       ...
       ('/tmp/tmp.P5lqtyqwPh/some_files/first_file', Byte(1337.0))
       ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))
       >>> for f in bitmath.listdir('./some_files', relpath=True):
-      ...     print f
+      ...     print(f)
       ...
       ('some_files/first_file', Byte(1337.0))
       ('some_files/deeper_files/second_file', Byte(13370.0))
@@ -183,7 +183,7 @@ bitmath.listdir()
    .. code-block:: python
 
       >>> for f in bitmath.listdir('./some_files', filter='second*'):
-      ...     print f
+      ...     print(f)
       ...
       ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))
 
@@ -194,7 +194,7 @@ bitmath.listdir()
    .. code-block:: python
 
       >>> files = list(bitmath.listdir('./some_files'))
-      >>> print files
+      >>> print(files)
       [('/tmp/tmp.P5lqtyqwPh/some_files/first_file', Byte(1337.0)), ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))]
 
    Here's a more advanced example where we will sum the size of all
@@ -205,36 +205,103 @@ bitmath.listdir()
    .. code-block:: python
 
       >>> discovered_files = [f[1] for f in bitmath.listdir('./some_files')]
-      >>> print discovered_files
+      >>> print(discovered_files)
       [Byte(1337.0), Byte(13370.0)]
-      >>> print reduce(lambda x,y: x+y, discovered_files)
+      >>> print(reduce(lambda x,y: x+y, discovered_files))
       14707.0 Byte
-      >>> print reduce(lambda x,y: x+y, discovered_files).best_prefix()
+      >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix())
       14.3623046875 KiB
-      >>> print reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}")
+      >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}"))
       14.362 KiB
 
 
    .. versionadded:: 1.0.7
 
 
+.. _bitmath_sum:
+
+bitmath.sum()
+=============
+
+.. function:: sum(iterable[, start=None])
+
+   Sum an iterable of bitmath instances into a single bitmath instance.
+
+   :param iterable: Any iterable of bitmath objects to sum.
+   :param start: **Default:** ``None`` (accumulates into
+                 :class:`bitmath.Byte`). Pass a bitmath instance to
+                 set both the starting value and the result type.
+   :type start: A bitmath instance, or ``None``
+   :returns: A bitmath instance whose type is determined by ``start``
+             (or :class:`bitmath.Byte` when ``start`` is ``None``).
+
+   .. note::
+
+      Python's built-in :py:func:`sum` also works with bitmath
+      objects. Because ``0 + bm`` returns ``bm`` itself, the built-in
+      accumulates into the type of the **first element** in the
+      iterable. Use :py:func:`bitmath.sum` instead when you need the
+      result normalised to a **specific unit** regardless of the input
+      types.
+
+   Sum a homogeneous list — result type matches ``start`` (``Byte`` by
+   default):
+
+   .. code-block:: python
+
+      >>> import bitmath
+      >>> bitmath.sum([bitmath.MiB(1), bitmath.GiB(1)])
+      Byte(1074790400.0)
+
+   Pass ``start`` to choose a different accumulator unit:
+
+   .. code-block:: python
+
+      >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
+      MiB(0.0029296875)
+
+   Contrast with the built-in :py:func:`sum`, whose result type tracks the
+   first element:
+
+   .. code-block:: python
+
+      >>> sum([bitmath.KiB(1), bitmath.KiB(2)])
+      KiB(3.0)
+      >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
+      Byte(1074790401.0)
+
+   .. seealso::
+
+      :ref:`Summing an Iterable <simple_examples_summing>` in *Getting Started*
+         Side-by-side examples of built-in :py:func:`sum` vs
+         :py:func:`bitmath.sum`.
+
+   .. versionadded:: 2.0.0
+
 
 bitmath.parse_string()
 ======================
 
-.. function:: parse_string(str_repr)
+.. function:: parse_string(str_repr, system=bitmath.NIST, strict=True)
 
-   .. versionadded:: 1.1.0
+   Parse a string (or, when ``strict=False``, a string or number) into
+   a bitmath object.
 
-   Parse a string representing a unit into a proper bitmath
-   object. All non-string inputs are rejected and will raise a
-   :py:exc:`ValueError`. Strings without units are also rejected. See
-   the examples below for additional clarity.
-
-   :param string str_repr: The string to parse. May contain whitespace
-                           between the value and the unit.
-   :return: A bitmath object representing ``str_repr``
-   :raises ValueError: if ``str_repr`` can not be parsed
+   :param str_repr: The value to parse. String inputs may include
+                    whitespace between the value and the unit.
+   :param system: Unit system used when ``strict=False`` and the
+                  intended unit cannot be reliably determined from the
+                  input. Ignored when ``strict=True``. One of
+                  :py:data:`bitmath.NIST` (default) or
+                  :py:data:`bitmath.SI`.
+   :param strict: When ``True`` (default) the unit must be an exact
+                  bitmath type name such as ``"KiB"`` or ``"MB"``.
+                  When ``False`` the parser accepts ambiguous input
+                  such as plain numbers, numeric strings, and
+                  case-insensitive single-letter units. See
+                  :ref:`parse-string-non-strict` below.
+   :return: A bitmath object representing the input.
+   :raises ValueError: if the input cannot be parsed.
 
    A simple usage example:
 
@@ -242,24 +309,22 @@ bitmath.parse_string()
 
       >>> import bitmath
       >>> a_dvd = bitmath.parse_string("4.7 GiB")
-      >>> print type(a_dvd)
+      >>> print(type(a_dvd))
       <class 'bitmath.GiB'>
-      >>> print a_dvd
+      >>> print(a_dvd)
       4.7 GiB
 
    .. caution::
 
-      Caution is advised if you are reading values from an unverified
-      external source, such as output from a shell command or a
-      generated file. Many applications (even ``/usr/bin/ls``) still
-      do not produce file size strings with valid (or even correct)
-      prefix units unless `specially configured to do so
-      <https://www.gnu.org/software/coreutils/manual/html_node/Block-size.html#Block-size>`_. See
-      :py:func:`bitmath.parse_string_unsafe` as an alternative.
+      Caution is advised when reading values from an unverified
+      external source such as shell command output or a generated file.
+      Many applications (even ``/usr/bin/ls``) do not produce file
+      size strings with valid prefix units unless `specially configured
+      <https://www.gnu.org/software/coreutils/manual/html_node/Block-size.html#Block-size>`_.
+      Use ``strict=False`` for those cases — see :ref:`parse-string-non-strict`.
 
-   To protect your application from unexpected runtime errors it is
-   recommended that calls to :py:func:`bitmath.parse_string` are
-   wrapped in a ``try`` statement:
+   To protect your application from unexpected runtime errors, wrap
+   calls in a ``try`` statement:
 
    .. code-block:: python
 
@@ -267,13 +332,12 @@ bitmath.parse_string()
       >>> try:
       ...     a_dvd = bitmath.parse_string("4.7 G")
       ... except ValueError:
-      ...    print "Error while parsing string into bitmath object"
+      ...    print("Error while parsing string into bitmath object")
       ...
       Error while parsing string into bitmath object
 
 
-   Here we can see some more examples of invalid input, as well as two
-   acceptable inputs:
+   Here are some more examples of valid and invalid input:
 
    .. code-block:: python
 
@@ -281,9 +345,9 @@ bitmath.parse_string()
       >>> sizes = [ 1337, 1337.7, "1337", "1337.7", "1337 B", "1337B" ]
       >>> for size in sizes:
       ...     try:
-      ...         print "Parsed size into %s" % bitmath.parse_string(size).best_prefix()
+      ...         print("Parsed size into %s" % bitmath.parse_string(size).best_prefix())
       ...     except ValueError:
-      ...         print "Could not parse input: %s" % size
+      ...         print("Could not parse input: %s" % size)
       ...
       Could not parse input: 1337
       Could not parse input: 1337.7
@@ -296,7 +360,7 @@ bitmath.parse_string()
    .. versionchanged:: 1.2.4
       Added support for parsing *octet* units via issue `#53 - parse
       french units
-      <https://github.com/tbielawa/bitmath/issues/53>`_. The `usage
+      <https://github.com/timlnx/bitmath/issues/53>`_. The `usage
       <https://en.wikipedia.org/wiki/Octet_(computing)#Use>`_ of
       "octet" is still common in some `RFCs
       <https://en.wikipedia.org/wiki/Request_for_Comments>`_, as well
@@ -313,165 +377,169 @@ bitmath.parse_string()
       >>> import bitmath
       >>> a_mebibyte = bitmath.parse_string("1 MiB")
       >>> a_mebioctet = bitmath.parse_string("1 Mio")
-      >>> print a_mebibyte, a_mebioctet
+      >>> print(a_mebibyte, a_mebioctet)
       1.0 MiB 1.0 MiB
-      >>> print bitmath.parse_string("1Po")
+      >>> print(bitmath.parse_string("1Po"))
       1.0 PB
-      >>> print bitmath.parse_string("1337 Eio")
+      >>> print(bitmath.parse_string("1337 Eio"))
       1337.0 EiB
 
-   Notice how on lines **4** and **5** that the variable
-   ``a_mebibyte`` from the input ``1 MiB`` is exactly equivalent to
-   ``a_mebioctet`` from the different input ``1 Mio``. This is because
-   after :py:mod:`bitmath` parses the octet units the results are
-   normalized into their **standard** NIST/SI equivalents
-   automatically.
+   Notice how on lines **4** and **5** the variable ``a_mebibyte``
+   from the input ``"1 MiB"`` is exactly equivalent to ``a_mebioctet``
+   from ``"1 Mio"``. After parsing, octet units are normalised into
+   their standard NIST/SI equivalents automatically.
+
+   .. versionchanged:: 2.0.0
+      Added ``strict`` and ``system`` parameters. The default
+      ``strict=True`` behaviour is identical to earlier versions.
+      ``system`` defaults to :py:data:`bitmath.NIST` and is only
+      consulted when ``strict=False``.
+
+   .. versionadded:: 1.1.0
 
 
-   .. note::
+.. _parse-string-non-strict:
 
-      If your input isn't compatible with
-      :py:func:`bitmath.parse_string` you can try using
-      :py:func:`bitmath.parse_string_unsafe`
-      instead. :py:func:`bitmath.parse_string_unsafe` is more
-      forgiving with input. Please read the documentation carefully so
-      you understand the risks you assume using the ``unsafe`` parser.
+parse_string with ``strict=False``
+-----------------------------------
+
+When ``strict=False`` the parser accepts ambiguous input that does not
+conform to exact bitmath type names — for example, the single-letter
+units produced by tools like ``ls -h``, ``df``, and ``qemu-img``. This
+is the behaviour previously provided by the now-deprecated
+:py:func:`bitmath.parse_string_unsafe`.
+
+All inputs are treated as **byte-based**. Bit-based units are not
+supported in non-strict parsing mode. Capitalisation does not matter.
+
+.. _parse-string-system-hint:
+
+Understanding the ``system`` parameter in non-strict mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. important::
+
+   In ``strict=False`` mode, ``system`` is a **tiebreaker**, not a
+   guarantee. It is only consulted when the parser cannot determine the
+   unit system from the input itself. Passing ``system=bitmath.SI``
+   does **not** force all results to be SI units.
+
+The parser resolves the unit system in the following order of
+precedence:
+
+1. **No unit present** — plain numbers and numeric strings (e.g.
+   ``100``, ``"2048"``) are always returned as :class:`bitmath.Byte`
+   regardless of ``system``.
+
+2. **Unit is self-describing** — inputs whose unit already contains an
+   ``i`` marker (e.g. ``"100 KiB"``, ``"4Gi"``) unambiguously identify
+   a NIST unit. ``system`` is ignored and the result is always NIST.
+
+3. **Unit is ambiguous** — single-letter units such as ``k``, ``M``,
+   ``G`` carry no inherent system information. Only here does
+   ``system`` act as the deciding hint: ``system=bitmath.NIST``
+   (the default) interprets ``"4G"`` as ``GiB(4)``; passing
+   ``system=bitmath.SI`` interprets it as ``GB(4)``.
+
+In summary: ``system`` resolves ambiguity — it does not override
+evidence already present in the input string.
+
+In this example we parse the output of ``df -H / /boot /home``,
+whose ``Used`` column contains single-letter SI units. Because the
+units are ambiguous we pass ``system=bitmath.SI`` as a hint::
+
+   Filesystem                                 Size  Used Avail Use% Mounted on
+   /dev/mapper/luks-ca8d5493-72bb-4691-afe1   107G   64G   38G  63% /
+   /dev/sda1                                  500M  391M   78M  84% /boot
+   /dev/mapper/vg_deepfryer-lv_home           129G  118G  4.7G  97% /home
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7
+
+   >>> with open('/tmp/df-output.txt', 'r') as fp:
+   ...     _ = fp.readline()   # skip header
+   ...     for line in fp.readlines():
+   ...         cols = line.split()[0:4]
+   ...         print("""Filesystem: %s
+   ... - Used: %s""" % (cols[0],
+   ...             bitmath.parse_string(cols[1], strict=False, system=bitmath.SI)))
+   Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
+   - Used: 107.0 GB
+   Filesystem: /dev/sda1
+   - Used: 500.0 MB
+   Filesystem: /dev/mapper/vg_deepfryer-lv_home
+   - Used: 129.0 GB
+
+If ``df`` is run with ``-h`` instead of ``-H`` it produces NIST-sized
+values but still prints the same single-letter units. Omit ``system``
+(NIST is the default) or pass ``system=bitmath.NIST`` explicitly:
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7
+
+   >>> with open('/tmp/df-output.txt', 'r') as fp:
+   ...     _ = fp.readline()   # skip header
+   ...     for line in fp.readlines():
+   ...         cols = line.split()[0:4]
+   ...         print("""Filesystem: %s
+   ... - Used: %s""" % (cols[0],
+   ...             bitmath.parse_string(cols[1], strict=False, system=bitmath.NIST)))
+   Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
+   - Used: 100.0 GiB
+   Filesystem: /dev/sda1
+   - Used: 477.0 MiB
+   Filesystem: /dev/mapper/vg_deepfryer-lv_home
+   - Used: 120.0 GiB
+
+The results now use the proper NIST prefix syntax: ``GiB``.
 
 
 bitmath.parse_string_unsafe()
 =============================
 
-.. function:: parse_string_unsafe(repr[, system=bitmath.SI])
+.. deprecated:: 2.0.0
+
+   ``parse_string_unsafe`` is deprecated and will be removed in a
+   future release. Use :py:func:`bitmath.parse_string` with
+   ``strict=False`` instead:
+
+   .. code-block:: python
+
+      # old
+      bitmath.parse_string_unsafe(value, system=bitmath.NIST)
+
+      # new
+      bitmath.parse_string(value, strict=False, system=bitmath.NIST)
+
+   To suppress the deprecation warning in the interim:
+
+   .. code-block:: python
+
+      import warnings
+      warnings.filterwarnings('ignore', category=DeprecationWarning,
+                              module='bitmath')
+
+.. function:: parse_string_unsafe(repr[, system=bitmath.NIST])
+
+   A deprecated thin wrapper around
+   ``parse_string(repr, strict=False, system=system)``. All behaviour,
+   parameters, and caveats are identical to
+   :ref:`parse_string with strict=False <parse-string-non-strict>`.
+
+   :param repr: The value to parse.
+   :param system: :py:data:`bitmath.NIST` (default) or
+                  :py:data:`bitmath.SI`.
+   :return: A bitmath object representing ``repr``.
+   :raises ValueError: if ``repr`` cannot be parsed.
+
+   .. versionchanged:: 2.0.0
+      Deprecated. Default ``system`` changed from ``bitmath.SI`` to
+      ``bitmath.NIST`` for consistency with
+      :py:func:`bitmath.parse_string`.
 
    .. versionadded:: 1.3.1
-
-   Parse a string or number into a proper bitmath object. This is the
-   less strict version of the :py:func:`bitmath.parse_string`
-   function. While :py:func:`bitmath.parse_string` only accepts SI and
-   NIST defined unit prefixes, :py:func:`bitmath.parse_string_unsafe`
-   accepts *non-standard* units such as those often displayed in
-   command-line output. Examples following the description.
-
-   :param repr: The value to parse. May contain whitespace between the
-                value and the unit.
-
-   :param system: :py:func:`bitmath.parse_string_unsafe` defaults to
-                  parsing units as ``SI`` (base-10) units. Set the
-                  ``system`` parameter to :py:data:`bitmath.NIST` if
-                  you know your input is in ``NIST`` (base-2) format.
-
-   :return: A bitmath object representing ``repr``
-   :raises ValueError: if ``repr`` can not be parsed
-
-   Use of this function comes with several caveats:
-
-   * All inputs are assumed to be byte-based (as opposed to bit based)
-   * Numerical inputs (those without any units) are assumed to be a number of bytes
-   * Inputs with single letter units (``k``, ``M``, ``G``, etc) are
-     assumed to be SI units (base-10). See the ``system`` parameter
-     description **above** to change this behavior
-   * Inputs with an ``i`` character following the leading letter (``Ki``,
-     ``Mi``, ``Gi``) are assumed to be NIST units (base-2)
-   * Capitalization does not matter
-
-   What exactly are these *non-standard* units? Generally speaking
-   non-standard units will not include enough information to be able
-   to identify exactly which unit system is being used. This is caused
-   by mis-capitalized characters (capital ``k``'s for SI *kilo* units
-   when they should be lower case), or omitted Byte or Bit
-   suffixes. You can find examples of non-standard units in many
-   common command line functions or parameters. For example:
-
-   * The ``ls`` command will print out single-letter units when given
-     the ``-h`` option flag
-   * Running ``qemu-img info virtualdisk.img`` will also report with
-     single letter units
-   * The ``df`` command also uses single-letter units
-   * `Kubernetes
-     <http://kubernetes.io/docs/user-guide/compute-resources/>`_ will
-     display items like *memory limits* using two letter NIST units
-     (ex: ``memory: 2370Mi``)
-
-   Given those considerations, understanding exactly what values you
-   are feeding into this function is crucial to getting accurate
-   results. You can control the output of some commands with various
-   option flags. For example, you could ensure the GNU ``ls`` and
-   ``df`` commands print with SI values by providing the ``--si``
-   option flag. By default those commands will print out using NIST
-   (base-2) values.
-
-   In this example let's pretend we're parsing the output of running
-   ``df -H / /boot /home`` on our filesystems. Assume the output is
-   saved into a file called ``/tmp/df-output.txt`` and looks like
-   this::
-
-      Filesystem                                 Size  Used Avail Use% Mounted on
-      /dev/mapper/luks-ca8d5493-72bb-4691-afe1   107G   64G   38G  63% /
-      /dev/sda1                                  500M  391M   78M  84% /boot
-      /dev/mapper/vg_deepfryer-lv_home           129G  118G  4.7G  97% /home
-
-   Now let's read this file, parse the ``Used`` column, and then print
-   out the space used (line **7**):
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 7
-
-      >>> with open('/tmp/df-output.txt', 'r') as fp:
-      ...     # Skip parsing the 'df' header column
-      ...     _ = fp.readline()
-      ...     for line in fp.readlines():
-      ...         cols = line.split()[0:4]
-      ...         print """Filesystem: %s
-      ... - Used: %s""" % (cols[0], bitmath.parse_string_unsafe(cols[1]))
-      Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
-      - Used: 107.0 GB
-      Filesystem: /dev/sda1
-      - Used: 500.0 MB
-      Filesystem: /dev/mapper/vg_deepfryer-lv_home
-      - Used: 129.0 GB
-
-
-   If we had ran the ``df`` command with the ``-h`` option (instead of
-   ``-H``) we will get base-2 (NIST) output. That would look like
-   this::
-
-     Filesystem                                 Size  Used Avail Use% Mounted on
-     /dev/mapper/luks-ca8d5493-72bb-4691-afe1   100G   59G   36G  63% /
-     /dev/sda1                                  477M  373M   75M  84% /boot
-     /dev/mapper/vg_deepfryer-lv_home           120G  110G  4.4G  97% /home
-
-   Because we switch from ``SI`` output to ``NIST`` output the values
-   displayed are slightly different. **However** they still print
-   using the same prefix unit, ``G``. We can tell
-   :py:func:`bitmath.parse_string_unsafe` that the input is ``NIST``
-   (base-2) by giving ``bitmath.NIST`` to the ``system`` parameter
-   like this (line **8**):
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 8
-
-      >>> with open('/tmp/df-output.txt', 'r') as fp:
-      ...     # Skip parsing the 'df' header column
-      ...     _ = fp.readline()
-      ...     for line in fp.readlines():
-      ...         cols = line.split()[0:4]
-      ...         print """Filesystem: %s
-      ... - Used: %s""" % (cols[0],
-      ...                  bitmath.parse_string_unsafe(cols[1], \
-      ...                      system=bitmath.NIST))
-      Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
-      - Used: 100.0 GiB
-      Filesystem: /dev/sda1
-      - Used: 477.0 MiB
-      Filesystem: /dev/mapper/vg_deepfryer-lv_home
-      - Used: 120.0 GiB
-
-   The results printed use the proper NIST prefix unit syntax now:
-   Capital **G** followed by a lower-case **i** ending with a capital
-   **B**, ``GiB``.
-
 
 
 bitmath.query_device_capacity()
@@ -513,7 +581,7 @@ bitmath.query_device_capacity()
       >>> import bitmath
       >>> with open("/dev/sda") as device:
       ...     size = bitmath.query_device_capacity(device).best_prefix()
-      ...     print "Device %s capacity: %s (%s Bytes)" % (device.name, size, size_bytes)
+      ...     print("Device %s capacity: %s (%s Bytes)" % (device.name, size, size_bytes))
       Device /dev/sda capacity: 238.474937439 GiB (2.56060514304e+11 Bytes)
 
 
@@ -532,7 +600,7 @@ Context Managers
 ****************
 
 This section describes all of the `context managers
-<https://docs.python.org/2/reference/datamodel.html#context-managers>`_
+<https://docs.python.org/3/reference/datamodel.html#context-managers>`_
 provided by the bitmath class.
 
 .. warning::
@@ -620,8 +688,8 @@ bitmath.format()
           'always_plural': always_plural_kbs
       }
 
-      print """None of the following will be pluralized, because that feature is turned off
-      """
+      print("""None of the following will be pluralized, because that feature is turned off
+      """)
 
       test_string = """   One unit of 'Bit': {not_plural}
 
@@ -630,18 +698,18 @@ bitmath.format()
          several items of a unit will always be pluralized in normal US English
          speech: {always_plural}"""
 
-      print test_string.format(**formatting_args)
+      print(test_string.format(**formatting_args))
 
-      print """
+      print("""
       ----------------------------------------------------------------------
-      """
+      """)
 
-      print """Now, we'll use the bitmath.format() context manager
+      print("""Now, we'll use the bitmath.format() context manager
       to print the same test string, but with pluralization enabled.
-      """
+      """)
 
       with bitmath.format(plural=True):
-          print test_string.format(**formatting_args)
+          print(test_string.format(**formatting_args))
 
    The context manager is demonstrated in lines **33** → **34**. In
    these lines we use the :py:func:`bitmath.format` context manager,
@@ -685,13 +753,13 @@ bitmath.format()
       :linenos:
 
       >>> import bitmath
-      >>> print "Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512))
+      >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       Some instances: 0.333333333333 KiB, 512.0 Bit
       >>> with bitmath.format("{value:e}-{unit}"):
-      ...     print "Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512))
+      ...     print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       ...
       Some instances: 3.333333e-01-KiB, 5.120000e+02-Bit
-      >>> print "Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512))
+      >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       Some instances: 0.333333333333 KiB, 512.0 Bit
 
 
@@ -736,7 +804,7 @@ behavior.
    .. code-block:: python
 
       >>> from bitmath import *
-      >>> print MiB(1337), kb(0.1234567), Byte(0)
+      >>> print(MiB(1337), kb(0.1234567), Byte(0))
       1337.0 MiB 0.1234567 kb 0.0 Byte
 
    We can make these instances print however we want to. Let's wrap
@@ -748,7 +816,7 @@ behavior.
 
       >>> import bitmath
       >>> bitmath.format_string = "[{value:.2f}-{unit}]"
-      >>> print bitmath.MiB(1337), bitmath.kb(0.1234567), bitmath.Byte(0)
+      >>> print(bitmath.MiB(1337), bitmath.kb(0.1234567), bitmath.Byte(0))
       [1337.00-MiB] [0.12-kb] [0.00-Byte]
 
 .. py:data:: format_plural
@@ -763,7 +831,7 @@ behavior.
    .. code-block:: python
 
       >>> import bitmath
-      >>> print bitmath.MiB(1337)
+      >>> print(bitmath.MiB(1337))
       1337.0 MiB
 
    And now we'll enable pluralization (line **2**):
@@ -774,10 +842,10 @@ behavior.
 
       >>> import bitmath
       >>> bitmath.format_plural = True
-      >>> print bitmath.MiB(1337)
+      >>> print(bitmath.MiB(1337))
       1337.0 MiBs
       >>> bitmath.format_plural = False
-      >>> print bitmath.MiB(1337)
+      >>> print(bitmath.MiB(1337))
       1337.0 MiB
 
    On line **5** we disable pluralization again and then see that the
@@ -810,7 +878,9 @@ behavior.
           'G': 1000000000,
           'T': 1000000000000,
           'P': 1000000000000000,
-          'E': 1000000000000000000
+          'E': 1000000000000000000,
+          'Z': 1000000000000000000000,
+          'Y': 1000000000000000000000000
       }
 
 
@@ -832,7 +902,9 @@ behavior.
           'Gi': 1073741824,
           'Ti': 1099511627776,
           'Pi': 1125899906842624,
-          'Ei': 1152921504606846976
+          'Ei': 1152921504606846976,
+          'Zi': 1180591620717411303424,
+          'Yi': 1208925819614629174706176
       }
 
 
@@ -843,215 +915,17 @@ behavior.
 
    .. code-block:: python
 
-      ALL_UNIT_TYPES = ['b', 'B', 'kb', 'kB', 'Mb', 'MB', 'Gb', 'GB',
-         'Tb', 'TB', 'Pb', 'PB', 'Eb', 'EB', 'Kib', 'KiB', 'Mib',
-         'MiB', 'Gib', 'GiB', 'Tib', 'TiB', 'Pib', 'PiB', 'Eib',
-         'EiB']
+      ALL_UNIT_TYPES = ['Bit', 'Byte', 'kb', 'kB', 'Mb', 'MB', 'Gb', 'GB',
+         'Tb', 'TB', 'Pb', 'PB', 'Eb', 'EB', 'Zb', 'ZB', 'Yb', 'YB',
+         'Kib', 'KiB', 'Mib', 'MiB', 'Gib', 'GiB', 'Tib', 'TiB',
+         'Pib', 'PiB', 'Eib', 'EiB', 'Zib', 'ZiB', 'Yib', 'YiB']
 
-.. py:module:: bitmath.integrations
+.. _bitmath_3rd_party_module_integrations:
 
 3rd Party Module Integrations
 *****************************
 
-This section describes the various ways in which :py:mod:`bitmath` can
-be integrated with other 3rd pary modules.
-
-To see a full demo of the :mod:`argparse` and :mod:`progressbar`
-integrations, as well as a comprehensive demonstrations of the full
-capabilities of the bitmath library, see :ref:`Creating Download
-Progress Bars <real_life_examples_download_progress_bars>` in the
-*Real Life Examples* section.
-
-.. _bitmath_BitmathType:
-
-argparse
-========
-
-.. versionadded:: 1.2.0
-
-The `argparse module
-<https://docs.python.org/2/library/argparse.html>`_ (part of stdlib)
-is used to parse command line arguments. By default, parsed options
-and arguments are turned into strings. However, one useful feature
-:py:mod:`argparse` provides is the ability to `specify what datatype
-<https://docs.python.org/2/library/argparse.html#type>`_ any given
-argument or option should be interpreted as.
-
-.. function:: BitmathType(bmstring)
-
-   The :func:`BitmathType` factory creates objects that can be passed
-   to the type argument of `ArgumentParser.add_argument()
-   <https://docs.python.org/2/library/argparse.html#argparse.ArgumentParser.add_argument>`_. Arguments
-   that have :func:`BitmathType` objects as their type will
-   automatically parse the command line argument into a matching
-   :ref:`bitmath object <classes>`.
-
-   :param str bmstring: The command-line option to parse into a
-                        bitmath object
-   :returns: A bitmath object representing ``bmstring``
-   :raises ValueError: on any input that
-                       :py:func:`bitmath.parse_string` already rejects
-   :raises ValueError: on **unquoted inputs** with whitespace
-                       separating the value from the unit (e.g.,
-                       ``--some-option 10 MiB`` is bad, but
-                       ``--some-option '10 MiB'`` is good)
-
-   Let's take a look at a more in-depth example.
-
-   A feature found in many command-line utilities is the ability to
-   specify some kind of file size using a string which roughly
-   describes some kind of parameter. For example, let's look at the
-   :program:`du` (disk usage) command. Invoking it as :option:`du -B`
-   allows one to specify a desired block-size scaling factor in
-   printed results.
-
-   Let's say we wanted to implement a similar mechanism in an
-   application of our own. Except, instead of abbreviating down to
-   ambiguous capital letters, we accept scaling factors as
-   :ref:`properly written values <appendix_on_units>` with associated
-   units. Such as **10 MiB**, or **1 MB**.
-
-   To accomplish this, we'll use :py:mod:`argparse` to create an
-   argument parser and add one option to it, ``--block-size``. This
-   option will have a type of :func:`BitmathType` set.
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 3,6,7
-
-      >>> import argparse, bitmath
-      >>> parser = argparse.ArgumentParser()
-      >>> parser.add_argument('--block-size', type=bitmath.BitmathType)
-      >>> args = "--block-size 1MiB"
-      >>> results = parser.parse_args(args.split())
-      >>> print type(results.block_size)
-      <class 'bitmath.MiB'>
-
-   On line **3** we add the ``--block-size`` option to the parser,
-   explicitly defining it's type as :func:`BitmathType`. In lines
-   **6** and **7** when we parse the provided arguments we find that
-   :py:mod:`argparse` has automatically created a bitmath object for
-   us.
-
-   If an invalid scaling factor is provided by the user, such as one
-   which does not represent a recognizable unit, the bitmath library
-   will automatically detect this for us and signal to the argument
-   parser that an error has occurred.
-
-
-.. _bitmath_BitmathFileTransferSpeed:
-
-progressbar
-===========
-
-.. versionadded:: 1.2.1
-
-The `progressbar module
-<https://github.com/niltonvolpato/python-progressbar>`_ is typically
-used to display the progress of a long running task, such as a file
-transfer operation. The module provides widgets for custom formatting
-how exactly the 'progress' is displayed. Some examples include:
-overall percentage complete, estimated time until completion, and an
-ASCII progress bar which fills as the operation continues.
-
-While :mod:`progressbar` already includes a widget suitable for
-displaying `file transfer rates
-<https://github.com/niltonvolpato/python-progressbar/blob/master/progressbar/widgets.py#L165>`_,
-this widget does not support customizing its presentation, and is
-limited to only prefix units from the SI system.
-
-
-.. class:: BitmathFileTransferSpeed([system=bitmath.NIST, [format="{value:.2f} {unit}/s"]])
-
-   The :class:`BitmathFileTransferSpeed` class is a more functional
-   replacement for the upstream `FileTransferSpeed
-   <https://github.com/niltonvolpato/python-progressbar/blob/master/progressbar/widgets.py>`_
-   widget.
-
-   While both widgets are able to calculate average transfer rates
-   over a period of time, the :class:`BitmathFileTransferSpeed` widget
-   adds new support for `NIST <appendix_on_units>`_ prefix units (the
-   upstream widget only supports SI prefix units).
-
-   In addition to NIST unit support, :class:`BitmathFileTransferSpeed`
-   enables the user to have **full control** over the look and feel of
-   the displayed rates.
-
-   :param system: **Default:** :py:data:`bitmath.NIST`. The preferred
-                  system of units for the printed rate.
-   :type system: One of :py:data:`bitmath.NIST` or :py:data:`bitmath.SI`
-   :param string format: a formatting mini-language compat formatting
-                       string. **Default** ``{value:.2f} {unit}/s``
-                       (e.g., ``13.37 GiB/s``)
-
-   .. note::
-
-      See :ref:`instance attributes <instances_attributes>` for a list
-      of available formatting items. See the section on
-      :ref:`formatting bitmath instances <instances_format>` for more
-      information on this topic.
-
-
-   Use :class:`BitmathFileTransferSpeed` exactly like the upstream
-   ``FileTransferSpeed`` widget (example copied and modified from the
-   progressbar project page):
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 2,4
-
-      >>> from progressbar import ProgressBar, Percentage, Bar, ETA, RotatingMarker
-      >>> from bitmath.integrations import BitmathFileTransferSpeed
-      >>> widgets = ['Something: ', Percentage(), ' ', Bar(marker=RotatingMarker()),
-      ...           ' ', ETA(), ' ', BitmathFileTransferSpeed()]
-      >>> pbar = ProgressBar(widgets=widgets, maxval=10000000).start()
-      >>> for i in range(1000000):
-      ...     # do something
-      ...     pbar.update(10*i+1)
-      >>> pbar.finish()
-
-   If this was ran from a script we would see output similar to the
-   following::
-
-      Something: 100% ||||||||||||||||||||||||||||||||||| Time: 0:00:01 9.27 MiB/s
-
-   If we wanted behavior identical to :class:`FileTransferSpeed` we
-   would set the ``system`` parameter to :py:data:`bitmath.SI` (line
-   **5** below):
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 5
-
-      >>> import bitmath
-      >>> # ...
-      >>> widgets = ['Something: ', Percentage(), ' ', Bar(marker=RotatingMarker()),
-      ...           ' ', ETA(), ' ',
-      ...           BitmathFileTransferSpeed(system=bitmath.SI)]
-      >>> pbar = ProgressBar(widgets=widgets, maxval=10000000).start()
-      >>> # ...
-
-   If this was ran from a script we would see output similar to the
-   following::
-
-      Something: 100% ||||||||||||||||||||||||||||||||||| Time: 0:00:01 9.80 MB/s
-
-   Note how the only difference is in the displayed unit. The former
-   example produced a rate with a unit of ``MiB`` (a NIST unit)
-   whereas the latter examples unit is ``MB`` (an SI unit).
-
-   As noted previously, :class:`BitmathFileTransferSpeed` allows for
-   full control over the formatting of the calculated rate of
-   transfer.
-
-   For example, if we wished to see the rate printed using more
-   verbose language and plauralized units, we could do exactly that by
-   constructing our widget in the following way:
-
-   .. code-block:: python
-
-      BitmathFileTransferSpeed(format="{value:.2f} {unit_plural} per second")
-
-   And if this were run from a script like the previous examples::
-
-      Something: 100% ||||||||||||||||||||||||||||||||||| Time: 0:00:01 9.41 MiBs per second
+Self-contained, copy-paste examples for integrating :mod:`bitmath` with
+:mod:`argparse`, `click <https://click.palletsprojects.com/>`_, and
+`progressbar2 <https://progressbar-2.readthedocs.io/>`_ are collected in
+the :ref:`Integration Examples <integration_examples>` chapter.

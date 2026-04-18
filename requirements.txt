@@ -1,8 +1,4 @@
-python-coveralls
-coverage==4.0.3
-mock
-nose
-pyflakes
+flake8
 pycodestyle
-progressbar231
-click
+pytest
+pytest-cov
