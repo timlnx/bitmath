@@ -1583,6 +1583,14 @@ the return value::
 
         val, unit = s[:index], s[index:]
 
+        # Explicit base-unit and word-form checks: handle B, b, bit(s),
+        # byte(s) before the prefix-normalisation logic below.
+        _unit_lower = unit.lower()
+        if unit == 'B' or _unit_lower in ('byte', 'bytes'):
+            return Byte(float(val))
+        if unit == 'b' or _unit_lower in ('bit', 'bits'):
+            return Bit(float(val))
+
         # Normalise: strip trailing b/B and append 'B' so we always
         # work with byte-family units regardless of what was supplied.
         unit = unit.rstrip('Bb')

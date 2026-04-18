@@ -299,6 +299,32 @@ https://github.com/timlnx/bitmath/issues/60
             bitmath.parse_string('4.7M', strict=False, system=bitmath.SI),
             bitmath.MB(4.7))
 
+    def test_parse_non_strict_capital_B_is_Byte(self):
+        """parse_string strict=False: lone 'B' parses as Byte"""
+        self.assertIs(type(bitmath.parse_string("1B", strict=False)), bitmath.Byte)
+        self.assertEqual(bitmath.parse_string("1 B", strict=False), bitmath.Byte(1))
+
+    def test_parse_non_strict_lowercase_b_is_Bit(self):
+        """parse_string strict=False: lone 'b' parses as Bit"""
+        self.assertIs(type(bitmath.parse_string("1b", strict=False)), bitmath.Bit)
+        self.assertEqual(bitmath.parse_string("1 b", strict=False), bitmath.Bit(1))
+
+    def test_parse_non_strict_bit_word_forms(self):
+        """parse_string strict=False: bit/bits/Bit/Bits/BIT all parse as Bit"""
+        expected = bitmath.Bit(42)
+        for unit in ('bit', 'bits', 'Bit', 'Bits', 'BIT', 'BITS'):
+            result = bitmath.parse_string(f"42 {unit}", strict=False)
+            self.assertEqual(result, expected, msg=f"Failed for unit '{unit}'")
+            self.assertIs(type(result), bitmath.Bit, msg=f"Wrong type for unit '{unit}'")
+
+    def test_parse_non_strict_byte_word_forms(self):
+        """parse_string strict=False: byte/bytes/Byte/Bytes/BYTE all parse as Byte"""
+        expected = bitmath.Byte(42)
+        for unit in ('byte', 'bytes', 'Byte', 'Bytes', 'BYTE', 'BYTES'):
+            result = bitmath.parse_string(f"42 {unit}", strict=False)
+            self.assertEqual(result, expected, msg=f"Failed for unit '{unit}'")
+            self.assertIs(type(result), bitmath.Byte, msg=f"Wrong type for unit '{unit}'")
+
     def test_parse_string_unsafe_deprecation_warning(self):
         """parse_string_unsafe emits DeprecationWarning as of 2.0.0"""
         import warnings
