@@ -10,43 +10,135 @@ NEWS
 bitmath-2.0.0
 *************
 
-bitmath-2.0.0 **will be** the first new release since 1.3.3 was
-released in 2018!
+*Released: April 2026*
 
-Beginning with the release of 2.0.0 bitmath will only officially
-support supported python versions. It is considered a happy bonus if
-bitmath works with an unsupported Python version.
+Nearly eight years after 1.3.3 shipped in 2018, bitmath is back with
+a major release. Version 2.0.0 is a thorough modernization: the
+Python 2 era is officially over, the library picks up several
+long-requested features, and the entire project infrastructure has
+been rebuilt from scratch. If you've been running bitmath on Python
+3.11 or later and quietly wishing it felt more modern — this release
+is for you.
 
-The focus of the first "bitmath 2" releases will be
-simplification. Some things will go again, they may come back a little
-later.
+
+Breaking Changes
+================
+
+**Python support**
+   Python 3.11+ only. Python 2 and Python 3.7–3.10 are no longer
+   supported or tested.
+
+**parse_string() default system**
+   The default unit system when ``strict=False`` is now **NIST**
+   (binary). Previously it defaulted to SI. Code that relied on the
+   old default for ambiguous strings such as ``"1g"`` will get a
+   different result. See :ref:`bitmath_parse_string` for full details.
+
+**parse_string_unsafe() deprecated**
+   Use :func:`bitmath.parse_string` with ``strict=False`` instead.
+   The old name still works but emits a :exc:`DeprecationWarning`.
+
+**bitmath.integrations removed**
+   The argparse, click, and progressbar integrations have been removed
+   from the package. Copy-paste replacements are provided in the new
+   :ref:`Integration Examples <integration_examples>` documentation
+   chapter. No changes to calling code are required — just a local
+   copy of the relevant snippet.
+
+**Build and install**
+   ``setup.py`` and ``setup.py.in`` are gone. Installation is
+   ``pip install bitmath``. Source builds use ``python -m build``.
 
 
-What to Expect
-==============
+Library Improvements
+====================
 
-In the semantic versioning world, a major version number increase is
-meant to express fundamental changes to the software. Changes which
-will **almost certainly** result in breakages for at least some of the
-user base. For bitmath this will be true as well, and in this case
-that user base is specifically anyone still using the library on
-Python 2.x.
+The core API is unchanged — every bitmath object you created before
+still works exactly the same way.
 
-* The Bitmath API - The fundamental API will remain unchanged. What
-  will change are Python language features used and dropping of
-  workarounds for older Python versions
-* Bitmath :ref:`Integrations
-  <bitmath_3rd_party_module_integrations>` - Integrations will be
-  removed from the primary source code for now. Many of these can be
-  provided as code examples instead which will simplify packaging and
-  testing requirements for the project. They'll be in the docs or just
-  in git, not sure yet.
-* Packaging - It looks like a lot has changed in the last 2.5 years in
-  the Python packaging world, and I have a lot to catch up on. I guess
-  we use TOML instead of setup.py now, that's neat.
-* Distribution - I daily drive Fedora Linux and Mac OS X, I don't have
-  time to keep up with other platforms. If someone wants to bring back
-  debian packaging, contact me and we'll work something out.
+**Full NIST unit coverage**
+   The four largest NIST prefix units — :class:`~bitmath.ZiB`,
+   :class:`~bitmath.YiB`, :class:`~bitmath.Zib`, and
+   :class:`~bitmath.Yib` — are now first-class bitmath types. All
+   constants (``NIST_PREFIXES``, ``NIST_STEPS``, ``ALL_UNIT_TYPES``)
+   reflect reality.
+
+**f-string and format() support**
+   bitmath objects now implement the Python format protocol
+   (``__format__``, `PEP 3101 <https://peps.python.org/pep-3101/>`_). They can be used directly in f-strings
+   with format specs — ``f"{some_size:.2f}"`` just works. See
+   :ref:`instances_dunder_format` for the full reference. Credit to
+   `Jonathan Eunice <https://github.com/jonathaneunice>`_ for the
+   original concept in `PR #76
+   <https://github.com/timlnx/bitmath/pull/76>`_.
+
+**bitmath.sum() and built-in sum()**
+   A new :func:`bitmath.sum` function returns a unit-normalised result
+   when summing mixed-type iterables. For uniform collections, the
+   built-in :py:func:`sum` now works directly on bitmath sequences
+   without a ``start=`` argument.
+
+**Thread-safe context manager**
+   The :func:`bitmath.format` context manager previously mutated
+   module-level globals, making it unsafe under concurrent access. It
+   now uses ``threading.local`` with proper save/restore semantics,
+   including correct nesting behavior. Closes `issue #83
+   <https://github.com/timlnx/bitmath/issues/83>`_.
+
+**best_prefix() bit-family fix**
+   :func:`bitmath.best_prefix` incorrectly converted bit-family units
+   (e.g. ``Kib``) into byte-family units (e.g. ``KiB``). The unit
+   family is now preserved. Closes `issue #95
+   <https://github.com/timlnx/bitmath/issues/95>`_.
+
+**Flexible string parsing**
+   :func:`bitmath.parse_string` with ``strict=False`` accepts
+   ambiguous input such as ``"1g"`` or ``"1GB"`` and resolves it to
+   the most likely unit. When the system cannot be reliably determined,
+   NIST is the tiebreaker. Closes `issue #54
+   <https://github.com/timlnx/bitmath/issues/54>`_.
+
+
+Project Infrastructure
+======================
+
+**Packaging**
+   ``pyproject.toml`` with a hatchling backend replaces the old
+   ``setup.py``/``setup.py.in`` template system. The package is PEP
+   517/518 compliant. ``MANIFEST.in`` is gone; sdist content is
+   declared explicitly in ``pyproject.toml``.
+
+**GitHub Actions**
+   CI now runs against Python 3.11, 3.12, and 3.13 on both Ubuntu and
+   macOS, with actions pinned to current versions (``checkout@v4``,
+   ``setup-python@v5``). Tests run on every pull request, not just
+   pushes.
+
+**Security scanning**
+   CodeQL analysis runs on every push to master, every pull request,
+   and on a weekly schedule.
+
+**ReadTheDocs**
+   ``.readthedocs.yaml`` is now present and explicit. The RTD build
+   uses Python 3.11 and installs ``sphinx_rtd_theme`` directly.
+
+**Development workflow**
+   ``make ci`` is the single command for a full local build: unique
+   test name check, pycodestyle, flake8, and pytest with coverage.
+   ``make build``, ``make pypitest``, and ``make pypi`` replace the
+   old ``make sdist upload`` pattern.
+
+
+Looking Forward
+===============
+
+bitmath started as a small utility for thinking clearly about file
+sizes, and that's still exactly what it is. The 2.0.0 release doesn't
+change what the library does — it changes what it's built on, so it
+can keep doing it for the next eight years. The test suite sits at 288
+tests and 100% coverage. If you've been holding off on adopting
+bitmath because the last release predated your Python version — now's
+the time.
 
 
 .. _bitmath-1.4.0-1:
