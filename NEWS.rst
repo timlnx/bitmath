@@ -32,7 +32,7 @@ Breaking Changes
    The default unit system when ``strict=False`` is now **NIST**
    (binary). Previously it defaulted to SI. Code that relied on the
    old default for ambiguous strings such as ``"1g"`` will get a
-   different result. See :ref:`bitmath_parse_string` for full details.
+   different result. See :ref:`parse-string-non-strict` for full details.
 
 **parse_string_unsafe() deprecated**
    Use :func:`bitmath.parse_string` with ``strict=False`` instead.
@@ -137,15 +137,28 @@ projects are actually maintained in 2026:
 Closing Thoughts
 ================
 
-bitmath started as a small utility for thinking clearly about file
-sizes, and that's still exactly what it is. The 2.0.0 release doesn't
-change what the library does — it changes what it's built on, so it
-can keep doing it for the next eight years. The test suite sits at 288
-tests and 100% coverage. The documentation has been comprehensively
-reviewed and updated. The packaging is clean enough to pass ``twine
-check`` on the first attempt (well, the second). If you've been
-holding off on adopting bitmath because the last release predated your
-Python version — now's the time.
+bitmath started as a small passion project of mine. A utility for
+thinking about and clearly expressing file sizes, and that's still
+exactly what it is. This 2.0.0 release doesn't change what the library
+does. What I've done is change the very foundation that it's built
+on. The test suite sits at 288 tests and 100% coverage. The
+documentation has been comprehensively reviewed and updated. The
+packaging is clean enough to pass ``twine check`` on the first attempt
+(well, the second).
+
+It really is a remarkable milestone in project history. I have to give
+the warmest thanks to all of the users and fans who have written bug
+reports and submitted pull requests. Especially in the least active
+years of the project. Most of those PRs and Issues have been
+integrated into this massive 2.0 release.
+
+**Thanks for your patience and your participation.**
+
+If you've been holding off on adopting bitmath because the last
+release predated your Python version — yeah I totally get it. This
+place was a dumpster for the last 8 years.
+
+Go on, give it a shot. It really is better than ever.
 
 
 .. _bitmath-1.4.0-1:
