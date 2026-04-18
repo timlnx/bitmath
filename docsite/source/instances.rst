@@ -109,7 +109,7 @@ bitmath objects have several instance attributes:
 
       >>> b = bitmath.Byte(1337)
       >>> print(b.unit)
-      Byte
+      B
 
 .. py:attribute:: BitMathInstance.unit_plural
 
@@ -119,7 +119,7 @@ bitmath objects have several instance attributes:
 
       >>> b = bitmath.Byte(1337)
       >>> print(b.unit_plural)
-      Bytes
+      B
 
 .. py:attribute:: BitMathInstance.unit_singular
 
@@ -130,7 +130,7 @@ bitmath objects have several instance attributes:
 
       >>> b = bitmath.Byte(1337)
       >>> print(b.unit_singular)
-      Byte
+      B
 
 
 **Notes:**
@@ -197,7 +197,7 @@ classes. You can even ``to_THING()`` an instance into itself again:
    >>> six_TB = TB(6)
    >>> six_TB_in_bits = six_TB.to_Bit()
    >>> print(six_TB, six_TB_in_bits)
-   6.0 TB 4.8e+13 Bit
+   6.0 TB 4.8e+13 b
 
    >>> six_TB == six_TB_in_bits
    True
@@ -252,16 +252,16 @@ even easier to read.
    ...    print("Rate: %s/second" % Bit(_rate))
    ...    time.sleep(1)
 
-   Rate: 100.0 Bit/sec
-   Rate: 24000.0 Bit/sec
-   Rate: 1024.0 Bit/sec
-   Rate: 60151.0 Bit/sec
-   Rate: 33.0 Bit/sec
-   Rate: 9999.0 Bit/sec
-   Rate: 9238742.0 Bit/sec
-   Rate: 2.09895849555e+13 Bit/sec
-   Rate: 934098021.0 Bit/sec
-   Rate: 934894.0 Bit/sec
+   Rate: 100.0 b/sec
+   Rate: 24000.0 b/sec
+   Rate: 1024.0 b/sec
+   Rate: 60151.0 b/sec
+   Rate: 33.0 b/sec
+   Rate: 9999.0 b/sec
+   Rate: 9238742.0 b/sec
+   Rate: 2.09895849555e+13 b/sec
+   Rate: 934098021.0 b/sec
+   Rate: 934894.0 b/sec
 
 And now using a custom formatting definition:
 
@@ -271,11 +271,11 @@ And now using a custom formatting definition:
    ...    print(Bit(_rate).best_prefix().format("Rate: {value:.3f} {unit}/sec"))
    ...    time.sleep(1)
 
-   Rate: 12.500 Byte/sec
+   Rate: 12.500 B/sec
    Rate: 2.930 KiB/sec
-   Rate: 128.000 Byte/sec
+   Rate: 128.000 B/sec
    Rate: 7.343 KiB/sec
-   Rate: 4.125 Byte/sec
+   Rate: 4.125 B/sec
    Rate: 1.221 KiB/sec
    Rate: 1.101 MiB/sec
    Rate: 2.386 TiB/sec
@@ -304,7 +304,7 @@ bitmath instances come with a verbose built-in string representation:
 
    >>> leet_bits = Bit(1337)
    >>> print(leet_bits)
-   1337.0 Bit
+   1337.0 b
 
 However, for instances which aren't whole numbers (as in ``MiB(1/3.0)
 == 0.333333333333 MiB``, etc), their representation can be undesirable.
@@ -535,7 +535,7 @@ classes. Under the covers these properties call ``to_THING``.
 
    >>> six_TB = TB(6)
    >>> print(six_TB, six_TB.Bit)
-   6.0 TB 4.8e+13 Bit
+   6.0 TB 4.8e+13 b
 
    >>> six_TB == six_TB.Bit
    True

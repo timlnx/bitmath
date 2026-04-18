@@ -47,7 +47,7 @@ class TestContextManager(TestCase):
         ]
 
         str_reps = [
-            "101.00-Byte",
+            "101.00-B",
             "202.00-KiB",
             "303.00-MB",
             "404.00-GiB",
@@ -68,7 +68,7 @@ class TestContextManager(TestCase):
 
     def test_print_byte_plural(self):
         """Byte(3.0) prints out units in plural form"""
-        expected_result = "3Bytes"
+        expected_result = "3B"
         fmt_str = "{value:.1g}{unit}"
         three_Bytes = bitmath.Byte(3.0)
 
@@ -78,7 +78,7 @@ class TestContextManager(TestCase):
 
     def test_print_byte_plural_fmt_in_mgr(self):
         """Byte(3.0) prints out units in plural form, setting the fmt str in the mgr"""
-        expected_result = "3Bytes"
+        expected_result = "3B"
 
         with bitmath.format(fmt_str="{value:.1g}{unit}", plural=True):
             three_Bytes = bitmath.Byte(3.0)

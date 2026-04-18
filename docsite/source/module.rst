@@ -56,7 +56,7 @@ bitmath.getsize()
 
       >>> import bitmath
       >>> print(bitmath.getsize('./bitmath/__init__.py', bestprefix=False))
-      34159.0 Byte
+      34159.0 B
 
    Recall, the default for representation is with the best
    human-readable prefix. We can control the prefix system used by
@@ -208,7 +208,7 @@ bitmath.listdir()
       >>> print(discovered_files)
       [Byte(1337.0), Byte(13370.0)]
       >>> print(reduce(lambda x,y: x+y, discovered_files))
-      14707.0 Byte
+      14707.0 B
       >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix())
       14.3623046875 KiB
       >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}"))
@@ -721,9 +721,9 @@ bitmath.format()
 
       None of the following will be pluralized, because that feature is turned off
 
-         One unit of 'Bit': 1.0 Bit
+         One unit of 'Bit': 1.0 b
 
-         0 of a unit is typically said pluralized in US English: 0.0 Byte
+         0 of a unit is typically said pluralized in US English: 0.0 B
 
          several items of a unit will always be pluralized in normal US English
          speech: 42.0 kb
@@ -733,9 +733,9 @@ bitmath.format()
       Now, we'll use the bitmath.format() context manager
       to print the same test string, but with pluralization enabled.
 
-         One unit of 'Bit': 1.0 Bit
+         One unit of 'Bit': 1.0 b
 
-         0 of a unit is typically said pluralized in US English: 0.0 Bytes
+         0 of a unit is typically said pluralized in US English: 0.0 B
 
          several items of a unit will always be pluralized in normal US English
          speech: 42.0 kbs
@@ -754,13 +754,13 @@ bitmath.format()
 
       >>> import bitmath
       >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
-      Some instances: 0.333333333333 KiB, 512.0 Bit
+      Some instances: 0.333333333333 KiB, 512.0 b
       >>> with bitmath.format("{value:e}-{unit}"):
       ...     print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       ...
-      Some instances: 3.333333e-01-KiB, 5.120000e+02-Bit
+      Some instances: 3.333333e-01-KiB, 5.120000e+02-b
       >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
-      Some instances: 0.333333333333 KiB, 512.0 Bit
+      Some instances: 0.333333333333 KiB, 512.0 b
 
 
    .. versionadded:: 1.0.8
@@ -805,7 +805,7 @@ behavior.
 
       >>> from bitmath import *
       >>> print(MiB(1337), kb(0.1234567), Byte(0))
-      1337.0 MiB 0.1234567 kb 0.0 Byte
+      1337.0 MiB 0.1234567 kb 0.0 B
 
    We can make these instances print however we want to. Let's wrap
    each one in square brackets (``[``, ``]``), replace the separating

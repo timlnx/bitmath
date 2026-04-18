@@ -49,6 +49,14 @@ Breaking Changes
    ``setup.py`` and ``setup.py.in`` are gone. Installation is
    ``pip install bitmath``. Source builds use ``python -m build``.
 
+**Byte and Bit display names**
+   ``Byte`` and ``Bit`` now display as ``B`` and ``b`` respectively,
+   matching the abbreviated style of every other unit. Code that
+   compares formatted strings (e.g. ``"{unit}"`` in a format template
+   or the output of ``str()`` / ``repr()``) against the literal words
+   ``"Byte"`` or ``"Bit"`` will need to be updated. The class names
+   themselves are unchanged.
+
 
 Library Improvements
 ====================
