@@ -7,6 +7,7 @@ jobs:
   # Copr build on every pull request
   - job: copr_build
     trigger: pull_request
+    version_suffix: ""
     owner: tbielawa
     project: bitmath-ci
     targets:
