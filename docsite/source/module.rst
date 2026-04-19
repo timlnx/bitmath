@@ -47,7 +47,7 @@ bitmath.getsize()
 
       >>> import bitmath
       >>> print(bitmath.getsize('./bitmath/__init__.py'))
-      33.3583984375 KiB
+      33.36 KiB
 
    Let's say we want to see the results in bytes. We can do this by
    setting ``bestprefix`` to ``False``:
@@ -56,7 +56,7 @@ bitmath.getsize()
 
       >>> import bitmath
       >>> print(bitmath.getsize('./bitmath/__init__.py', bestprefix=False))
-      34159.0 B
+      34159.00 B
 
    Recall, the default for representation is with the best
    human-readable prefix. We can control the prefix system used by
@@ -68,11 +68,11 @@ bitmath.getsize()
       :emphasize-lines: 1-4
 
       >>> print(bitmath.getsize('./bitmath/__init__.py'))
-      33.3583984375 KiB
+      33.36 KiB
       >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.NIST))
-      33.3583984375 KiB
+      33.36 KiB
       >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.SI))
-      34.159 kB
+      34.16 kB
 
    We can see in lines **1** → **4** that the same result is returned
    when ``system`` is not set and when ``system`` is set to
@@ -206,11 +206,11 @@ bitmath.listdir()
 
       >>> discovered_files = [f[1] for f in bitmath.listdir('./some_files')]
       >>> print(discovered_files)
-      [Byte(1337.0), Byte(13370.0)]
+      [Byte(1337.00), Byte(13370.00)]
       >>> print(reduce(lambda x,y: x+y, discovered_files))
-      14707.0 B
+      14707.00 B
       >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix())
-      14.3623046875 KiB
+      14.36 KiB
       >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}"))
       14.362 KiB
 
@@ -251,14 +251,14 @@ bitmath.sum()
 
       >>> import bitmath
       >>> bitmath.sum([bitmath.MiB(1), bitmath.GiB(1)])
-      Byte(1074790400.0)
+      Byte(1074790400.00)
 
    Pass ``start`` to choose a different accumulator unit:
 
    .. code-block:: python
 
       >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
-      MiB(0.0029296875)
+      MiB(0.00)
 
    Contrast with the built-in :py:func:`sum`, whose result type tracks the
    first element:
@@ -266,9 +266,9 @@ bitmath.sum()
    .. code-block:: python
 
       >>> sum([bitmath.KiB(1), bitmath.KiB(2)])
-      KiB(3.0)
+      KiB(3.00)
       >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
-      Byte(1074790401.0)
+      Byte(1074790401.00)
 
    .. seealso::
 
@@ -312,7 +312,7 @@ bitmath.parse_string()
       >>> print(type(a_dvd))
       <class 'bitmath.GiB'>
       >>> print(a_dvd)
-      4.7 GiB
+      4.70 GiB
 
    .. caution::
 
@@ -353,8 +353,8 @@ bitmath.parse_string()
       Could not parse input: 1337.7
       Could not parse input: 1337
       Could not parse input: 1337.7
-      Parsed size into 1.3056640625 KiB
-      Parsed size into 1.3056640625 KiB
+      Parsed size into 1.31 KiB
+      Parsed size into 1.31 KiB
 
 
    .. versionchanged:: 1.2.4
@@ -378,11 +378,11 @@ bitmath.parse_string()
       >>> a_mebibyte = bitmath.parse_string("1 MiB")
       >>> a_mebioctet = bitmath.parse_string("1 Mio")
       >>> print(a_mebibyte, a_mebioctet)
-      1.0 MiB 1.0 MiB
+      1.00 MiB 1.00 MiB
       >>> print(bitmath.parse_string("1Po"))
-      1.0 PB
+      1.00 PB
       >>> print(bitmath.parse_string("1337 Eio"))
-      1337.0 EiB
+      1337.00 EiB
 
    Notice how on lines **4** and **5** the variable ``a_mebibyte``
    from the input ``"1 MiB"`` is exactly equivalent to ``a_mebioctet``
@@ -465,11 +465,11 @@ units are ambiguous we pass ``system=bitmath.SI`` as a hint::
    ... - Used: %s""" % (cols[0],
    ...             bitmath.parse_string(cols[1], strict=False, system=bitmath.SI)))
    Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
-   - Used: 107.0 GB
+   - Used: 107.00 GB
    Filesystem: /dev/sda1
-   - Used: 500.0 MB
+   - Used: 500.00 MB
    Filesystem: /dev/mapper/vg_deepfryer-lv_home
-   - Used: 129.0 GB
+   - Used: 129.00 GB
 
 If ``df`` is run with ``-h`` instead of ``-H`` it produces NIST-sized
 values but still prints the same single-letter units. Omit ``system``
@@ -487,11 +487,11 @@ values but still prints the same single-letter units. Omit ``system``
    ... - Used: %s""" % (cols[0],
    ...             bitmath.parse_string(cols[1], strict=False, system=bitmath.NIST)))
    Filesystem: /dev/mapper/luks-ca8d5493-72bb-4691-afe1
-   - Used: 100.0 GiB
+   - Used: 100.00 GiB
    Filesystem: /dev/sda1
-   - Used: 477.0 MiB
+   - Used: 477.00 MiB
    Filesystem: /dev/mapper/vg_deepfryer-lv_home
-   - Used: 120.0 GiB
+   - Used: 120.00 GiB
 
 The results now use the proper NIST prefix syntax: ``GiB``.
 
@@ -721,24 +721,24 @@ bitmath.format()
 
       None of the following will be pluralized, because that feature is turned off
 
-         One unit of 'Bit': 1.0 b
+         One unit of 'Bit': 1.00 b
 
-         0 of a unit is typically said pluralized in US English: 0.0 B
+         0 of a unit is typically said pluralized in US English: 0.00 B
 
          several items of a unit will always be pluralized in normal US English
-         speech: 42.0 kb
+         speech: 42.00 kb
 
       ----------------------------------------------------------------------
 
       Now, we'll use the bitmath.format() context manager
       to print the same test string, but with pluralization enabled.
 
-         One unit of 'Bit': 1.0 b
+         One unit of 'Bit': 1.00 b
 
-         0 of a unit is typically said pluralized in US English: 0.0 B
+         0 of a unit is typically said pluralized in US English: 0.00 B
 
          several items of a unit will always be pluralized in normal US English
-         speech: 42.0 kbs
+         speech: 42.00 kbs
 
    Here's a shorter example, where we'll:
 
@@ -754,13 +754,13 @@ bitmath.format()
 
       >>> import bitmath
       >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
-      Some instances: 0.333333333333 KiB, 512.0 b
+      Some instances: 0.33 KiB, 512.00 b
       >>> with bitmath.format("{value:e}-{unit}"):
       ...     print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       ...
       Some instances: 3.333333e-01-KiB, 5.120000e+02-b
       >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
-      Some instances: 0.333333333333 KiB, 512.0 b
+      Some instances: 0.33 KiB, 512.00 b
 
 
    .. versionadded:: 1.0.8
@@ -792,9 +792,9 @@ behavior.
 .. py:data:: format_string
 
    This is the default string representation of all bitmath
-   instances. The default value is ``{value} {unit}`` which, when
-   evaluated, formats an instance as a floating point number with at
-   least one digit of precision, followed by a character of
+   instances. The default value is ``{value:.2f} {unit}`` which, when
+   evaluated, formats an instance as a floating point number with
+   exactly two digits of decimal precision, followed by a character of
    whitespace, followed by the prefix unit of the instance.
 
    For example, given bitmath instances representing the following
@@ -805,7 +805,7 @@ behavior.
 
       >>> from bitmath import *
       >>> print(MiB(1337), kb(0.1234567), Byte(0))
-      1337.0 MiB 0.1234567 kb 0.0 B
+      1337.00 MiB 0.12 kb 0.00 B
 
    We can make these instances print however we want to. Let's wrap
    each one in square brackets (``[``, ``]``), replace the separating
@@ -832,7 +832,7 @@ behavior.
 
       >>> import bitmath
       >>> print(bitmath.MiB(1337))
-      1337.0 MiB
+      1337.00 MiB
 
    And now we'll enable pluralization (line **2**):
 
@@ -843,10 +843,10 @@ behavior.
       >>> import bitmath
       >>> bitmath.format_plural = True
       >>> print(bitmath.MiB(1337))
-      1337.0 MiBs
+      1337.00 MiBs
       >>> bitmath.format_plural = False
       >>> print(bitmath.MiB(1337))
-      1337.0 MiB
+      1337.00 MiB
 
    On line **5** we disable pluralization again and then see that the
    output has no trailing "s" character.

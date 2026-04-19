@@ -50,7 +50,7 @@ input value as a :class:`bitmath.Byte`:
 .. code-block:: bash
 
    $ bitmath 1024
-   1.0 KiB
+   1.00 KiB
 
 Convert 1024 KiB into kBs:
 
@@ -64,7 +64,7 @@ Convert 1073741824 bytes into the best human-readable unit:
 .. code-block:: bash
 
    $ bitmath -f Byte 1073741824
-   1.0 GiB
+   1.00 GiB
 
 Use the :command:`stat` command to print the size of
 :file:`bitmath/__init__.py` in bytes, pipe the output into the

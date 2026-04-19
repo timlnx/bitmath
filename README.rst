@@ -229,9 +229,9 @@ Select a human-readable unit
    >>> ugly_number = small_number.to_TiB()
 
    >>> print(ugly_number)
-   9.09494701773e-08 TiB
+   0.00 TiB
    >>> print(ugly_number.best_prefix())
-   97.65625 KiB
+   97.66 KiB
 
 
 Rich Comparison

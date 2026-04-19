@@ -80,10 +80,10 @@ operation.
    In [11]: second = kB(2)
 
    In [12]: first * second
-   Out[12]: MiB(10000.0)
+   Out[12]: MiB(10000.00)
 
    In [13]: (first * second).best_prefix()
-   Out[13]: GiB(9.765625)
+   Out[13]: GiB(9.77)
 
 As we can see on lines **6** and **9**, multiplying even two
 relatively small quantities together (``MiB(5)`` and ``kB(2)``) yields
@@ -121,7 +121,7 @@ function works correctly with iterables of bitmath objects, since
 
    >>> import bitmath
    >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
-   Byte(1074790401.0)
+   Byte(1074790401.00)
 
 For all non-zero numeric operands the behaviour (returning a number)
 applies.
@@ -202,10 +202,10 @@ explicit bitmath operand on both sides:
 .. code-block:: python
 
    >>> Byte(1) + Byte(1)
-   Byte(2.0)
+   Byte(2.00)
 
    >>> KiB(10) - KiB(3)
-   KiB(7.0)
+   KiB(7.00)
 
 This makes the unit explicit rather than relying on implicit
 conversion, which eliminates ambiguity — ``KiB(10) - 3`` could mean
@@ -225,10 +225,10 @@ numeric operand as a constant. Here's an example demonstrating this.
 .. code-block:: python
 
    In [2]: 10 * KiB(43)
-   Out[2]: KiB(430.0)
+   Out[2]: KiB(430.00)
 
    In [3]: KiB(43) * 10
-   Out[3]: KiB(430.0)
+   Out[3]: KiB(430.00)
 
 
 **Division**, however, *does not* have this commutative
@@ -242,7 +242,7 @@ bitmath), the intention of ``MiB(100) / 10)`` is to separate
 .. code-block:: python
 
    In [4]: KiB(43) / 10
-   Out[4]: KiB(4.3)
+   Out[4]: KiB(4.30)
 
 The reverse operation does not maintain semantic validity. Stated
 differently, it does not make logical sense to divide a constant by a
@@ -270,13 +270,13 @@ in division, unit conversion chains, and proportional calculations:
 .. code-block:: python
 
    >>> KiB(1) / 3
-   KiB(0.3333333333333333)
+   KiB(0.33)
 
    >>> MiB(1).to_Bit()
-   Bit(8388608.0)
+   Bit(8388608.00)
 
    >>> KiB(1/3).to_Bit()
-   Bit(2730.6666666666665)
+   Bit(2730.67)
 
 The last example is not a bug. The fractional bit count is the faithful
 representation of a fractional byte input. If you need integer results,

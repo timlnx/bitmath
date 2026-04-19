@@ -40,7 +40,7 @@ directly.
            return bitmath.parse_string(value)
        except ValueError:
            raise argparse.ArgumentTypeError(
-               f"{value!r} is not a recognised bitmath unit string "
+               f"{value!r} is not a recognized bitmath unit string "
                "(examples: 10MiB, 1.5GiB, 500kB)"
            )
 
@@ -68,11 +68,11 @@ Example run:
 .. code-block:: bash
 
    $ python script.py --block-size 10MiB
-   Block size: 10.0 MiB
+   Block size: 10.00 MiB
    In KiB:     10240.00 KiB
 
    $ python script.py --block-size bad
-   error: argument --block-size: 'bad' is not a recognised bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
+   error: argument --block-size: 'bad' is not a recognized bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
 
 
 .. _integration_examples_click:
@@ -108,7 +108,7 @@ Install click before use:
                return bitmath.parse_string(value)
            except ValueError:
                self.fail(
-                   f"{value!r} is not a recognised bitmath unit string "
+                   f"{value!r} is not a recognized bitmath unit string "
                    "(examples: 10MiB, 1.5GiB, 500kB)",
                    param,
                    ctx,
@@ -139,11 +139,11 @@ Example run:
 .. code-block:: bash
 
    $ python script.py --block-size 10MiB
-   Block size: 10.0 MiB
+   Block size: 10.00 MiB
    In KiB:     10240.00 KiB
 
    $ python script.py --block-size bad
-   Error: Invalid value for '--block-size': 'bad' is not a recognised bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
+   Error: Invalid value for '--block-size': 'bad' is not a recognized bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
 
 
 .. _integration_examples_progressbar2:

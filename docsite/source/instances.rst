@@ -192,12 +192,12 @@ classes. You can even ``to_THING()`` an instance into itself again:
 
    >>> another_mib = one_mib.to_MiB()
    >>> print(one_mib, one_mib_in_kb, another_mib)
-   1.0 MiB 8388.608 kb 1.0 MiB
+   1.00 MiB 8388.61 kb 1.00 MiB
 
    >>> six_TB = TB(6)
    >>> six_TB_in_bits = six_TB.to_Bit()
    >>> print(six_TB, six_TB_in_bits)
-   6.0 TB 4.8e+13 b
+   6.00 TB 48000000000000.00 b
 
    >>> six_TB == six_TB_in_bits
    True
@@ -252,16 +252,16 @@ even easier to read.
    ...    print("Rate: %s/second" % Bit(_rate))
    ...    time.sleep(1)
 
-   Rate: 100.0 b/sec
-   Rate: 24000.0 b/sec
-   Rate: 1024.0 b/sec
-   Rate: 60151.0 b/sec
-   Rate: 33.0 b/sec
-   Rate: 9999.0 b/sec
-   Rate: 9238742.0 b/sec
-   Rate: 2.09895849555e+13 b/sec
-   Rate: 934098021.0 b/sec
-   Rate: 934894.0 b/sec
+   Rate: 100.00 b/sec
+   Rate: 24000.00 b/sec
+   Rate: 1024.00 b/sec
+   Rate: 60151.00 b/sec
+   Rate: 33.00 b/sec
+   Rate: 9999.00 b/sec
+   Rate: 9238742.00 b/sec
+   Rate: 20989584955500.00 b/sec
+   Rate: 934098021.00 b/sec
+   Rate: 934894.00 b/sec
 
 And now using a custom formatting definition:
 
@@ -304,7 +304,7 @@ bitmath instances come with a verbose built-in string representation:
 
    >>> leet_bits = Bit(1337)
    >>> print(leet_bits)
-   1337.0 b
+   1337.00 b
 
 However, for instances which aren't whole numbers (as in ``MiB(1/3.0)
 == 0.333333333333 MiB``, etc), their representation can be undesirable.
@@ -338,7 +338,7 @@ First, for reference, the default formatting:
 
    >>> ugly_number = MB(50).to_MiB() / 8.0
    >>> print(ugly_number)
-   5.96046447754 MiB
+   5.96 MiB
 
 Now, let's use the :py:meth:`format` method to limit that to two
 digits of precision:
@@ -375,7 +375,7 @@ of how an attribute may be referenced multiple times.
       ...: bytes/bits without trailing decimals: {bytes:.0f}/{bits:.0f}""" % str(ugly_number)
 
    >>> print(ugly_number.format(longer_format))
-   Formatting attributes for 5.96046447754 MiB
+   Formatting attributes for 5.96 MiB
    This instances prefix unit is MiB, which is a NIST type unit
    The unit value is 5.96046447754
    This value can be truncated to just 1 digit of precision: 6.0
@@ -408,7 +408,7 @@ Python Format Protocol (f-strings and format())
 
       >>> size = bitmath.MiB(2.847598437)
       >>> f'{size}'
-      '2.847598437 MiB'
+      '2.85 MiB'
 
    When *fmt_spec* is a **numeric format spec**, it is applied to
    ``self.value`` only, returning the formatted number without a unit
@@ -531,11 +531,11 @@ classes. Under the covers these properties call ``to_THING``.
    True
 
    >>> print(one_mib, one_mib.kb, one_mib.MiB)
-   1.0 MiB 8388.608 kb 1.0 MiB
+   1.00 MiB 8388.61 kb 1.00 MiB
 
    >>> six_TB = TB(6)
    >>> print(six_TB, six_TB.Bit)
-   6.0 TB 4.8e+13 b
+   6.00 TB 48000000000000.00 b
 
    >>> six_TB == six_TB.Bit
    True

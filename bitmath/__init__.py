@@ -84,7 +84,7 @@ ALL_UNIT_TYPES = ['Bit', 'Byte', 'kb', 'kB', 'Mb', 'MB', 'Gb', 'GB', 'Tb',
 # Internal:
 
 # Console repr(), ex: MiB(13.37), or kB(42.0)
-_FORMAT_REPR = '{unit_singular}({value})'
+_FORMAT_REPR = '{unit_singular}({value:.2f})'
 
 # ##################################
 # Exposed:
@@ -133,7 +133,7 @@ NIST_STEPS = {
 }
 
 #: String representation, ex: ``13.37 MiB``, or ``42.0 kB``
-format_string = "{value} {unit}"
+format_string = "{value:.2f} {unit}"
 
 #: Pluralization behavior
 format_plural = False

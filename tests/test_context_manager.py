@@ -57,14 +57,14 @@ class TestContextManager(TestCase):
         ]
 
         # Make sure formatting looks right BEFORE the context manager
-        self.assertEqual(str(bitmath.KiB(1.337)), "1.337 KiB")
+        self.assertEqual(str(bitmath.KiB(1.337)), "1.34 KiB")
 
         with bitmath.format("{value:.2f}-{unit}"):
             for (inst, inst_str) in zip(to_print, str_reps):
                 self.assertEqual(str(inst), inst_str)
 
         # Make sure formatting looks right AFTER the context manager
-        self.assertEqual(str(bitmath.KiB(1.337)), "1.337 KiB")
+        self.assertEqual(str(bitmath.KiB(1.337)), "1.34 KiB")
 
     def test_print_byte_plural(self):
         """Byte(3.0) prints out units in plural form"""
@@ -107,13 +107,13 @@ class TestContextManager(TestCase):
         """bestprefix=True causes str() to render the best human-readable prefix"""
         with bitmath.format(bestprefix=True):
             result = str(bitmath.MiB(1024))
-        self.assertEqual(result, "1.0 GiB")
+        self.assertEqual(result, "1.00 GiB")
 
     def test_bestprefix_restores_after_context(self):
         """bestprefix is not active outside the context manager"""
         with bitmath.format(bestprefix=True):
             pass
-        self.assertEqual(str(bitmath.MiB(1024)), "1024.0 MiB")
+        self.assertEqual(str(bitmath.MiB(1024)), "1024.00 MiB")
 
     def test_bestprefix_with_fmt_str(self):
         """bestprefix=True combined with fmt_str applies the format to the converted unit"""
@@ -130,7 +130,7 @@ class TestContextManager(TestCase):
         except ValueError:
             pass
         self.assertEqual(bitmath.format_string, original)
-        self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")
+        self.assertEqual(str(bitmath.KiB(1)), "1.00 KiB")
 
     def test_nested_context_managers(self):
         """Nested format contexts correctly save and restore enclosing context state"""
@@ -139,4 +139,4 @@ class TestContextManager(TestCase):
             with bitmath.format(fmt_str="{value:.3f} {unit}"):
                 self.assertEqual(str(bitmath.KiB(1)), "1.000 KiB")
             self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")
-        self.assertEqual(str(bitmath.KiB(1)), "1.0 KiB")
+        self.assertEqual(str(bitmath.KiB(1)), "1.00 KiB")

@@ -118,7 +118,7 @@ bitmath supports all arithmetic operations
 
    >>> eighty_four_mib = fourty_two_mib + fourty_two_mib_in_kib
    >>> eighty_four_mib
-   MiB(84.0)
+   MiB(84.00)
    >>> eighty_four_mib == fourty_two_mib * 2
    True
 
@@ -133,13 +133,13 @@ Unit Conversion
    >>> fourty_two_mib = MiB(42)
    >>> fourty_two_mib_in_kib = fourty_two_mib.to_KiB()
    >>> fourty_two_mib_in_kib
-   KiB(43008.0)
+   KiB(43008.00)
 
    >>> fourty_two_mib
-   MiB(42.0)
+   MiB(42.00)
 
    >>> fourty_two_mib.KiB
-   KiB(43008.0)
+   KiB(43008.00)
 
 Rich Comparison
 ***************
@@ -193,21 +193,21 @@ out sorted by increasing magnitude (lines **10** and **11**, and
    ...     sizes.append(KiB(os.path.getsize('./tests/' + f)))
 
    >>> print(sizes)
-   [KiB(7337.0), KiB(1441.0), KiB(2126.0), KiB(2178.0), KiB(2326.0), KiB(4003.0), KiB(48.0), KiB(1770.0), KiB(7892.0), KiB(4190.0)]
+   [KiB(7337.00), KiB(1441.00), KiB(2126.00), KiB(2178.00), KiB(2326.00), KiB(4003.00), KiB(48.00), KiB(1770.00), KiB(7892.00), KiB(4190.00)]
 
    >>> print(sorted(sizes))
-   [KiB(48.0), KiB(1441.0), KiB(1770.0), KiB(2126.0), KiB(2178.0), KiB(2326.0), KiB(4003.0), KiB(4190.0), KiB(7337.0), KiB(7892.0)]
+   [KiB(48.00), KiB(1441.00), KiB(1770.00), KiB(2126.00), KiB(2178.00), KiB(2326.00), KiB(4003.00), KiB(4190.00), KiB(7337.00), KiB(7892.00)]
 
    >>> human_sizes = [s.best_prefix() for s in sizes]
    >>> print(sorted(human_sizes))
-   [KiB(48.0), MiB(1.4072265625), MiB(1.728515625), MiB(2.076171875), MiB(2.126953125), MiB(2.271484375), MiB(3.9091796875), MiB(4.091796875), MiB(7.1650390625), MiB(7.70703125)]
+   [KiB(48.00), MiB(1.41), MiB(1.73), MiB(2.08), MiB(2.13), MiB(2.27), MiB(3.91), MiB(4.09), MiB(7.17), MiB(7.71)]
 
 Now print them out in descending magnitude
 
 .. code-block:: python
 
    >>> print(sorted(human_sizes, reverse=True))
-   [MiB(7.70703125), MiB(7.1650390625), MiB(4.091796875), MiB(3.9091796875), MiB(2.271484375), MiB(2.126953125), MiB(2.076171875), MiB(1.728515625), MiB(1.4072265625), KiB(48.0)]
+   [MiB(7.71), MiB(7.17), MiB(4.09), MiB(3.91), MiB(2.27), MiB(2.13), MiB(2.08), MiB(1.73), MiB(1.41), KiB(48.00)]
 
 
 Parsing Strings
@@ -221,11 +221,11 @@ name:
 
    >>> import bitmath
    >>> bitmath.parse_string("4.7 GiB")
-   GiB(4.7)
+   GiB(4.70)
    >>> bitmath.parse_string("1337 MB")
-   MB(1337.0)
+   MB(1337.00)
    >>> bitmath.parse_string("1 Mio")   # octet alias
-   MiB(1.0)
+   MiB(1.00)
 
 When the input comes from a tool that produces ambiguous output
 (often-times single-letter units) use ``strict=False``. Pass
@@ -236,13 +236,13 @@ automatically:
 .. code-block:: python
 
    >>> bitmath.parse_string("4G", strict=False)             # NIST default
-   GiB(4.0)
+   GiB(4.00)
    >>> bitmath.parse_string("4G", strict=False, system=bitmath.SI)
-   GB(4.0)
+   GB(4.00)
    >>> bitmath.parse_string("100", strict=False)            # plain number → bytes
-   Byte(100.0)
+   Byte(100.00)
    >>> bitmath.parse_string("100 GiB", strict=False, system=bitmath.SI)  # i-marker wins
-   GiB(100.0)
+   GiB(100.00)
 
 .. seealso::
 
@@ -263,9 +263,9 @@ the iterable:
 
    >>> import bitmath
    >>> sum([bitmath.KiB(1), bitmath.KiB(2)])
-   KiB(3.0)
+   KiB(3.00)
    >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
-   Byte(1074790401.0)
+   Byte(1074790401.00)
 
 Results from mixing plain numbers and numbers with units yields a
 result with no units.
@@ -293,11 +293,11 @@ choose a different accumulator (resultant unit):
 .. code-block:: python
 
    >>> bitmath.sum([bitmath.MiB(1), bitmath.GiB(1)])
-   Byte(1074790400.0)
+   Byte(1074790400.00)
    >>> bitmath.sum([bitmath.KiB(1), bitmath.KiB(2)], start=bitmath.MiB(0))
-   MiB(0.0029296875)
+   MiB(0.00)
    >>> bitmath.sum([bitmath.MiB(100), bitmath.KiB(2000)], start=bitmath.GiB(0))
-   GiB(0.0995635986328125)
+   GiB(0.10)
 
 Rounding
 ********
@@ -367,15 +367,15 @@ Default ``str()``
 
 The simplest option. Just print or convert to string — no imports, no
 setup. Output follows the module-level ``format_string`` (default:
-``"{value} {unit}"``):
+``"{value:.2f} {unit}"``):
 
 .. code-block:: python
 
    >>> import bitmath
    >>> print(bitmath.MiB(1.5))
-   1.5 MiB
+   1.50 MiB
    >>> str(bitmath.GiB(10))
-   '10.0 GiB'
+   '10.00 GiB'
 
 **Use this when** you just need a readable value and don't care about
 precision or alignment.
@@ -413,7 +413,7 @@ only; the unit is omitted unless you add it explicitly with
    >>> f'{size:.2f} {size.unit}'
    '127.30 GiB'
    >>> f'{size}'           # no spec → same as str(size)
-   '127.3 GiB'
+   '127.30 GiB'
 
 This shines for columnar output where alignment matters:
 

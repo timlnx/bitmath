@@ -93,12 +93,12 @@ respective contexts simultaneously before formatting any strings.
                 with bitmath.format(plural=expect_plural):
                     barrier.wait()
                     result = str(bitmath.Byte(3.0))
-                    if expect_plural and result != "3.0 B":
+                    if expect_plural and result != "3.00 B":
                         errors.put(AssertionError(
-                            "plural thread: expected '3.0 B', got %r" % result))
-                    elif not expect_plural and result != "3.0 B":
+                            "plural thread: expected '3.00 B', got %r" % result))
+                    elif not expect_plural and result != "3.00 B":
                         errors.put(AssertionError(
-                            "singular thread: expected '3.0 B', got %r" % result))
+                            "singular thread: expected '3.00 B', got %r" % result))
             except Exception as exc:
                 errors.put(exc)
 
@@ -124,12 +124,12 @@ respective contexts simultaneously before formatting any strings.
                 with bitmath.format(bestprefix=use_bestprefix):
                     barrier.wait()
                     result = str(bitmath.MiB(1024))
-                    if use_bestprefix and result != "1.0 GiB":
+                    if use_bestprefix and result != "1.00 GiB":
                         errors.put(AssertionError(
-                            "bestprefix thread: expected '1.0 GiB', got %r" % result))
-                    elif not use_bestprefix and result != "1024.0 MiB":
+                            "bestprefix thread: expected '1.00 GiB', got %r" % result))
+                    elif not use_bestprefix and result != "1024.00 MiB":
                         errors.put(AssertionError(
-                            "no-bestprefix thread: expected '1024.0 MiB', got %r" % result))
+                            "no-bestprefix thread: expected '1024.00 MiB', got %r" % result))
             except Exception as exc:
                 errors.put(exc)
 
@@ -197,9 +197,9 @@ one of them exits its context, producing a KeyError.
                 except ValueError:
                     pass
                 result = str(bitmath.KiB(1))
-                if result != "1.0 KiB":
+                if result != "1.00 KiB":
                     errors.put(AssertionError(
-                        "after exception: expected '1.0 KiB', got %r" % result))
+                        "after exception: expected '1.00 KiB', got %r" % result))
             except Exception as exc:
                 errors.put(exc)
 

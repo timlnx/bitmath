@@ -36,8 +36,8 @@ import bitmath
 class TestRepresentation(TestCase):
     def setUp(self):
         self.kib = bitmath.KiB(1)
-        self.kib_repr = 'KiB(1.0)'
-        self.kib_str = '1.0 KiB'
+        self.kib_repr = 'KiB(1.00)'
+        self.kib_str = '1.00 KiB'
         self.kib_unit = 'KiB'
         self.kib_system = 'NIST'
         self.kib_bin = '0b10000000000000'
@@ -46,8 +46,8 @@ class TestRepresentation(TestCase):
         self.kib_base = 2
 
         self.half_mib = bitmath.MiB(0.5)
-        self.half_mib_repr = 'MiB(0.5)'
-        self.half_mib_str = '0.5 MiB'
+        self.half_mib_repr = 'MiB(0.50)'
+        self.half_mib_str = '0.50 MiB'
 
         self.kB = bitmath.kB(1)
         self.kB_unit = 'kB'
@@ -159,7 +159,7 @@ manager. There is a separate test suite for that: test_context_manager"""
     def test_dunder_format_fstring_empty_spec(self):
         """f'{size}' with no spec returns the default string representation"""
         size = bitmath.KiB(1)
-        self.assertEqual(f'{size}', '1.0 KiB')
+        self.assertEqual(f'{size}', '1.00 KiB')
 
     def test_dunder_format_precision(self):
         """__format__ with a precision spec formats self.value only"""
