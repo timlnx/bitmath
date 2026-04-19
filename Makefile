@@ -30,7 +30,7 @@ PKGNAME := python-$(NAME)
 
 # VERSION file provides one place to update the software version.
 VERSION := $(shell cat VERSION)
-RPMRELEASE = $(shell awk '/global _short_release/{print $$NF; exit}' $(RPMSPEC).in)
+RPMRELEASE := 1
 
 RPMSPECDIR := .
 RPMSPEC := $(RPMSPECDIR)/$(PKGNAME).spec
@@ -97,10 +97,6 @@ viewcover: ci-unittests
 conf.py: docsite/source/conf.py.in
 	sed "s/%VERSION%/$(VERSION)/" $< > docsite/source/conf.py
 
-# Build the spec file on the fly. Substitute version numbers from the
-# canonical VERSION file.
-python-bitmath.spec: python-bitmath.spec.in
-	sed "s/%VERSION%/$(VERSION)/" $< > $@
 
 build: clean
 	@echo "#############################################"
@@ -140,18 +136,18 @@ install:
 	mkdir -p /usr/share/man/man1/
 	gzip -9 -c bitmath.1 > /usr/share/man/man1/bitmath.1.gz
 
-sdist: clean
+sdist: clean virtualenv
 	@echo "#############################################"
 	@echo "# Creating SDIST"
 	@echo "#############################################"
-	python -m build --sdist
+	. $(NAME)env3/bin/activate && pip install build && python -m build --sdist
 
-rpmcommon: sdist python-bitmath.spec
+rpmcommon: sdist
 	@echo "#############################################"
 	@echo "# Building (S)RPM Now"
 	@echo "#############################################"
 	@mkdir -p rpm-build
-	@cp dist/$(NAME)-$(VERSION).$(RPMRELEASE).tar.gz rpm-build/$(VERSION).$(RPMRELEASE).tar.gz
+	@cp dist/$(NAME)-$(VERSION).tar.gz rpm-build/$(VERSION).tar.gz
 
 srpm: rpmcommon
 	rpmbuild --define "_topdir %(pwd)/rpm-build" \
@@ -160,6 +156,8 @@ srpm: rpmcommon
 	--define "_srcrpmdir %{_topdir}" \
 	--define "_specdir $(RPMSPECDIR)" \
 	--define "_sourcedir %{_topdir}" \
+	--define "_pkgversion $(VERSION)" \
+	--define "_pkgrelease $(RPMRELEASE)" \
 	-bs $(RPMSPEC)
 	@echo "#############################################"
 	@echo "$(PKGNAME) SRPM is built:"
@@ -173,6 +171,8 @@ rpm: rpmcommon
 	--define "_srcrpmdir %{_topdir}" \
 	--define "_specdir $(RPMSPECDIR)" \
 	--define "_sourcedir %{_topdir}" \
+	--define "_pkgversion $(VERSION)" \
+	--define "_pkgrelease $(RPMRELEASE)" \
 	-ba $(RPMSPEC)
 	@echo "#############################################"
 	@echo "$(PKGNAME) RPMs are built:"
