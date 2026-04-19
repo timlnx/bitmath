@@ -1,8 +1,3 @@
-# RHEL 9 ships Python 3.9 as default; use Python 3.11 from AppStream instead
-%if 0%{?rhel} == 9
-%global python3_pkgversion 3.11
-%endif
-
 Name:           python-bitmath
 Summary:        Work with file sizes like numbers — convert, compare, sort, and format across any unit prefix
 Version:        0
