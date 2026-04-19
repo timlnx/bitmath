@@ -91,6 +91,28 @@ fix a failing check yourself, leave a comment on the pull request
 explaining the situation and we'll help.
 
 
+.. _contributing_python_versions:
+
+Supported Python Versions
+*************************
+
+bitmath supports Python versions shipping with the current and previous
+major RHEL release available via `EPEL <https://docs.fedoraproject.org/en-US/epel/>`_.
+This means the minimum supported version tracks the oldest Python still
+included in a supported EPEL target:
+
+* **RHEL 10 / EPEL 10** — Python 3.12
+* **RHEL 9 / EPEL 9** — Python 3.9, 3.11
+
+The CI matrix tests all versions in this range. When a RHEL major
+release reaches end-of-life and is dropped from EPEL, the corresponding
+Python versions may be dropped from the support matrix in the next
+bitmath release.
+
+If anybody wants to take over Debian/Ubuntu patching, we can add notes
+for which distributions are covered.
+
+
 .. _contributing_automated_tests:
 
 Automated Tests

@@ -10,7 +10,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       matrix:
-        python-version: ["3.9", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         os: ["macos-latest", "ubuntu-latest"]
     runs-on: ${{ matrix.os }}
     steps:
