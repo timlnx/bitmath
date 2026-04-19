@@ -1,0 +1,59 @@
+upstream_package_name: bitmath
+downstream_package_name: python-bitmath
+specfile_path: python-bitmath.spec
+upstream_tag_template: "v{version}"
+
+jobs:
+  # Copr build on every pull request
+  - job: copr_build
+    trigger: pull_request
+    version_suffix: ""
+    owner: tbielawa
+    project: bitmath-ci
+    targets:
+      - fedora-rawhide-x86_64
+      - fedora-42-x86_64
+      - epel-9-x86_64
+      - epel-10-x86_64
+
+  # Copr build on RC tags (v*-rc* pattern)
+  - job: copr_build
+    trigger: release
+    upstream_tag_include: "v.*-rc.*"
+    owner: tbielawa
+    project: bitmath-ci
+    targets:
+      - fedora-rawhide-x86_64
+      - fedora-42-x86_64
+      - epel-9-x86_64
+      - epel-10-x86_64
+
+  # propose_downstream on production tags (clean vX.Y.Z, no RC suffix)
+  - job: propose_downstream
+    trigger: release
+    upstream_tag_exclude: ".*-rc.*"
+    dist_git_branches:
+      - rawhide
+      - f42
+      - epel9
+      - epel10
+
+  # Koji build triggers after dist-git PR is merged
+  - job: koji_build
+    trigger: commit
+    dist_git_branches:
+      - rawhide
+      - f42
+      - epel9
+      - epel10
+
+  # Bodhi update after successful Koji build (stable branches only, not rawhide)
+  - job: bodhi_update
+    trigger: commit
+    dist_git_branches:
+      - f42
+      - epel9
+      - epel10
+    bodhi_extra_params:
+      update_type: enhancement
+      notes: "New upstream release. See https://github.com/timlnx/bitmath/releases for details."

@@ -42,4 +42,3 @@ As an emergency backup you can find me on bsky or instagram and direct message m
 * [insta - @tim.lnx](https://www.instagram.com/tim.lnx/)
 
 For less serious security issues with lower potential for exploitation or damage, please open a bug on the project and apply the `security` label to it.
-
