@@ -102,19 +102,19 @@ build: clean
 	@echo "#############################################"
 	@echo "# Building sdist + wheel"
 	@echo "#############################################"
-	python -m build
+	. $(NAME)env3/bin/activate && python -m build
 
 pypi: build
 	@echo "#############################################"
 	@echo "# Uploading to PyPI"
 	@echo "#############################################"
-	twine upload dist/*
+	. $(NAME)env3/bin/activate && pip install twine && twine upload dist/*
 
 pypitest: build
 	@echo "#############################################"
 	@echo "# Uploading to TestPyPI"
 	@echo "#############################################"
-	twine upload --repository testpypi dist/*
+	. $(NAME)env3/bin/activate && pip install twine && twine upload --repository testpypi dist/*
 
 # usage example: make tag TAG=1.1.0-1
 tag:
