@@ -141,6 +141,52 @@ Unit Conversion
    >>> fourty_two_mib.KiB
    KiB(43008.0)
 
+Let's convert a unit and show the differences. What happens if we convert ``2048
+MB`` into GiBs? Let's look the MB unit in closer detail:
+
+.. code-block:: python
+
+   >>> from bitmath import *
+   >>> MB(2048).base, MB(2048).power, MB(2048).bytes
+   (10, 6, 2048000000.0)
+
+An MB (megabyte) is an SI unit in the base-10 number system. A single megabyte
+is 10 raised to the power of 6. When you raise 10 to the power of 6 and multiply
+the result by 2048 you get the number of bytes in ``MB(2048)``. We can check
+this by creating a byte object with that many bytes as the value and ask for the
+``MB`` equivalent:
+
+.. code-block:: python
+
+   >>> bitmath.Byte((10**6)*2048).MB
+   MB(2048.0)
+
+What about that conversion though, how about we convert this into GiBs? Those
+are NIST units, it is a base-2 number system. Let's convert the MB to a GiB and
+look at those instance attributes again:
+
+.. code-block:: python
+
+   >>> convert_demo = bitmath.MB(2048).GiB
+   >>> convert_demo
+   GiB(1.9073486328125)
+   >>> convert_demo.base, convert_demo.power, convert_demo.bytes
+   (2, 30, 2048000000.0)
+
+We can see that the entire calculation has changed but the number of bytes has
+remained the same. Now we have 2 raised to the power of 6, times
+1.9073486328125.
+
+A cleaner looking conversion is possible if we convert this within the same unit
+system. If we look at the GB equivalent we get:
+
+.. code-block:: python
+
+   >>> convert_demo.GB
+   GB(2.048)
+
+Because we aren't shifting between different base number systems.
+
 Rich Comparison
 ***************
 

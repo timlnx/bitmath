@@ -69,36 +69,56 @@ operation.
   The result will be of the type of the LHS.
 
 *Multiplication*
-   Supported, but yields strange results.
+   Supported, but yields results which may not be intuitive. The math is
+   performed at the byte-level (ignoring prefix units). The result is in the
+   unit of the LHS. Technically speaking, if the LHS of the equation is a byte
+   unit, then the result should be squared. You are advised to call the
+   :py:meth:`best_prefix` method on the result to get a useful value back.
 
 .. code-block:: python
-   :linenos:
-   :emphasize-lines: 6,9
 
-   In [10]: first = MiB(5)
+   >>> bitmath.kB(3).bytes, bitmath.MiB(5).bytes
+   (3000.0, 5242880.0)
+   >>> bitmath.best_prefix(3000 * 5242880)
+   GiB(14.6484375)
 
-   In [11]: second = kB(2)
+   >>> bitmath.Byte(3000) * bitmath.MiB(5)
+   B(15728640000.0)
 
-   In [12]: first * second
-   Out[12]: MiB(10000.0)
+   >>> (bitmath.Byte(3000) * bitmath.MiB(5)).best_prefix()
+   GiB(14.6484375)
 
-   In [13]: (first * second).best_prefix()
-   Out[13]: GiB(9.765625)
+The final result represents how many “GiB-sized” chunks of bytes are in that
+total. It's weird, but it works.
 
-As we can see on lines **6** and **9**, multiplying even two
-relatively small quantities together (``MiB(5)`` and ``kB(2)``) yields
-quite large results.
+If the LHS is larger than a byte prefix unit then you get a result matching the
+unit of the LHS of the equation.
 
-Internally, this is implemented as:
+.. code-block:: python
 
-.. math::
+   >>> bitmath.MiB(5) * bitmath.kB(3)
+   MiB(15000.0)
+   # LHS was MiB, result is MiB
 
-   (5 \cdot 2^{20}) \cdot (2 \cdot 10^{3}) = 10,485,760,000 B
-
-   10,485,760,000 B \cdot \dfrac{1 MiB}{1,048,576 B} = 10,000 MiB
+   # And if we wrap it with best_prefix() we get the earlier result back
+   >>> (bitmath.MiB(5) * bitmath.kB(3)).best_prefix()
+   GiB(14.6484375)
 
 *Division*
    The result will be a number type due to unit cancellation.
+
+.. code-block:: python
+
+   >>> bitmath.kB(3) / bitmath.MiB(5)
+   0.00057220458984375
+
+   >>> bitmath.kB(3).bytes / bitmath.MiB(5).bytes
+   0.00057220458984375
+
+Above you can see that the math is performed on the bytes of each operand. As
+noted above, the units cancel out. This is the opposite of the multiplication
+case where the units square together if you do not coerce them into a larger
+prefix unit.
 
 .. _appendix_math_mixed_types:
 
@@ -123,7 +143,7 @@ function works correctly with iterables of bitmath objects, since
    >>> sum([bitmath.Byte(1), bitmath.MiB(1), bitmath.GiB(1)])
    Byte(1074790401.0)
 
-For all non-zero numeric operands the behaviour (returning a number)
+For all non-zero numeric operands the behavior (returning a number)
 applies.
 
 **Discussion:** Why do ``100 - KiB(90)`` and ``KiB(100) - 90`` both
@@ -251,7 +271,25 @@ yourself what you would expect to get if you did this:
 
 .. math::
 
-   \dfrac{100}{kB(33)} = x
+   \dfrac{100}{kB(33)}
+
+Unless you're representing rates that doesn't mean much at all. The units of
+operands when expressing rates is going to be context sensitive and can be very
+non-intuitive without additional knowledge. For example:
+
+.. code-block:: python
+
+   >>> 100/bitmath.kB(33)
+   3.0303030303030303
+
+This is functionally equivalent to writing:
+
+.. math::
+
+   \dfrac{1}{kB(33)} \cdot 100
+
+This might mean something to you, but we can't express that as a prefix unit. We
+let you do it, but it is up to you to determine the significance of the result.
 
 
 
@@ -326,6 +364,6 @@ Footnotes
        <https://www.programiz.com/python-programming/precedence-associativity>`_
 
 .. [#datamodel] `Python Datamodel Customization Methods
-                <https://docs.python.org/2.7/reference/datamodel.html#basic-customization>`_
+                <https://docs.python.org/3/reference/datamodel.html#basic-customization>`_
 
 .. [#significance] https://en.wikipedia.org/wiki/Significance_arithmetic
