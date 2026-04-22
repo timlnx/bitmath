@@ -42,6 +42,8 @@ man 7 units (from the Linux Documentation Project 'man-pages' package)
       # pragma: no cover
 """
 
+from __future__ import annotations
+
 import argparse
 import contextlib
 import fnmatch
@@ -52,6 +54,9 @@ import os.path
 import platform
 import sys
 import threading
+
+from collections.abc import Generator, Iterable, Iterator
+from typing import IO, Any
 
 # For device capacity reading in query_device_capacity(). Only supported
 # on posix systems for now. Will be addressed in issue #52 on GitHub.
@@ -157,12 +162,12 @@ def _get_bestprefix():
     return getattr(_thread_local, 'bestprefix', False)
 
 
-def os_name():
+def os_name() -> str:
     # makes unittesting platform specific code easier
     return os.name
 
 
-def capitalize_first(s):
+def capitalize_first(s: str) -> str:
     """Capitalize ONLY the first letter of the input `s`
 
 * returns a copy of input `s` with the first letter capitalized
@@ -178,7 +183,7 @@ class Bitmath(object):
     """The base class for all the other prefix classes"""
 
     # All the allowed input types
-    valid_types = (int, float)
+    valid_types: tuple[type, ...] = (int, float)
 
     def __init__(self, value=0, bytes=None, bits=None):
         """Instantiate with `value` by the unit, in plain bytes, or
@@ -229,18 +234,18 @@ only setting bits: assert value == 0 and bytes is None
         # We have the fundamental unit figured out. Set the 'pretty' unit
         self._set_prefix_value()
 
-    def _set_prefix_value(self):
+    def _set_prefix_value(self) -> None:
         self.prefix_value = self._to_prefix_value(self._byte_value)
 
-    def _to_prefix_value(self, value):
+    def _to_prefix_value(self, value: float) -> float:
         """Return the number of bits/bytes as they would look like if we
 converted *to* this unit"""
         return value / float(self._unit_value)
 
-    def _setup(self):
+    def _setup(self) -> tuple:
         raise NotImplementedError("The base 'bitmath.Bitmath' class can not be used directly")
 
-    def _do_setup(self):
+    def _do_setup(self) -> None:
         """Setup basic parameters for this class.
 
 `base` is the numeric base which when raised to `power` is equivalent
@@ -253,7 +258,7 @@ for the Kilobyte is 3.
         (self._base, self._power, self._name_singular, self._name_plural) = self._setup()
         self._unit_value = self._base ** self._power
 
-    def _norm(self, value):
+    def _norm(self, value: int | float) -> None:
         """Normalize the input value into the fundamental unit for this prefix
 type.
 
@@ -401,19 +406,19 @@ instantiate the class ahead of time.
     #
     # Reference: https://docs.python.org/3/reference/datamodel.html#basic-customization
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Representation of this object as you would expect to see in an
 interpreter"""
         global _FORMAT_REPR  # noqa: F824
         return self.format(_FORMAT_REPR)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of this object"""
         if _get_bestprefix():
             return self.best_prefix().format(_get_format_string())
         return self.format(_get_format_string())
 
-    def __format__(self, fmt_spec):
+    def __format__(self, fmt_spec: str) -> str:
         """Support Python's string formatting protocol.
 
 When *fmt_spec* is empty, returns ``str(self)`` — the same as the
@@ -432,7 +437,7 @@ surrounding string::
             return str(self)
         return self.value.__format__(fmt_spec)
 
-    def format(self, fmt):
+    def format(self, fmt: str) -> str:
         """Return a representation of this instance formatted with user
 supplied syntax"""
         _fmt_params = {
@@ -912,11 +917,11 @@ equivalent of the this instances prefix Unix value. That is to say:
     - float(KiB(3.336)) would return 3.336
 """
 
-    def __int__(self):
+    def __int__(self) -> int:
         """Return this instances prefix unit as an integer"""
         return int(self.prefix_value)
 
-    def __float__(self):
+    def __float__(self) -> float:
         """Return this instances prefix unit as a floating point number"""
         return float(self.prefix_value)
 
@@ -1262,7 +1267,7 @@ class Yb(Bit):
 
 ######################################################################
 # Utility functions
-def best_prefix(bytes, system=NIST):
+def best_prefix(bytes: Bitmath | int | float, system: int = NIST) -> Bitmath:
     """Return a bitmath instance representing the best human-readable
 representation of the number of bytes given by ``bytes``. In addition
 to a numeric type, the ``bytes`` parameter may also be a bitmath type.
@@ -1289,7 +1294,7 @@ Or:
     return Byte(value).best_prefix(system=system)
 
 
-def query_device_capacity(device_fd):
+def query_device_capacity(device_fd: IO[Any]) -> Byte:
     """Create bitmath instances of the capacity of a system block device
 
 Make one or more ioctl request to query the capacity of a block
@@ -1422,7 +1427,7 @@ ioctl's for querying block device sizes:
     return Byte(platform_params['func'](results))
 
 
-def getsize(path, bestprefix=True, system=NIST):
+def getsize(path: str, bestprefix: bool = True, system: int = NIST) -> Bitmath:
     """Return a bitmath instance in the best human-readable representation
 of the file size at `path`. Optionally, provide a preferred unit
 system by setting `system` to either `bitmath.NIST` (default) or
@@ -1439,8 +1444,14 @@ instances back.
         return Byte(size_bytes)
 
 
-def listdir(search_base, followlinks=False, filter='*',
-            relpath=False, bestprefix=False, system=NIST):
+def listdir(
+    search_base: str,
+    followlinks: bool = False,
+    filter: str = '*',
+    relpath: bool = False,
+    bestprefix: bool = False,
+    system: int = NIST,
+) -> Iterator[tuple[str, Bitmath]]:
     """This is a generator which recurses the directory tree
 `search_base`, yielding 2-tuples of:
 
@@ -1482,7 +1493,7 @@ def listdir(search_base, followlinks=False, filter='*',
                     yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
 
 
-def parse_string(s, system=NIST, strict=True):
+def parse_string(s: str | numbers.Number, system: int = NIST, strict: bool = True) -> Bitmath:
     """Parse a string with units and return a bitmath instance.
 
 String inputs may include whitespace characters between the value and
@@ -1626,7 +1637,7 @@ the return value::
         return unit_class(float(val))
 
 
-def parse_string_unsafe(s, system=NIST):
+def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
     """Deprecated wrapper for ``parse_string(s, strict=False, system=system)``.
 
 .. deprecated:: 2.0.0
@@ -1652,7 +1663,7 @@ def parse_string_unsafe(s, system=NIST):
     return parse_string(s, system=system, strict=False)
 
 
-def sum(iterable, start=None):
+def sum(iterable: Iterable[Bitmath], start: Bitmath | None = None) -> Bitmath:
     """Sum an iterable of bitmath instances, returning a Byte by default.
 
 The built-in sum() also works with bitmath objects: the __radd__
@@ -1673,7 +1684,7 @@ Byte(0) by default, or into the provided start instance.
 ######################################################################
 # Context Managers
 @contextlib.contextmanager
-def format(fmt_str=None, plural=False, bestprefix=False):
+def format(fmt_str: str | None = None, plural: bool = False, bestprefix: bool = False) -> Generator[None, None, None]:
     """Thread-safe context manager for printing bitmath instances.
 
 ``fmt_str`` - a formatting mini-language compatible string. See
