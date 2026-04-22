@@ -39,7 +39,7 @@ Breaking Changes
    The old name still works but emits a :exc:`DeprecationWarning`.
 
 **bitmath.integrations removed**
-   The argparse, click, and progressbar integrations have been removed
+   The ``argparse``, ``click``, and ``progressbar`` integrations have been removed
    from the package. Copy-paste replacements are provided in the new
    :ref:`Integration Examples <integration_examples>` documentation
    chapter. No changes to calling code are required — just a local
@@ -81,7 +81,7 @@ still works exactly the same way. What 2.0.0 adds on top of that:
    <https://github.com/timlnx/bitmath/pull/76>`_.
 
 **bitmath.sum() and built-in sum()**
-   A new :func:`bitmath.sum` function returns a unit-normalised result
+   A new :func:`bitmath.sum` function returns a unit-normalized result
    when summing mixed-type iterables. For uniform collections, the
    built-in :py:func:`sum` now works directly on bitmath sequences
    without a ``start=`` argument.
