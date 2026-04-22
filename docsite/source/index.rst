@@ -378,7 +378,7 @@ chapter of the documentation.
            return bitmath.parse_string(value)
        except ValueError:
            raise argparse.ArgumentTypeError(
-               f"{value!r} is not a recognised bitmath unit string"
+               f"{value!r} is not a recognized bitmath unit string"
            )
 
    parser = argparse.ArgumentParser()

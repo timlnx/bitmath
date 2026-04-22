@@ -153,6 +153,24 @@ bitmath.listdir()
    The **total** size of the files in this tree is **1337 + 13370 =
    14707** bytes.
 
+   .. versionadded:: 2.0.0
+
+   By far the simplest way to sum all of the results is using the built-in
+   :py:func:`sum` function, or :py:func:`bitmath.sum` for additional control
+   (complete docs on that following this section).
+
+   .. code-block:: python
+
+      >>> discovered_files = [f[1] for f in bitmath.listdir('./some_files')]
+      >>> print(discovered_files)
+      [Byte(1337.0), Byte(13370.0)]
+      >>> print(sum(discovered_files))
+      14707.0 B
+      >>> print(sum(discovered_files).best_prefix())
+      14.3623046875 KiB
+
+
+
    Let's call :py:func:`bitmath.listdir` on the ``some_files/``
    directory and see what the results look like. First we'll use all
    the default parameters, then we'll set ``relpath`` to ``True``:
@@ -391,7 +409,7 @@ bitmath.parse_string()
 
    .. versionchanged:: 2.0.0
       Added ``strict`` and ``system`` parameters. The default
-      ``strict=True`` behaviour is identical to earlier versions.
+      ``strict=True`` behavior is identical to earlier versions.
       ``system`` defaults to :py:data:`bitmath.NIST` and is only
       consulted when ``strict=False``.
 
@@ -406,7 +424,7 @@ parse_string with ``strict=False``
 When ``strict=False`` the parser accepts ambiguous input that does not
 conform to exact bitmath type names — for example, the single-letter
 units produced by tools like ``ls -h``, ``df``, and ``qemu-img``. This
-is the behaviour previously provided by the now-deprecated
+is the behavior previously provided by the now-deprecated
 :py:func:`bitmath.parse_string_unsafe`.
 
 All inputs are treated as **byte-based**. Bit-based units are not
@@ -524,7 +542,7 @@ bitmath.parse_string_unsafe()
 .. function:: parse_string_unsafe(repr[, system=bitmath.NIST])
 
    A deprecated thin wrapper around
-   ``parse_string(repr, strict=False, system=system)``. All behaviour,
+   ``parse_string(repr, strict=False, system=system)``. All behavior,
    parameters, and caveats are identical to
    :ref:`parse_string with strict=False <parse-string-non-strict>`.
 

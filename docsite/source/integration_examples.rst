@@ -40,7 +40,7 @@ directly.
            return bitmath.parse_string(value)
        except ValueError:
            raise argparse.ArgumentTypeError(
-               f"{value!r} is not a recognised bitmath unit string "
+               f"{value!r} is not a recognized bitmath unit string "
                "(examples: 10MiB, 1.5GiB, 500kB)"
            )
 
@@ -72,7 +72,80 @@ Example run:
    In KiB:     10240.00 KiB
 
    $ python script.py --block-size bad
-   error: argument --block-size: 'bad' is not a recognised bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
+   error: argument --block-size: 'bad' is not a recognized bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
+
+argparse validation
+===================
+
+Now say you want to perform some additional validation on this custom
+``BitmathType`` unit. This is best done **after** the parsing is complete, not
+as part of the ``BitmathType`` implementation. This follows the advice outlined
+in the upstream :mod:`argparse` documentation.
+
+    In general, the ``type`` keyword is a convenience that should only be used for
+    simple conversions that can only raise one of the three supported exceptions.
+    Anything with more interesting error-handling or resource management should be
+    done downstream after the arguments are parsed.
+
+First, parse the unit, allow ``BitmathType`` to handle the parsing validation.
+Second, perform your own context-aware validation. For example, you might set
+minimum or maximums and need to compare the parsed argument against them.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 17,29-30
+
+   import argparse
+   import bitmath
+
+
+   def BitmathType(value):
+       """Convert a command-line string such as '10MiB' into a bitmath object."""
+       try:
+           return bitmath.parse_string(value)
+       except ValueError:
+           raise argparse.ArgumentTypeError(
+               f"{value!r} is not a recognized bitmath unit string "
+               "(examples: 10MiB, 1.5GiB, 500kB)"
+           )
+
+
+   def main():
+       max_block_size = bitmath.GiB(1)
+       parser = argparse.ArgumentParser(
+           description="Example script using a bitmath argument type"
+       )
+       parser.add_argument(
+           "--block-size",
+           type=BitmathType,
+           required=True,
+           help="Block size with unit, e.g. 10MiB",
+       )
+       args = parser.parse_args()
+
+       if args.block_size > bitmath.GiB(1):
+           raise ValueError(f"Provided block size {args.block_size} exceeds maximum {max_block_size}")
+
+       print(f"Block size: {args.block_size}")
+       print(f"In KiB:     {args.block_size.to_KiB():.2f}")
+
+
+   if __name__ == "__main__":
+       main()
+
+Example run:
+
+.. code-block:: bash
+
+   $ python script.py --block-size 42GiB
+   Traceback (most recent call last):
+   File "script.py", line 37, in <module>
+       main()
+       ~~~~^^
+   File "script.py", line 30, in main
+       raise ValueError(f"Provided block size {args.block_size} exceeds maximum {max_block_size}")
+   ValueError: Provided block size 42.0 GiB exceeds maximum 1.0 GiB
+
 
 
 .. _integration_examples_click:
@@ -108,7 +181,7 @@ Install click before use:
                return bitmath.parse_string(value)
            except ValueError:
                self.fail(
-                   f"{value!r} is not a recognised bitmath unit string "
+                   f"{value!r} is not a recognized bitmath unit string "
                    "(examples: 10MiB, 1.5GiB, 500kB)",
                    param,
                    ctx,
@@ -143,7 +216,7 @@ Example run:
    In KiB:     10240.00 KiB
 
    $ python script.py --block-size bad
-   Error: Invalid value for '--block-size': 'bad' is not a recognised bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
+   Error: Invalid value for '--block-size': 'bad' is not a recognized bitmath unit string (examples: 10MiB, 1.5GiB, 500kB)
 
 
 .. _integration_examples_progressbar2:

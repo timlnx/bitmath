@@ -1516,8 +1516,8 @@ the return value::
 
 .. versionchanged:: 2.0.0
    Added ``strict`` and ``system`` parameters. When ``strict=True``
-   (default) behaviour is identical to the original function.
-   When ``strict=False`` the behaviour of the former
+   (default) behavior is identical to the original function.
+   When ``strict=False`` the behavior of the former
    ``parse_string_unsafe`` is applied. The ``system`` parameter
    defaults to ``bitmath.NIST`` and is ignored when ``strict=True``.
     """
