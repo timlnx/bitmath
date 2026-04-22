@@ -25,12 +25,7 @@
 # SOFTWARE.
 
 
-import platform
-(major, minor, patch) = platform.python_version_tuple()
-if int(major) == 2 and int(minor) < 7:
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestCase(unittest.TestCase):
