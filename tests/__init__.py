@@ -33,9 +33,8 @@ class TestCase(unittest.TestCase):
     Parent TestCase to use for all tests.
     """
 
-    def assertListEqual(self, l1, l2, msg=None):
-        """Assert that the contents of l1 and l2 are equal (disregarding
-ordering)"""
+    def assertListEqualUnordered(self, l1, l2, msg=None):
+        """Assert that l1 and l2 contain the same elements regardless of order."""
         self.assertEqual(len(l1), len(l2))
 
         # OK, the lists are of the same size. Let's test that each

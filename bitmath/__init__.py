@@ -162,11 +162,6 @@ def _get_bestprefix():
     return getattr(_thread_local, 'bestprefix', False)
 
 
-def os_name() -> str:
-    # makes unittesting platform specific code easier
-    return os.name
-
-
 def capitalize_first(s: str) -> str:
     """Capitalize ONLY the first letter of the input `s`
 
@@ -179,7 +174,7 @@ def capitalize_first(s: str) -> str:
 
 ######################################################################
 # Base class for everything else
-class Bitmath(object):
+class Bitmath:
     """The base class for all the other prefix classes"""
 
     # All the allowed input types
@@ -269,11 +264,10 @@ type.
             self._byte_value = float(value) * self._unit_value
             self._bit_value = self._byte_value * 8.0
         else:
-            raise ValueError("Initialization value '%s' is of an invalid type: %s. "
-                             "Must be one of %s" % (
-                                 value,
-                                 type(value),
-                                 ", ".join(str(x) for x in self.valid_types)))
+            raise ValueError(
+                f"Initialization value '{value}' is of an invalid type: {type(value)}. "
+                f"Must be one of {', '.join(str(x) for x in self.valid_types)}"
+            )
 
     ##################################################################
     # Properties
@@ -314,8 +308,7 @@ That leading ``0b`` is normal. That's how Python represents binary.
             # I don't expect to ever encounter this logic branch, but
             # hey, it's better to have extra test coverage than
             # insufficient test coverage.
-            raise ValueError("Instances mathematical base is an unsupported value: %s" % (
-                str(self._base)))
+            raise ValueError(f"Instances mathematical base is an unsupported value: {self._base}")
 
     @property
     def unit(self):
@@ -398,8 +391,7 @@ instantiate the class ahead of time.
         if isinstance(item, Bitmath):
             return cls(bits=item.bits)
         else:
-            raise ValueError("The provided items must be a valid bitmath class: %s" %
-                             str(item.__class__))
+            raise ValueError(f"The provided items must be a valid bitmath class: {item.__class__}")
 
     ######################################################################
     # The following implement the Python datamodel customization methods
@@ -409,7 +401,6 @@ instantiate the class ahead of time.
     def __repr__(self) -> str:
         """Representation of this object as you would expect to see in an
 interpreter"""
-        global _FORMAT_REPR  # noqa: F824
         return self.format(_FORMAT_REPR)
 
     def __str__(self) -> str:
@@ -782,7 +773,7 @@ always return a Byte-family result.
     # Basic math operations
     ##################################################################
 
-    # Reference: http://docs.python.org/2.7/reference/datamodel.html#emulating-numeric-types
+    # Reference: https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types
 
     """These methods are called to implement the binary arithmetic
 operations (+, -, *, //, %, divmod(), pow(), **, <<, >>, &, ^, |). For
@@ -1314,8 +1305,8 @@ ioctl's for querying block device sizes:
    :return: a bitmath :class:`bitmath.Byte` instance equivalent to the
    capacity of the target device in bytes.
 """
-    if os_name() != 'posix':
-        raise NotImplementedError("'bitmath.query_device_capacity' is not supported on this platform: %s" % os_name())
+    if os.name != 'posix':
+        raise NotImplementedError(f"'bitmath.query_device_capacity' is not supported on this platform: {os.name}")
 
     s = os.stat(device_fd.name).st_mode
     if not stat.S_ISBLK(s):
@@ -1408,15 +1399,12 @@ ioctl's for querying block device sizes:
     for req_name, fmt, request_code in platform_params['request_params']:
         # Read the systems native size (in bytes) of this format type.
         buffer_size = struct.calcsize(fmt)
-        # Construct a buffer to store the ioctl result in
-        buffer = ' ' * buffer_size
-
         # This code has been ran on only a few test systems. If it's
         # appropriate, maybe in the future we'll add try/except
         # conditions for some possible errors. Really only for cases
         # where it would add value to override the default exception
         # message string.
-        buffer = fcntl.ioctl(device_fd.fileno(), request_code, buffer)
+        buffer = fcntl.ioctl(device_fd.fileno(), request_code, buffer_size)
 
         # Unpack the raw result from the ioctl call into a familiar
         # python data type according to the ``fmt`` rules.
@@ -1534,16 +1522,15 @@ the return value::
     """
     if strict:
         # Strings only please
-        if not isinstance(s, (str)):
-            raise ValueError("parse_string only accepts string inputs but a %s was given" %
-                             type(s))
+        if not isinstance(s, str):
+            raise ValueError(f"parse_string only accepts string inputs but a {type(s)} was given")
 
         # get the index of the first alphabetic character
         try:
-            index = list([i.isalpha() for i in s]).index(True)
-        except ValueError:
-            # If there's no alphabetic characters we won't be able to .index(True)
-            raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
+            index = next(i for i, c in enumerate(s) if c.isalpha())
+        except StopIteration:
+            # If there's no alphabetic characters we won't be able to find a match
+            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
 
         # split the string into the value and the unit
         val, unit = s[:index], s[index:]
@@ -1555,7 +1542,7 @@ the return value::
             unit_class = Byte
         else:
             if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
-                raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+                raise ValueError(f"The unit {unit} is not a valid bitmath unit")
             unit_class = globals()[unit]
 
         try:
@@ -1565,21 +1552,19 @@ the return value::
         try:
             return unit_class(val)
         except:  # pragma: no cover
-            raise ValueError("Can't parse string %s into a bitmath object" % s)
+            raise ValueError(f"Can't parse string {s} into a bitmath object")
 
     else:
         # strict=False path (formerly parse_string_unsafe)
-        if not isinstance(s, (str)) and \
-           not isinstance(s, numbers.Number):
-            raise ValueError("parse_string only accepts string/number inputs but a %s was given" %
-                             type(s))
+        if not isinstance(s, str) and not isinstance(s, numbers.Number):
+            raise ValueError(f"parse_string only accepts string/number inputs but a {type(s)} was given")
 
         # Test case: raw number input (easy!)
         if isinstance(s, numbers.Number):
             return Byte(s)
 
         # Test case: a number pretending to be a string
-        if isinstance(s, (str)):
+        if isinstance(s, str):
             try:
                 return Byte(float(s))
             except ValueError:
@@ -1588,9 +1573,9 @@ the return value::
         # At this point the input is a string with a unit component.
         # Separate the number and the unit.
         try:
-            index = list([i.isalpha() for i in s]).index(True)
-        except ValueError:  # pragma: no cover
-            raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
+            index = next(i for i, c in enumerate(s) if c.isalpha())
+        except StopIteration:  # pragma: no cover
+            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
 
         val, unit = s[:index], s[index:]
 
@@ -1627,12 +1612,12 @@ the return value::
             if unit[:2] in NIST_PREFIXES:
                 unit_class = globals()[unit]
         else:
-            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
 
         try:
             unit_class
         except UnboundLocalError:
-            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
 
         return unit_class(float(val))
 
