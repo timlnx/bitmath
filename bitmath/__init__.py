@@ -889,9 +889,6 @@ Result types match __floordiv__ and __mod__.
 """
         return (self.__floordiv__(other), self.__mod__(other))
 
-    # def __pow__(self, other, modulo=None):
-    #     return NotImplemented
-
     ##################################################################
 
     """These methods are called to implement the binary arithmetic
