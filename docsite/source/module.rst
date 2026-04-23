@@ -560,60 +560,150 @@ bitmath.parse_string_unsafe()
    .. versionadded:: 1.3.1
 
 
+bitmath.query_capacity()
+========================
+
+.. function:: query_capacity(path, bestprefix=True, system=NIST)
+
+   Return the total, used, and free capacity of the volume containing
+   ``path`` as a :class:`Capacity` NamedTuple of :class:`bitmath.Bitmath`
+   instances. This is the recommended API for volume size queries — it
+   works cross-platform without elevated privileges.
+
+   :param path: A path on the volume to query (``str`` or
+                :class:`os.PathLike`). On Windows, a bare drive letter
+                such as ``"C"`` or ``"C:"`` is automatically normalized
+                to ``"C:\\"``.
+   :param bool bestprefix: When ``True`` (default), each returned field
+                           is pre-normalized via
+                           :meth:`~bitmath.Bitmath.best_prefix` for
+                           human-readable output. When ``False``, raw
+                           :class:`bitmath.Byte` instances are returned.
+   :param int system: Prefix system used when ``bestprefix`` is
+                      ``True``. :data:`bitmath.NIST` (default) gives
+                      binary prefixes (``GiB``); :data:`bitmath.SI`
+                      gives decimal prefixes (``GB``). Ignored when
+                      ``bestprefix`` is ``False``.
+   :return: A :class:`bitmath.Capacity` with fields ``total``,
+            ``used``, and ``free``.
+   :raises FileNotFoundError: if ``path`` does not exist.
+   :raises PermissionError: if the process lacks access to query ``path``.
+
+   Linux examples (human-readable by default):
+
+   .. code-block:: python
+
+      >>> import bitmath
+      >>> cap = bitmath.query_capacity("/")
+      >>> print(cap.total)
+      465.762 GiB
+      >>> cap = bitmath.query_capacity("/home")
+      >>> print(cap.free)
+      120.5 GiB
+
+   macOS examples:
+
+   .. code-block:: python
+
+      >>> cap = bitmath.query_capacity("/")
+      >>> print(cap.total)
+      500.068 GiB
+      >>> cap = bitmath.query_capacity("/Volumes/SomeVolume")
+      >>> print(cap.used)
+      14.311 GiB
+
+   Windows examples (bare drive letters are normalized automatically):
+
+   .. code-block:: python
+
+      >>> cap = bitmath.query_capacity("C:\\")
+      >>> print(cap.total)
+      476.837 GiB
+      >>> cap = bitmath.query_capacity("C")
+      >>> print(cap.free)
+      200.0 GiB
+
+   Tuple unpacking:
+
+   .. code-block:: python
+
+      >>> total, used, free = bitmath.query_capacity("/")
+      >>> print(total, used, free)
+      465.762 GiB 186.264 GiB 279.397 GiB
+
+   Opt into SI (decimal) prefixes:
+
+   .. code-block:: python
+
+      >>> cap = bitmath.query_capacity("/", system=bitmath.SI)
+      >>> print(cap.total)
+      500.068 GB
+
+   Raw :class:`bitmath.Byte` instances (no prefix normalization):
+
+   .. code-block:: python
+
+      >>> cap = bitmath.query_capacity("/", bestprefix=False)
+      >>> print(cap.total)
+      500068036608.0 Byte
+
+   .. versionadded:: 2.0.0
+
+
 bitmath.query_device_capacity()
-===============================
+================================
 
 .. function:: query_device_capacity(device_fd)
 
-   Create :class:`bitmath.Byte` instances representing the capacity of
-   a block device.
+   Query the raw physical capacity of a block device. This is an
+   advanced, privileged API intended for callers that need the true
+   hardware capacity (e.g. disk imaging tools). Most users should use
+   :func:`query_capacity` instead.
 
-   :param file device_fd: An open file handle (``handle =
-                          open('/dev/sda')``) of the target device.
-   :return: A :class:`bitmath.Byte` equal to the size of ``device_fd``.
-   :raises ValueError: if file descriptor ``device_fd`` is not of a
-                       device type.
-   :raises IOError:
+   Requires root on Linux and administrator on Windows. **Not supported
+   on macOS** — SIP blocks raw block device access even for root; use
+   :func:`query_capacity` there.
 
-      * :py:exc:`IOError[13]` - If the effective **uid** of this
-        process does not have access to issue raw commands to block
-        devices. I.e., this process does not have super-user rights.
-      * :py:exc:`IOError[2]` - If the device ``device_fd`` points to
-        does not exist.
+   :param file device_fd: An open file handle of the block device.
+   :return: A :class:`bitmath.Byte` equal to the device capacity.
+   :raises ValueError: if ``device_fd`` is not a block device.
+   :raises NotImplementedError: on macOS or any unsupported platform.
+   :raises OSError: if the underlying ioctl or DeviceIoControl call fails.
 
-
-   .. include:: query_device_capacity_warning.rst
-
-
-   .. include:: example_block_devices.rst
-
-
-   Here's an example using the ``with`` context manager to open a
-   device and print its capacity with the best-human readable prefix
-   (line **3**):
+   Linux example (requires root):
 
    .. code-block:: python
       :linenos:
-      :emphasize-lines: 3
 
       >>> import bitmath
-      >>> with open("/dev/sda") as device:
+      >>> with open("/dev/sda", "rb") as device:
       ...     size = bitmath.query_device_capacity(device).best_prefix()
-      ...     print("Device %s capacity: %s (%s Bytes)" % (device.name, size, size_bytes))
-      Device /dev/sda capacity: 238.474937439 GiB (2.56060514304e+11 Bytes)
+      ...     print(f"Device {device.name} capacity: {size}")
+      Device /dev/sda capacity: 238.475 GiB
 
+   Windows example (requires administrator privileges):
 
-   :raises NotImplementedError: if called on an unsupported platform.
-                               Supported platforms are Linux, macOS,
-                               and Windows.
+   .. code-block:: python
+      :linenos:
 
-   .. note:: **Windows usage**: open the device as
-             ``open(r'\\.\PhysicalDrive0', 'rb')`` (administrator
-             privileges required).  The device path must start with
-             ``\\.\`` — passing a regular file path raises
-             :py:exc:`ValueError`.
+      >>> import bitmath
+      >>> drives = [r'\\.\PhysicalDrive0', r'\\.\PhysicalDrive1']
+      >>> for path in drives:
+      ...     with open(path, 'rb') as drive:
+      ...         size = bitmath.query_device_capacity(drive).best_prefix()
+      ...         print(f"Drive {path}: {size}")
+      Drive \\.\PhysicalDrive0: 80.0 GiB
+      Drive \\.\PhysicalDrive1: 14.311 TiB
+
+   .. note:: **macOS**: this function raises :exc:`NotImplementedError`
+             because System Integrity Protection (SIP) prevents raw
+             block device access. Use :func:`query_capacity` instead.
 
    .. versionadded:: 1.2.4
+
+   .. versionchanged:: 2.0.0
+      Added Windows support. macOS now raises :exc:`NotImplementedError`
+      (SIP restriction).
 
 .. _module_context_managers:
 
