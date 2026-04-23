@@ -85,6 +85,57 @@ The result on line **4** tells tells us that we could fit **256**
 average-quality songs on our iPod.
 
 
+Using Real Device Capacity
+==========================
+
+Rather than hard-coding a device size, we can query the actual free
+space on any mounted filesystem with :func:`bitmath.query_capacity`
+and feed that directly into the same calculation.
+
+:func:`bitmath.query_capacity` returns a :class:`Capacity` named
+tuple with ``total``, ``used``, and ``free`` fields. By default
+(``bestprefix=True``) each field is already normalized to a
+human-readable prefix (e.g. ``GiB``). Pass ``bestprefix=False`` to
+get raw :class:`bitmath.Byte` instances instead. It requires no
+elevated privileges and works cross-platform.
+
+.. code-block:: python
+
+   >>> import bitmath
+   >>> cap = bitmath.query_capacity("/")
+   >>> print(cap.free)
+   93.08 GiB
+
+Now we can ask: *how many 4.7 GB DVD images fit in that free space?*
+
+.. code-block:: python
+
+   >>> dvd = bitmath.GB(4.7)
+   >>> count, remainder = divmod(cap.free, dvd)
+   >>> print(int(count), "DVDs,", remainder.best_prefix(), "left over")
+   19 DVDs, 3.262 GiB left over
+
+Floor division (``//``) and modulo (``%``) work the same way if you
+only need one value:
+
+.. code-block:: python
+
+   >>> print(int(cap.free // dvd), "DVDs fit")
+   19 DVDs fit
+   >>> print((cap.free % dvd).best_prefix(), "remaining")
+   3.262 GiB remaining
+
+.. seealso::
+
+   :ref:`Capacity Math <capacity_math>`
+      Details on floor division, modulo, and ``divmod`` for bitmath
+      objects.
+
+   :func:`bitmath.query_capacity`
+      Full reference for the ``Capacity`` named tuple and
+      cross-platform behaviour.
+
+
 Printing Human-Readable File Sizes in Python
 ********************************************
 
