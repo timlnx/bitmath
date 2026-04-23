@@ -1663,10 +1663,7 @@ the return value::
             val = float(val)
         except ValueError:
             raise
-        try:
-            return unit_class(val)
-        except:  # pragma: no cover
-            raise ValueError(f"Can't parse string {s} into a bitmath object")
+        return unit_class(val)
 
     else:
         # strict=False path (formerly parse_string_unsafe)
