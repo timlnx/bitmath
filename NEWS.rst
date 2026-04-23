@@ -101,6 +101,15 @@ still works exactly the same way. What 2.0.0 adds on top of that:
    family is now preserved. Closes `issue #95
    <https://github.com/timlnx/bitmath/issues/95>`_.
 
+**Windows device capacity**
+   :func:`bitmath.query_device_capacity` now works on Windows via
+   ``DeviceIoControl``. Open the device as
+   ``open(r'\\.\PhysicalDrive0', 'rb')`` (administrator privileges
+   required). Unsupported platforms raise :exc:`NotImplementedError`.
+   The new :data:`bitmath.SUPPORTED_PLATFORMS` constant lists all
+   platforms where the function is available. Closes `issue #52
+   <https://github.com/timlnx/bitmath/issues/52>`_.
+
 **Flexible string parsing**
    :func:`bitmath.parse_string` with ``strict=False`` accepts
    ambiguous input such as ``"1g"`` or ``"1GB"`` and resolves it to
@@ -124,8 +133,8 @@ projects are actually maintained in 2026:
    ``pyproject.toml``.
 
 **GitHub Actions**
-   CI now runs against Python 3.11, 3.12, and 3.13 on both Ubuntu and
-   macOS, with actions pinned to current versions (``checkout@v4``,
+   CI now runs against Python 3.9 through 3.13 on Ubuntu, macOS, and
+   Windows, with actions pinned to current versions (``checkout@v6``,
    ``setup-python@v5``). Tests run on every pull request, not just
    pushes.
 
@@ -151,7 +160,7 @@ bitmath started as a small passion project of mine. A utility for
 thinking about and clearly expressing file sizes, and that's still
 exactly what it is. This 2.0.0 release doesn't change what the library
 does. What I've done is change the very foundation that it's built
-on. The test suite sits at 288 tests and 100% coverage. The
+on. The test suite sits at 294 tests and 99% coverage. The
 documentation has been comprehensively reviewed and updated. The
 packaging is clean enough to pass ``twine check`` on the first attempt
 (well, the second).
