@@ -27,10 +27,10 @@ Phases 1 (maintenance 1.4.0) and 2 (bitmath 2.0.0) are complete. The project:
 ## Common Commands
 
 ```bash
-# Run the full test suite with coverage
-make test
+# Run the full test suite with coverage (creates venv, runs pytest + linting)
+make ci
 
-# Run linting
+# Run linting only
 ruff check bitmath/ tests/
 
 # Build a wheel

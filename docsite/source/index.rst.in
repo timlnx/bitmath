@@ -78,7 +78,7 @@ Installation
 
 bitmath is available in Fedora and EPEL repositories, as well as
 directly available via `PyPI
-<https://pypi.python.org/pypi/bitmath>`_. As of 2023 bitmath is only
+<https://pypi.org/project/bitmath/>`_. As of 2023 bitmath is only
 developed, tested, and supported for `currently supported
 <https://devguide.python.org/versions/>`_ Python releases.
 
