@@ -603,12 +603,15 @@ bitmath.query_device_capacity()
       Device /dev/sda capacity: 238.474937439 GiB (2.56060514304e+11 Bytes)
 
 
-   .. important:: **Platform Notice**:
-                  :py:func:`bitmath.query_device_capacity` is only
-                  verified to work on **Linux** and **Mac OS X**
-                  platforms. To file a bug report, please follow the
-                  instructions in the :ref:`contributing
-                  section<contributing_issue_reporting>`.
+   :raises NotImplementedError: if called on an unsupported platform.
+                               Supported platforms are Linux, macOS,
+                               and Windows.
+
+   .. note:: **Windows usage**: open the device as
+             ``open(r'\\.\PhysicalDrive0', 'rb')`` (administrator
+             privileges required).  The device path must start with
+             ``\\.\`` — passing a regular file path raises
+             :py:exc:`ValueError`.
 
    .. versionadded:: 1.2.4
 

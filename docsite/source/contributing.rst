@@ -242,8 +242,7 @@ output omitted for brevity):
 
    ======================== NNN passed in Xs ========================
 
-A passing run shows 100% coverage. The exact test count grows as new
-tests are added. Any regression in coverage is a failure.
+The exact test count grows as new tests are added.
 
 The definitive pass/fail verdict comes from the GitHub Actions workflow
 on your pull request, which runs the suite across all supported Python
