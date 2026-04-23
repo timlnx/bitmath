@@ -42,6 +42,8 @@ man 7 units (from the Linux Documentation Project 'man-pages' package)
       # pragma: no cover
 """
 
+from __future__ import annotations
+
 import argparse
 import contextlib
 import fnmatch
@@ -52,6 +54,9 @@ import os.path
 import platform
 import sys
 import threading
+
+from collections.abc import Generator, Iterable, Iterator
+from typing import IO, Any
 
 # For device capacity reading in query_device_capacity(). Only supported
 # on posix systems for now. Will be addressed in issue #52 on GitHub.
@@ -157,12 +162,7 @@ def _get_bestprefix():
     return getattr(_thread_local, 'bestprefix', False)
 
 
-def os_name():
-    # makes unittesting platform specific code easier
-    return os.name
-
-
-def capitalize_first(s):
+def capitalize_first(s: str) -> str:
     """Capitalize ONLY the first letter of the input `s`
 
 * returns a copy of input `s` with the first letter capitalized
@@ -174,11 +174,11 @@ def capitalize_first(s):
 
 ######################################################################
 # Base class for everything else
-class Bitmath(object):
+class Bitmath:
     """The base class for all the other prefix classes"""
 
     # All the allowed input types
-    valid_types = (int, float)
+    valid_types: tuple[type, ...] = (int, float)
 
     def __init__(self, value=0, bytes=None, bits=None):
         """Instantiate with `value` by the unit, in plain bytes, or
@@ -229,18 +229,18 @@ only setting bits: assert value == 0 and bytes is None
         # We have the fundamental unit figured out. Set the 'pretty' unit
         self._set_prefix_value()
 
-    def _set_prefix_value(self):
+    def _set_prefix_value(self) -> None:
         self.prefix_value = self._to_prefix_value(self._byte_value)
 
-    def _to_prefix_value(self, value):
+    def _to_prefix_value(self, value: float) -> float:
         """Return the number of bits/bytes as they would look like if we
 converted *to* this unit"""
         return value / float(self._unit_value)
 
-    def _setup(self):
+    def _setup(self) -> tuple:
         raise NotImplementedError("The base 'bitmath.Bitmath' class can not be used directly")
 
-    def _do_setup(self):
+    def _do_setup(self) -> None:
         """Setup basic parameters for this class.
 
 `base` is the numeric base which when raised to `power` is equivalent
@@ -253,7 +253,7 @@ for the Kilobyte is 3.
         (self._base, self._power, self._name_singular, self._name_plural) = self._setup()
         self._unit_value = self._base ** self._power
 
-    def _norm(self, value):
+    def _norm(self, value: int | float) -> None:
         """Normalize the input value into the fundamental unit for this prefix
 type.
 
@@ -264,11 +264,10 @@ type.
             self._byte_value = float(value) * self._unit_value
             self._bit_value = self._byte_value * 8.0
         else:
-            raise ValueError("Initialization value '%s' is of an invalid type: %s. "
-                             "Must be one of %s" % (
-                                 value,
-                                 type(value),
-                                 ", ".join(str(x) for x in self.valid_types)))
+            raise ValueError(
+                f"Initialization value '{value}' is of an invalid type: {type(value)}. "
+                f"Must be one of {', '.join(str(x) for x in self.valid_types)}"
+            )
 
     ##################################################################
     # Properties
@@ -309,8 +308,7 @@ That leading ``0b`` is normal. That's how Python represents binary.
             # I don't expect to ever encounter this logic branch, but
             # hey, it's better to have extra test coverage than
             # insufficient test coverage.
-            raise ValueError("Instances mathematical base is an unsupported value: %s" % (
-                str(self._base)))
+            raise ValueError(f"Instances mathematical base is an unsupported value: {self._base}")
 
     @property
     def unit(self):
@@ -393,27 +391,25 @@ instantiate the class ahead of time.
         if isinstance(item, Bitmath):
             return cls(bits=item.bits)
         else:
-            raise ValueError("The provided items must be a valid bitmath class: %s" %
-                             str(item.__class__))
+            raise ValueError(f"The provided items must be a valid bitmath class: {item.__class__}")
 
     ######################################################################
     # The following implement the Python datamodel customization methods
     #
     # Reference: https://docs.python.org/3/reference/datamodel.html#basic-customization
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Representation of this object as you would expect to see in an
 interpreter"""
-        global _FORMAT_REPR  # noqa: F824
         return self.format(_FORMAT_REPR)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of this object"""
         if _get_bestprefix():
             return self.best_prefix().format(_get_format_string())
         return self.format(_get_format_string())
 
-    def __format__(self, fmt_spec):
+    def __format__(self, fmt_spec: str) -> str:
         """Support Python's string formatting protocol.
 
 When *fmt_spec* is empty, returns ``str(self)`` — the same as the
@@ -432,7 +428,7 @@ surrounding string::
             return str(self)
         return self.value.__format__(fmt_spec)
 
-    def format(self, fmt):
+    def format(self, fmt: str) -> str:
         """Return a representation of this instance formatted with user
 supplied syntax"""
         _fmt_params = {
@@ -777,7 +773,7 @@ always return a Byte-family result.
     # Basic math operations
     ##################################################################
 
-    # Reference: http://docs.python.org/2.7/reference/datamodel.html#emulating-numeric-types
+    # Reference: https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types
 
     """These methods are called to implement the binary arithmetic
 operations (+, -, *, //, %, divmod(), pow(), **, <<, >>, &, ^, |). For
@@ -912,11 +908,11 @@ equivalent of the this instances prefix Unix value. That is to say:
     - float(KiB(3.336)) would return 3.336
 """
 
-    def __int__(self):
+    def __int__(self) -> int:
         """Return this instances prefix unit as an integer"""
         return int(self.prefix_value)
 
-    def __float__(self):
+    def __float__(self) -> float:
         """Return this instances prefix unit as a floating point number"""
         return float(self.prefix_value)
 
@@ -1262,7 +1258,7 @@ class Yb(Bit):
 
 ######################################################################
 # Utility functions
-def best_prefix(bytes, system=NIST):
+def best_prefix(bytes: Bitmath | int | float, system: int = NIST) -> Bitmath:
     """Return a bitmath instance representing the best human-readable
 representation of the number of bytes given by ``bytes``. In addition
 to a numeric type, the ``bytes`` parameter may also be a bitmath type.
@@ -1289,7 +1285,7 @@ Or:
     return Byte(value).best_prefix(system=system)
 
 
-def query_device_capacity(device_fd):
+def query_device_capacity(device_fd: IO[Any]) -> Byte:
     """Create bitmath instances of the capacity of a system block device
 
 Make one or more ioctl request to query the capacity of a block
@@ -1309,8 +1305,8 @@ ioctl's for querying block device sizes:
    :return: a bitmath :class:`bitmath.Byte` instance equivalent to the
    capacity of the target device in bytes.
 """
-    if os_name() != 'posix':
-        raise NotImplementedError("'bitmath.query_device_capacity' is not supported on this platform: %s" % os_name())
+    if os.name != 'posix':
+        raise NotImplementedError(f"'bitmath.query_device_capacity' is not supported on this platform: {os.name}")
 
     s = os.stat(device_fd.name).st_mode
     if not stat.S_ISBLK(s):
@@ -1403,15 +1399,12 @@ ioctl's for querying block device sizes:
     for req_name, fmt, request_code in platform_params['request_params']:
         # Read the systems native size (in bytes) of this format type.
         buffer_size = struct.calcsize(fmt)
-        # Construct a buffer to store the ioctl result in
-        buffer = ' ' * buffer_size
-
         # This code has been ran on only a few test systems. If it's
         # appropriate, maybe in the future we'll add try/except
         # conditions for some possible errors. Really only for cases
         # where it would add value to override the default exception
         # message string.
-        buffer = fcntl.ioctl(device_fd.fileno(), request_code, buffer)
+        buffer = fcntl.ioctl(device_fd.fileno(), request_code, buffer_size)
 
         # Unpack the raw result from the ioctl call into a familiar
         # python data type according to the ``fmt`` rules.
@@ -1422,7 +1415,7 @@ ioctl's for querying block device sizes:
     return Byte(platform_params['func'](results))
 
 
-def getsize(path, bestprefix=True, system=NIST):
+def getsize(path: str, bestprefix: bool = True, system: int = NIST) -> Bitmath:
     """Return a bitmath instance in the best human-readable representation
 of the file size at `path`. Optionally, provide a preferred unit
 system by setting `system` to either `bitmath.NIST` (default) or
@@ -1439,8 +1432,14 @@ instances back.
         return Byte(size_bytes)
 
 
-def listdir(search_base, followlinks=False, filter='*',
-            relpath=False, bestprefix=False, system=NIST):
+def listdir(
+    search_base: str,
+    followlinks: bool = False,
+    filter: str = '*',
+    relpath: bool = False,
+    bestprefix: bool = False,
+    system: int = NIST,
+) -> Iterator[tuple[str, Bitmath]]:
     """This is a generator which recurses the directory tree
 `search_base`, yielding 2-tuples of:
 
@@ -1482,7 +1481,7 @@ def listdir(search_base, followlinks=False, filter='*',
                     yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
 
 
-def parse_string(s, system=NIST, strict=True):
+def parse_string(s: str | numbers.Number, system: int = NIST, strict: bool = True) -> Bitmath:
     """Parse a string with units and return a bitmath instance.
 
 String inputs may include whitespace characters between the value and
@@ -1523,16 +1522,15 @@ the return value::
     """
     if strict:
         # Strings only please
-        if not isinstance(s, (str)):
-            raise ValueError("parse_string only accepts string inputs but a %s was given" %
-                             type(s))
+        if not isinstance(s, str):
+            raise ValueError(f"parse_string only accepts string inputs but a {type(s)} was given")
 
         # get the index of the first alphabetic character
         try:
-            index = list([i.isalpha() for i in s]).index(True)
-        except ValueError:
-            # If there's no alphabetic characters we won't be able to .index(True)
-            raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
+            index = next(i for i, c in enumerate(s) if c.isalpha())
+        except StopIteration:
+            # If there's no alphabetic characters we won't be able to find a match
+            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
 
         # split the string into the value and the unit
         val, unit = s[:index], s[index:]
@@ -1544,7 +1542,7 @@ the return value::
             unit_class = Byte
         else:
             if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
-                raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+                raise ValueError(f"The unit {unit} is not a valid bitmath unit")
             unit_class = globals()[unit]
 
         try:
@@ -1554,21 +1552,19 @@ the return value::
         try:
             return unit_class(val)
         except:  # pragma: no cover
-            raise ValueError("Can't parse string %s into a bitmath object" % s)
+            raise ValueError(f"Can't parse string {s} into a bitmath object")
 
     else:
         # strict=False path (formerly parse_string_unsafe)
-        if not isinstance(s, (str)) and \
-           not isinstance(s, numbers.Number):
-            raise ValueError("parse_string only accepts string/number inputs but a %s was given" %
-                             type(s))
+        if not isinstance(s, str) and not isinstance(s, numbers.Number):
+            raise ValueError(f"parse_string only accepts string/number inputs but a {type(s)} was given")
 
         # Test case: raw number input (easy!)
         if isinstance(s, numbers.Number):
             return Byte(s)
 
         # Test case: a number pretending to be a string
-        if isinstance(s, (str)):
+        if isinstance(s, str):
             try:
                 return Byte(float(s))
             except ValueError:
@@ -1577,9 +1573,9 @@ the return value::
         # At this point the input is a string with a unit component.
         # Separate the number and the unit.
         try:
-            index = list([i.isalpha() for i in s]).index(True)
-        except ValueError:  # pragma: no cover
-            raise ValueError("No unit detected, can not parse string '%s' into a bitmath object" % s)
+            index = next(i for i, c in enumerate(s) if c.isalpha())
+        except StopIteration:  # pragma: no cover
+            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
 
         val, unit = s[:index], s[index:]
 
@@ -1616,17 +1612,17 @@ the return value::
             if unit[:2] in NIST_PREFIXES:
                 unit_class = globals()[unit]
         else:
-            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
 
         try:
             unit_class
         except UnboundLocalError:
-            raise ValueError("The unit %s is not a valid bitmath unit" % unit)
+            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
 
         return unit_class(float(val))
 
 
-def parse_string_unsafe(s, system=NIST):
+def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
     """Deprecated wrapper for ``parse_string(s, strict=False, system=system)``.
 
 .. deprecated:: 2.0.0
@@ -1652,7 +1648,7 @@ def parse_string_unsafe(s, system=NIST):
     return parse_string(s, system=system, strict=False)
 
 
-def sum(iterable, start=None):
+def sum(iterable: Iterable[Bitmath], start: Bitmath | None = None) -> Bitmath:
     """Sum an iterable of bitmath instances, returning a Byte by default.
 
 The built-in sum() also works with bitmath objects: the __radd__
@@ -1673,7 +1669,7 @@ Byte(0) by default, or into the provided start instance.
 ######################################################################
 # Context Managers
 @contextlib.contextmanager
-def format(fmt_str=None, plural=False, bestprefix=False):
+def format(fmt_str: str | None = None, plural: bool = False, bestprefix: bool = False) -> Generator[None, None, None]:
     """Thread-safe context manager for printing bitmath instances.
 
 ``fmt_str`` - a formatting mini-language compatible string. See

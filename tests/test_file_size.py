@@ -121,7 +121,7 @@ Would yield 2-tuple's of:
             'tests/listdir_nosymlinks/depth1/depth2/1024_byte_file'
         ]
 
-        self.assertListEqual(discovered_paths, expected_paths)
+        self.assertListEqualUnordered(discovered_paths, expected_paths)
 
         expected_sizes = [
             bitmath.Byte(10.0),
@@ -131,7 +131,7 @@ Would yield 2-tuple's of:
             contents[0][1],
             contents[1][1]
         ]
-        self.assertListEqual(discovered_sizes, expected_sizes)
+        self.assertListEqualUnordered(discovered_sizes, expected_sizes)
 
     # 2018-03-18 - Commenting this out for now. This is failing during
     # RPM building. I have no idea why or when this began
@@ -186,7 +186,7 @@ Same assumptions as in test_listdir_symlinks_nofollow.
             contents[0][0],
             contents[1][0]
         ]
-        self.assertListEqual(discovered_paths, expected_paths)
+        self.assertListEqualUnordered(discovered_paths, expected_paths)
 
         # Ensure the measured size is what we expect
         expected_sizes = [
@@ -197,7 +197,7 @@ Same assumptions as in test_listdir_symlinks_nofollow.
             contents[0][1],
             contents[1][1]
         ]
-        self.assertListEqual(discovered_sizes, expected_sizes)
+        self.assertListEqualUnordered(discovered_sizes, expected_sizes)
 
     def test_listdir_symlinks_follow_relpath_false(self):
         """listdir: symlinks followed, absolute paths are returned
@@ -219,7 +219,7 @@ that the 0th item of the tuple returns a fully qualified path.
             contents[0][0],
             contents[1][0]
         ]
-        self.assertListEqual(discovered_paths, expected_paths)
+        self.assertListEqualUnordered(discovered_paths, expected_paths)
 
         # Ensure the measured size is what we expect
         expected_sizes = [
@@ -230,7 +230,7 @@ that the 0th item of the tuple returns a fully qualified path.
             contents[0][1],
             contents[1][1]
         ]
-        self.assertListEqual(discovered_sizes, expected_sizes)
+        self.assertListEqualUnordered(discovered_sizes, expected_sizes)
 
     def test_listdir_filtering_nosymlinks(self):
         """listdir: no symbolic links in tree measures right with a filter

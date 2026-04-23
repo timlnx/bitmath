@@ -99,14 +99,14 @@ supported <https://devguide.python.org/versions/>`_ Python releases.
    $ sudo dnf install python3-bitmath
 
 
-**PyPi**:
+**PyPI**:
 
-You could also install bitmath from `PyPi
-<https://pypi.python.org/pypi/bitmath>`_ if you like:
+You could also install bitmath from `PyPI
+<https://pypi.org/project/bitmath/>`_ if you like:
 
 .. code-block:: bash
 
-   $ sudo pip install bitmath
+   $ pip install --user bitmath
 
 
 

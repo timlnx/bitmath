@@ -17,7 +17,7 @@ a major release. Version 2.0.0 is a thorough modernization: the
 Python 2 era is officially over, the library picks up several
 long-requested features, and the entire project infrastructure has
 been rebuilt from scratch. If you've been running bitmath on Python
-3.11 or later and quietly wishing it felt more modern — this release
+3.9 or later and quietly wishing it felt more modern — this release
 is for you.
 
 
@@ -25,29 +25,26 @@ Breaking Changes
 ================
 
 **Python support**
-   Python 3.11+ only. Python 2 and Python 3.7–3.10 are no longer
+   Python 3.9+ only. Python 2 and Python < 3.9 are no longer
    supported or tested.
 
 **parse_string() default system**
-   The default unit system when ``strict=False`` is now **NIST**
-   (binary). Previously it defaulted to SI. Code that relied on the
-   old default for ambiguous strings such as ``"1g"`` will get a
-   different result. See :ref:`parse-string-non-strict` for full details.
+   The default unit system when ``strict=False`` is now **NIST** (base-2).
+   Previously it defaulted to SI (base-10). Code that relied on the old default
+   for ambiguous strings such as ``"1g"`` could get a different result. See
+   :ref:`parse-string-non-strict` for full details. All bitmath now consistently
+   defaults to the NIST system.
 
 **parse_string_unsafe() deprecated**
    Use :func:`bitmath.parse_string` with ``strict=False`` instead.
    The old name still works but emits a :exc:`DeprecationWarning`.
 
 **bitmath.integrations removed**
-   The argparse, click, and progressbar integrations have been removed
+   The ``argparse``, ``click``, and ``progressbar`` integrations have been removed
    from the package. Copy-paste replacements are provided in the new
    :ref:`Integration Examples <integration_examples>` documentation
    chapter. No changes to calling code are required — just a local
    copy of the relevant snippet.
-
-**Build and install**
-   ``setup.py`` and ``setup.py.in`` are gone. Installation is
-   ``pip install bitmath``. Source builds use ``python -m build``.
 
 **Byte and Bit display names**
    ``Byte`` and ``Bit`` now display as ``B`` and ``b`` respectively,
@@ -56,6 +53,11 @@ Breaking Changes
    or the output of ``str()`` / ``repr()``) against the literal words
    ``"Byte"`` or ``"Bit"`` will need to be updated. The class names
    themselves are unchanged.
+
+**Build and install**
+   ``setup.py`` and ``setup.py.in`` are gone. Installation is
+   ``pip install bitmath``. Source builds use ``python -m build``.
+
 
 
 Library Improvements
@@ -81,7 +83,7 @@ still works exactly the same way. What 2.0.0 adds on top of that:
    <https://github.com/timlnx/bitmath/pull/76>`_.
 
 **bitmath.sum() and built-in sum()**
-   A new :func:`bitmath.sum` function returns a unit-normalised result
+   A new :func:`bitmath.sum` function returns a unit-normalized result
    when summing mixed-type iterables. For uniform collections, the
    built-in :py:func:`sum` now works directly on bitmath sequences
    without a ``start=`` argument.

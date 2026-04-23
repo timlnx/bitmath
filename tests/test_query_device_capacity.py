@@ -66,12 +66,10 @@ class TestQueryDeviceCapacity(TestCase):
             ioctl.return_value = struct.pack('L', 244140625)
             # = 'QJ\x8d\x0e\x00\x00\x00\x00'
             # = 244140625 ~= 244.140625 MB (in SI)
-            buffer_test = ' ' * struct.calcsize('L')
-
             bytes = bitmath.query_device_capacity(device)
             self.assertEqual(bytes, 244140625)
             self.assertEqual(ioctl.call_count, 1)
-            ioctl.assert_called_once_with(4, 0x80081272, buffer_test)
+            ioctl.assert_called_once_with(4, 0x80081272, struct.calcsize('L'))
 
     def test_query_device_capacity_mac_everything_is_wonderful(self):
         """query device capacity works on a happy Mac OS X host"""
@@ -120,7 +118,6 @@ class TestQueryDeviceCapacity(TestCase):
 
     def test_query_device_capacity_non_posix_system_fails(self):
         """query device capacity fails on a non-posix host"""
-        with mock.patch('bitmath.os_name') as os_name:
-            os_name.return_value = 'nt'
+        with mock.patch('bitmath.os.name', 'nt'):
             with self.assertRaises(NotImplementedError):
                 bitmath.query_device_capacity(device)

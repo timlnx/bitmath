@@ -55,7 +55,7 @@ docs-venv:
 	fi
 	. $(DOCSVENV)/bin/activate && pip install -q -r doc-requirements.txt
 
-docs: docs-venv conf.py $(MANPAGES) docsite/source/index.rst
+docs: docs-venv $(MANPAGES) docsite/source/index.rst
 	. $(DOCSVENV)/bin/activate && cd docsite && make html
 
 # Add examples to the RTD docs by taking it from the README
@@ -93,10 +93,6 @@ viewcover: ci-unittests
 	else \
 		xdg-open htmlcov/index.html; \
 	fi
-
-conf.py: docsite/source/conf.py.in
-	sed "s/%VERSION%/$(VERSION)/" $< > docsite/source/conf.py
-
 
 build: clean
 	@echo "#############################################"
