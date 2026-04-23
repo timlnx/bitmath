@@ -112,8 +112,10 @@ pypitest: build
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pip install twine && twine upload --repository testpypi dist/*
 
-# usage example: make tag TAG=1.1.0-1
+# usage example: make tag TAG=v1.1.0-1
 tag:
+	@if [ -z "$(TAG)" ]; then echo "ERROR: TAG is required. Example: make tag TAG=v2.0.0"; exit 1; fi
+	@case "$(TAG)" in v*) ;; *) echo "ERROR: TAG must start with 'v'. Got: '$(TAG)'. Example: make tag TAG=v2.0.0"; exit 1 ;; esac
 	git tag -s -m $(TAG) $(TAG)
 
 clean:

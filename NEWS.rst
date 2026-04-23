@@ -54,6 +54,13 @@ Breaking Changes
    ``"Byte"`` or ``"Bit"`` will need to be updated. The class names
    themselves are unchanged.
 
+**query_device_capacity() on macOS**
+   :func:`bitmath.query_device_capacity` now raises
+   :exc:`NotImplementedError` on macOS. System Integrity Protection
+   (SIP) blocks raw block device access even for root, making the
+   previous ioctl path unreliable. Use :func:`bitmath.query_capacity`
+   instead.
+
 **Build and install**
    ``setup.py`` and ``setup.py.in`` are gone. Installation is
    ``pip install bitmath``. Source builds use ``python -m build``.
@@ -101,6 +108,17 @@ still works exactly the same way. What 2.0.0 adds on top of that:
    family is now preserved. Closes `issue #95
    <https://github.com/timlnx/bitmath/issues/95>`_.
 
+**query_capacity() — recommended volume size API**
+   New :func:`bitmath.query_capacity` returns a :class:`bitmath.Capacity`
+   NamedTuple of ``(total, used, free)`` :class:`bitmath.Bitmath`
+   instances for any path or mount point. Works cross-platform without
+   elevated privileges. This is the recommended API for "how big is
+   this volume?" queries. Accepts ``bestprefix=True`` (default) to get
+   already human-readable units (e.g. ``GiB``) and ``system=bitmath.SI``
+   to opt into decimal prefixes instead of the default NIST binary
+   prefixes. Set ``bestprefix=False`` to receive raw
+   :class:`bitmath.Byte` instances.
+
 **Windows device capacity**
    :func:`bitmath.query_device_capacity` now works on Windows via
    ``DeviceIoControl``. Open the device as
@@ -109,6 +127,13 @@ still works exactly the same way. What 2.0.0 adds on top of that:
    The new :data:`bitmath.SUPPORTED_PLATFORMS` constant lists all
    platforms where the function is available. Closes `issue #52
    <https://github.com/timlnx/bitmath/issues/52>`_.
+
+**query_device_capacity() Linux buffer fix**
+   :func:`bitmath.query_device_capacity` on Linux was passing an
+   integer where an ioctl buffer was required, causing
+   ``OSError: [Errno 14] Bad address``. The call now correctly
+   allocates a zero-filled buffer of the proper size via
+   ``b'\\x00' * struct.calcsize(fmt)``.
 
 **Flexible string parsing**
    :func:`bitmath.parse_string` with ``strict=False`` accepts
