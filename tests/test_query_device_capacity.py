@@ -31,7 +31,8 @@ Test reading block device capacities
 
 from . import TestCase
 import bitmath
-from unittest import mock
+import os
+from unittest import mock, skipUnless
 import struct
 from contextlib import ExitStack, contextmanager
 
@@ -59,6 +60,7 @@ windows_non_device.name = r'C:\somefile.txt'
 
 
 class TestQueryDeviceCapacity(TestCase):
+    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_linux_everything_is_wonderful(self):
         """query device capacity works on a happy Linux host"""
         with nested(
@@ -78,6 +80,7 @@ class TestQueryDeviceCapacity(TestCase):
             self.assertEqual(ioctl.call_count, 1)
             ioctl.assert_called_once_with(4, 0x80081272, struct.calcsize('L'))
 
+    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_mac_everything_is_wonderful(self):
         """query device capacity works on a happy Mac OS X host"""
         with nested(
@@ -107,6 +110,7 @@ class TestQueryDeviceCapacity(TestCase):
             self.assertEqual(bytes, 1000000000000)
             self.assertEqual(ioctl.call_count, 2)
 
+    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_device_not_block(self):
         """query device capacity aborts if a non-block-device is provided"""
         with nested(
