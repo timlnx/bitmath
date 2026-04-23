@@ -142,12 +142,31 @@ still works exactly the same way. What 2.0.0 adds on top of that:
    NIST is the tiebreaker. Closes `issue #54
    <https://github.com/timlnx/bitmath/issues/54>`_.
 
+**Floor division, modulo, and divmod for capacity math**
+   bitmath objects now implement ``__floordiv__`` (``//``),
+   ``__mod__`` (``%``), and ``__divmod__`` — useful for
+   chunk-and-remainder capacity planning (*"how many N-sized chunks
+   fit into this device, and how much is left over?"*).
+   ``bm1 // bm2`` returns an ``int`` (count of whole divisions),
+   mirroring how ``bm1 / bm2`` returns a unitless ratio.
+   ``bm1 % bm2`` and ``divmod(bm1, bm2)`` return remainders as
+   bitmath objects of the **left-hand operand's type**, consistent
+   with every other bitmath arithmetic operator. The identity
+   ``(a // b) * b + (a % b) == a`` holds. See :ref:`capacity_math`
+   for worked examples including ``best_prefix()`` coercion and
+   ``bitmath.format`` context-manager integration.
+
 
 Project Infrastructure
 ======================
 
 The project infrastructure has been rebuilt to reflect how Python
 projects are actually maintained in 2026:
+
+**Project Security**
+   GitHub now has branch protection enabled. Releases are signed with
+   the maintainers `GPG key
+   <https://keys.openpgp.org/search?q=bitmath%40lnx.cx>`_.
 
 **Packaging**
    ``pyproject.toml`` with a hatchling backend replaces the old
