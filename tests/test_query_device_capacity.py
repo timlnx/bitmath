@@ -31,7 +31,8 @@ Test reading block device capacities
 
 from . import TestCase
 import bitmath
-from unittest import mock
+import os
+from unittest import mock, skipUnless
 import struct
 from contextlib import ExitStack, contextmanager
 
@@ -50,8 +51,16 @@ device.name = "/dev/sda"
 non_device_file = mock.MagicMock('file')
 non_device_file.name = "/home/"
 
+windows_device = mock.MagicMock('file')
+windows_device.fileno = mock.Mock(return_value=4)
+windows_device.name = r'\\.\PhysicalDrive0'
+
+windows_non_device = mock.MagicMock('file')
+windows_non_device.name = r'C:\somefile.txt'
+
 
 class TestQueryDeviceCapacity(TestCase):
+    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_linux_everything_is_wonderful(self):
         """query device capacity works on a happy Linux host"""
         with nested(
@@ -71,6 +80,7 @@ class TestQueryDeviceCapacity(TestCase):
             self.assertEqual(ioctl.call_count, 1)
             ioctl.assert_called_once_with(4, 0x80081272, struct.calcsize('L'))
 
+    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_mac_everything_is_wonderful(self):
         """query device capacity works on a happy Mac OS X host"""
         with nested(
@@ -100,6 +110,7 @@ class TestQueryDeviceCapacity(TestCase):
             self.assertEqual(bytes, 1000000000000)
             self.assertEqual(ioctl.call_count, 2)
 
+    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_device_not_block(self):
         """query device capacity aborts if a non-block-device is provided"""
         with nested(
@@ -116,8 +127,29 @@ class TestQueryDeviceCapacity(TestCase):
 
             self.assertEqual(ioctl.call_count, 0)
 
-    def test_query_device_capacity_non_posix_system_fails(self):
-        """query device capacity fails on a non-posix host"""
+    def test_query_device_capacity_windows_everything_is_wonderful(self):
+        """query device capacity works on a happy Windows host"""
+        expected_bytes = 1_000_000_000_000  # 1 TB
+
+        with mock.patch('bitmath._query_device_capacity_windows', return_value=expected_bytes):
+            with mock.patch('bitmath.os.name', 'nt'):
+                result = bitmath.query_device_capacity(windows_device)
+
+        self.assertEqual(result, bitmath.Byte(expected_bytes))
+
+    def test_query_device_capacity_windows_non_device_fails(self):
+        """query device capacity rejects a non-device path on Windows"""
         with mock.patch('bitmath.os.name', 'nt'):
+            with self.assertRaises(ValueError):
+                bitmath.query_device_capacity(windows_non_device)
+
+    def test_query_device_capacity_unsupported_platform_fails(self):
+        """query device capacity fails on an unsupported platform"""
+        # Derive a value that is guaranteed not to be in SUPPORTED_PLATFORMS.
+        unsupported = next(
+            p for p in ('os2', 'java', 'riscos', 'ce')
+            if p not in bitmath.SUPPORTED_PLATFORMS
+        )
+        with mock.patch('bitmath.os.name', unsupported):
             with self.assertRaises(NotImplementedError):
                 bitmath.query_device_capacity(device)

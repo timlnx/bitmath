@@ -32,6 +32,7 @@ Tests to verify that string representations are accurate
 from . import TestCase
 import bitmath
 import os
+import pathlib
 
 
 class TestFileSize(TestCase):
@@ -113,8 +114,8 @@ Would yield 2-tuple's of:
 
         # Ensure the returned paths match the expected paths
         discovered_paths = [
-            contents[0][0],
-            contents[1][0],
+            pathlib.Path(contents[0][0]).as_posix(),
+            pathlib.Path(contents[1][0]).as_posix(),
         ]
         expected_paths = [
             'tests/listdir_nosymlinks/depth1/depth2/10_byte_file',
@@ -183,8 +184,8 @@ Same assumptions as in test_listdir_symlinks_nofollow.
             'tests/listdir_symlinks/depth1/depth2/10_byte_file'
         ]
         discovered_paths = [
-            contents[0][0],
-            contents[1][0]
+            pathlib.Path(contents[0][0]).as_posix(),
+            pathlib.Path(contents[1][0]).as_posix()
         ]
         self.assertListEqualUnordered(discovered_paths, expected_paths)
 
@@ -243,7 +244,7 @@ Same assumptions as test_listdir_nosymlinks."""
                                         filter='1024*'))
 
         # Ensure the returned path matches the expected path
-        self.assertEqual(contents[0][0],
+        self.assertEqual(pathlib.Path(contents[0][0]).as_posix(),
                          'tests/listdir_nosymlinks/depth1/depth2/1024_byte_file')
 
         # Ensure the measured size is what we expect
