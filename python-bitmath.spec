@@ -17,9 +17,11 @@ bitmath simplifies many facets of interacting with file sizes in
 various units. Examples include: converting between SI and NIST prefix
 units (GiB to kB), converting between units of the same type (SI to
 SI, or NIST to NIST), basic arithmetic operations (subtracting 42KiB
-from 50GiB), and rich comparison operations (1024 Bytes == 1KiB),
-bit-wise operations, sorting, automatic best human-readable prefix
-selection, and completely customizable formatting.
+from 50GiB), capacity math with floor division, modulo, and divmod
+(GiB(1) // MiB(300), GiB(1) % MiB(300)), rich comparison operations
+(1024 Bytes == 1KiB), bit-wise operations, sorting, automatic best
+human-readable prefix selection, and completely customizable
+formatting.
 
 In addition to the conversion and math operations, bitmath provides
 human readable representations of values which are suitable for use in
@@ -40,9 +42,11 @@ bitmath simplifies many facets of interacting with file sizes in
 various units. Examples include: converting between SI and NIST prefix
 units (GiB to kB), converting between units of the same type (SI to
 SI, or NIST to NIST), basic arithmetic operations (subtracting 42KiB
-from 50GiB), and rich comparison operations (1024 Bytes == 1KiB),
-bit-wise operations, sorting, automatic best human-readable prefix
-selection, and completely customizable formatting.
+from 50GiB), capacity math with floor division, modulo, and divmod
+(GiB(1) // MiB(300), GiB(1) % MiB(300)), rich comparison operations
+(1024 Bytes == 1KiB), bit-wise operations, sorting, automatic best
+human-readable prefix selection, and completely customizable
+formatting.
 
 In addition to the conversion and math operations, bitmath provides
 human readable representations of values which are suitable for use in

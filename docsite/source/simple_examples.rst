@@ -76,6 +76,21 @@ Math works mostly like you expect it to, except for a few edge-cases:
 +----------------+-------------------+---------------------+---------------------------------------+
 | Division       | ``num`` / ``bm``  | ``type(num)``       | ``3 / KiB(2)`` = ``1.5``              |
 +----------------+-------------------+---------------------+---------------------------------------+
+| Floor Division | ``bm1`` // ``bm2``| ``type(int)``       | ``GiB(1) // MiB(300)`` = ``3``        |
++----------------+-------------------+---------------------+---------------------------------------+
+| Floor Division | ``bm`` // ``num`` | ``type(bm)``        | ``KiB(6) // 4`` = ``KiB(1.5)``\ :sup:`2` |
++----------------+-------------------+---------------------+---------------------------------------+
+| Modulo         | ``bm1`` % ``bm2`` | ``type(bm1)``       | ``GiB(1) % MiB(300)`` = ``GiB(0.12...)``|
++----------------+-------------------+---------------------+---------------------------------------+
+| Modulo         | ``bm`` % ``num``  | ``type(bm)``        | ``GiB(1) % 1000`` = ``GiB(2.23e-7)``\ :sup:`2` |
++----------------+-------------------+---------------------+---------------------------------------+
+| divmod         | ``divmod(bm1,bm2)``| ``(int, type(bm1))``| ``divmod(GiB(1), MiB(300))`` = ``(3, GiB(0.12...))``|
++----------------+-------------------+---------------------+---------------------------------------+
+
+2. For ``//`` and ``%`` with a scalar RHS, the scalar operates on the
+   internal byte count (consistent with how ``/`` is defined for
+   ``bm / num``). This is mostly useful for ``bm op bm`` forms; the
+   ``bm op num`` forms are provided for completeness.
 
 
 Bitwise Operations
@@ -121,6 +136,114 @@ bitmath supports all arithmetic operations
    MiB(84.0)
    >>> eighty_four_mib == fourty_two_mib * 2
    True
+
+
+Capacity Math: Floor Division and Modulo
+****************************************
+
+Floor division (``//``), modulo (``%``), and ``divmod()`` are useful for
+capacity-planning problems: *"how many N-sized chunks fit into this
+device, and how much is left over?"*
+
+As with the other arithmetic operators, the **left-hand operand's type
+is preserved** in the result. The one exception is ``bm1 // bm2``, which
+returns a unitless ``int`` — a count of whole divisions — mirroring how
+``bm1 / bm2`` returns a unitless ratio.
+
+.. code-block:: python
+   :linenos:
+
+   >>> from bitmath import GiB, MiB
+   >>> disk = GiB(1)
+   >>> chunk = MiB(300)
+
+   >>> disk // chunk        # how many whole 300 MiB chunks fit in 1 GiB?
+   3
+   >>> disk % chunk         # leftover, typed as the LHS (GiB)
+   GiB(0.12109375)
+   >>> divmod(disk, chunk)  # both at once
+   (3, GiB(0.12109375))
+
+   >>> # Exact fits produce a zero-valued bitmath in the LHS unit:
+   >>> GiB(1) % MiB(1)
+   GiB(0.0)
+
+.. note::
+
+   With a scalar RHS, the scalar operates on the internal byte count
+   — consistent with how ``bm / num`` is defined. In practice the
+   ``bm op bm`` forms above are what you want for capacity math; the
+   ``bm op num`` forms are available but rarely useful.
+
+The fundamental identity holds — ``(a // b) * b + (a % b) == a``:
+
+.. code-block:: python
+
+   >>> q, r = divmod(GiB(1), MiB(300))
+   >>> (q * MiB(300)) + r == GiB(1)
+   True
+
+
+Coercing the Remainder with ``best_prefix``
+===========================================
+
+Because ``%`` preserves the LHS type, a small remainder can display
+with an awkwardly tiny ``value``. Use ``.best_prefix()`` to re-express
+the result in a more human-readable unit without changing its size:
+
+.. code-block:: python
+   :linenos:
+
+   >>> leftover = GiB(1) % MiB(300)
+   >>> leftover
+   GiB(0.12109375)
+   >>> leftover.best_prefix()
+   MiB(124.0)
+
+   >>> # Force a specific unit system:
+   >>> import bitmath
+   >>> leftover.best_prefix(system=bitmath.SI)
+   MB(130.02330...)
+
+   >>> # Or coerce directly to a known unit:
+   >>> leftover.to_MiB()
+   MiB(124.0)
+
+
+Formatting Remainders in a ``bitmath.format`` Context
+=====================================================
+
+The ``bitmath.format`` context manager pairs nicely with modulo results
+when you want consistent, human-readable display throughout a block of
+capacity calculations — including automatic best-prefix coercion:
+
+.. code-block:: python
+   :linenos:
+
+   >>> import bitmath
+   >>> from bitmath import GiB, MiB, TiB
+
+   >>> volume = TiB(1)
+   >>> block = GiB(7)
+   >>> with bitmath.format(fmt_str="{value:.2f} {unit}", bestprefix=True):
+   ...     whole = volume // block
+   ...     leftover = volume % block
+   ...     print(f"{whole} whole blocks of {block} fit in {volume}")
+   ...     print(f"leftover: {leftover}")
+   146 whole blocks of 7.00 GiB fit in 1.00 TiB
+   leftover: 2.00 GiB
+
+   >>> # divmod inside a context manager, reporting in plural form.
+   >>> # Note: bestprefix on a zero remainder collapses to bits ("b").
+   >>> with bitmath.format(fmt_str="{value:.1f} {unit}", plural=True, bestprefix=True):
+   ...     q, r = divmod(GiB(10), MiB(256))
+   ...     print(f"{q} chunks, {r} remaining")
+   40 chunks, 0.0 b remaining
+
+.. note::
+
+   ``bitmath.format`` is thread-safe — settings are thread-local, so
+   concurrent contexts in different threads do not interfere.
 
 
 Unit Conversion

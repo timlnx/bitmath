@@ -46,6 +46,7 @@ focusing on file size unit conversion, functionality now includes:
 * Full NIST unit coverage including **ZiB**, **YiB**, **Zib**, and **Yib**
 * Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_)
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
+* Capacity math with floor division, modulo, and ``divmod`` (``GiB(1) // MiB(300)``, ``GiB(1) % MiB(300)``)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
 * Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
 * Rounding via ``math.floor``, ``math.ceil``, and ``round``
