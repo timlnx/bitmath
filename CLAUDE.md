@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**bitmath** is a pure-Python library (no external runtime dependencies) for representing and converting file sizes across SI (decimal) and NIST (binary) unit systems. It supports arithmetic, rich comparisons, bitwise ops, parsing, formatting, and f-string/format() support.
+**bitmath** is a pure-Python library (no external runtime dependencies) for representing and converting file sizes across SI (decimal) and NIST (binary) unit systems. It supports arithmetic (including floor division, modulo, and `divmod` for capacity math), rich comparisons, bitwise ops, parsing, formatting, and f-string/format() support.
 
 ## Project Direction
 bitmath has been around for almost 12 years, and over that lifetime it promised to deliver backwards compatibility. It delivered on that promise and gathered a strong supporting of people and eventual "critical infrastructure" project status on the PyPI.org website.
@@ -20,7 +20,7 @@ Phases 1 (maintenance 1.4.0) and 2 (bitmath 2.0.0) are complete. The project:
 
 - Supports **Python 3.9 and newer only** (`requires-python = ">=3.9"` in `pyproject.toml`)
 - Uses `hatchling` as the build backend (replaces `setup.py`)
-- Uses `pytest` as the test runner (292 tests, 99% coverage — one branch in `system` property intentionally uncovered)
+- Uses `pytest` as the test runner (303 tests). Coverage is high but platform-sensitive: the `query_device_capacity` branches for the *other* OS are naturally uncovered on any single run.
 - Is published on PyPI as version 2.0.0
 - Drop-in compatible with the 1.x public API
 
@@ -71,5 +71,5 @@ All unit values are normalized to bits internally; conversion between units happ
 - Test runner: `pytest`
 - All tests are in `tests/` as `test_*.py` files
 - Test case names must be unique across the suite — enforced by `tests/test_unique_testcase_names.sh`
-- Coverage: 99% (one branch in `system` property intentionally uncovered)
+- Coverage is platform-sensitive: Windows and POSIX `query_device_capacity` paths only run on their respective OS
 - `unittest.mock` (stdlib) is used for patching in integration tests

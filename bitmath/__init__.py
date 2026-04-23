@@ -858,17 +858,40 @@ is to be supported.object.__complex__(self)
             # bm1 / bm2
             return self._byte_value / float(other.bytes)
 
-    # def __floordiv__(self, other):
-    #     return NotImplemented
+    def __floordiv__(self, other):
+        """Floor division: Supported operations with result types:
 
-    # def __mod__(self, other):
-    #     return NotImplemented
+- bm1 // bm2 = int (whole divisions, unitless — mirrors bm1 / bm2 returning a ratio)
+- bm // num  = bm (LHS type)
+"""
+        if isinstance(other, numbers.Number):
+            # bm // num
+            result = self._byte_value // other
+            return (type(self))(bytes=result)
+        else:
+            # bm1 // bm2
+            return int(self._byte_value // other.bytes)
 
-    # def __divmod__(self, other):
-    #     return NotImplemented
+    def __mod__(self, other):
+        """Modulo (remainder): Supported operations with result types:
 
-    # def __pow__(self, other, modulo=None):
-    #     return NotImplemented
+- bm1 % bm2 = bm (LHS type) — remainder after floor-dividing bm1 by bm2
+- bm % num  = bm (LHS type)
+"""
+        if isinstance(other, numbers.Number):
+            # bm % num
+            result = self._byte_value % other
+            return (type(self))(bytes=result)
+        else:
+            # bm1 % bm2
+            return (type(self))(bytes=self._byte_value % other.bytes)
+
+    def __divmod__(self, other):
+        """divmod(bm, other) == (bm // other, bm % other).
+
+Result types match __floordiv__ and __mod__.
+"""
+        return (self.__floordiv__(other), self.__mod__(other))
 
     ##################################################################
 

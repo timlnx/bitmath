@@ -40,6 +40,7 @@ focusing on file size unit conversion, functionality now includes:
 * Full NIST unit coverage including **ZiB**, **YiB**, **Zib**, and **Yib**
 * Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_)
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
+* Capacity math with floor division, modulo, and ``divmod`` (``GiB(1) // MiB(300)``, ``GiB(1) % MiB(300)``)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
 * Bitwise operations (``<<``, ``>>``, ``&``, ``|``, ``^``)
 * Rounding via :py:func:`math.floor`, :py:func:`math.ceil`, and :py:func:`round`
@@ -150,6 +151,53 @@ Arithmetic
    >>> songs_per_drive = thumb_drive / song_size
    >>> print(songs_per_drive)
    2457.6
+
+
+Capacity Planning
+-----------------
+
+Floor division (``//``), modulo (``%``), and ``divmod()`` are handy for
+chunk-and-remainder capacity math. ``bm1 // bm2`` returns an ``int``
+(how many whole chunks fit); ``bm1 % bm2`` returns a ``bitmath`` of the
+**left-hand operand's type** (the leftover).
+
+.. code-block:: python
+
+   >>> from bitmath import GiB, MiB, TiB
+   >>> disk = GiB(1)
+   >>> chunk = MiB(300)
+
+   >>> disk // chunk        # how many whole 300 MiB chunks fit?
+   3
+   >>> disk % chunk         # leftover, typed as the LHS (GiB)
+   GiB(0.12109375)
+   >>> divmod(disk, chunk)  # both at once
+   (3, GiB(0.12109375))
+
+Re-express the remainder in a human-readable unit with
+``best_prefix()`` (or coerce directly with ``to_MiB()``, etc.):
+
+.. code-block:: python
+
+   >>> (GiB(1) % MiB(300)).best_prefix()
+   MiB(124.0)
+
+Pair with the ``bitmath.format`` context manager for clean reporting
+across a block of capacity calculations:
+
+.. code-block:: python
+
+   >>> import bitmath
+   >>> volume = TiB(1)
+   >>> block = GiB(7)
+   >>> with bitmath.format(fmt_str="{value:.2f} {unit}", bestprefix=True):
+   ...     whole, leftover = divmod(volume, block)
+   ...     print(f"{whole} whole blocks of {block} fit in {volume}")
+   ...     print(f"leftover: {leftover}")
+   146 whole blocks of 7.00 GiB fit in 1.00 TiB
+   leftover: 2.00 GiB
+
+The identity ``(a // b) * b + (a % b) == a`` holds, so ``divmod`` round-trips.
 
 
 Convert Units
