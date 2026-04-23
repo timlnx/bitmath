@@ -35,8 +35,8 @@ jobs:
 
       - name: Pre-Tests code smell validation
         run: |
-          pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
-          flake8 --select=F bitmath/__init__.py tests/*.py
+          pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/
+          flake8 --select=F bitmath/__init__.py tests/
 
       - name: Run Unit Tests
         run: |
