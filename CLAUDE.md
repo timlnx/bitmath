@@ -61,7 +61,8 @@ All unit values are normalized to bits internally; conversion between units happ
 - `getsize(path, ...)` — file size with automatic prefix selection
 - `listdir(search_base, ...)` — recursive directory listing with sizes
 - `parse_string(s)` / `parse_string_unsafe(s, system=SI)` — string → bitmath object
-- `query_device_capacity(device_fd)` — POSIX device capacity (Linux/macOS)
+- `query_capacity(path)` — volume/mount-point capacity as a `Capacity(total, used, free)` NamedTuple of `Byte` instances; cross-platform, no elevated privileges required
+- `query_device_capacity(device_fd)` — raw physical block device capacity (Linux: requires root; Windows: requires administrator; macOS: raises `NotImplementedError` due to SIP)
 
 **Constants:** `NIST`, `SI`, `NIST_PREFIXES`, `SI_PREFIXES`, `ALL_UNIT_TYPES`
 

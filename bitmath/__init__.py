@@ -52,11 +52,13 @@ import numbers
 import os
 import os.path
 import platform
+import re
+import shutil
 import sys
 import threading
 
 from collections.abc import Generator, Iterable, Iterator
-from typing import IO, Any
+from typing import IO, Any, NamedTuple, Union
 
 # For device capacity reading in query_device_capacity().
 if os.name == 'posix':
@@ -69,7 +71,8 @@ elif os.name == 'nt':
     import msvcrt
 
 #: Platforms where :func:`query_device_capacity` is supported.
-#: Corresponds to possible values of :data:`os.name`.
+#: Corresponds to possible values of :data:`os.name`. macOS (Darwin)
+#: is not supported due to SIP restrictions on raw block device access.
 SUPPORTED_PLATFORMS = frozenset({'posix', 'nt'})
 
 __all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB',
@@ -78,7 +81,8 @@ __all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'
            'Pb', 'Eb', 'Zb', 'Yb', 'getsize', 'listdir', 'format',
            'format_string', 'format_plural', 'parse_string', 'parse_string_unsafe',
            'sum', 'ALL_UNIT_TYPES', 'NIST', 'NIST_PREFIXES', 'NIST_STEPS',
-           'SI', 'SI_PREFIXES', 'SI_STEPS']
+           'SI', 'SI_PREFIXES', 'SI_STEPS', 'Capacity', 'query_capacity',
+           'query_device_capacity']
 
 #: A list of all the valid prefix unit types. Mostly for reference,
 #: also used by the CLI tool as valid types
@@ -1342,30 +1346,32 @@ Raises :class:`OSError` if the DeviceIoControl call fails.
 
 
 def query_device_capacity(device_fd: IO[Any]) -> Byte:
-    """Create bitmath instances of the capacity of a system block device
+    """Query the raw physical capacity of a block device.
 
-Make one or more ioctl request to query the capacity of a block
-device. Perform any processing required to compute the final capacity
-value. Return the device capacity in bytes as a :class:`bitmath.Byte`
-instance.
+Most users should prefer :func:`query_capacity`. This function is for
+callers who need raw physical device capacity (e.g. disk imaging tools).
+Requires root on Linux and administrator on Windows. Not supported on
+macOS (SIP restriction).
 
-Thanks to the following resources for help figuring this out Linux/Mac
-ioctl's for querying block device sizes:
-
-* http://stackoverflow.com/a/12925285/263969
-* http://stackoverflow.com/a/9764508/263969
-
-   :param file device_fd: A ``file`` object of the device to query the
-   capacity of. On Linux/macOS: ``open("/dev/sda", "rb")``. On Windows:
-   ``open(r'\\\\.\\PhysicalDrive0', 'rb')`` (requires administrator privileges).
+   :param file device_fd: A ``file`` object of the device to query.
+   On Linux: ``open("/dev/sda", "rb")`` (requires root).
+   On Windows: ``open(r'\\\\.\\PhysicalDrive0', 'rb')`` (requires administrator).
 
    :return: a bitmath :class:`bitmath.Byte` instance equivalent to the
    capacity of the target device in bytes.
+   :raises NotImplementedError: on macOS or any other unsupported platform.
+   :raises ValueError: if the file descriptor is not a block device.
 """
     if os.name not in SUPPORTED_PLATFORMS:
         raise NotImplementedError(f"'bitmath.query_device_capacity' is not supported on this platform: {os.name}")
     if os.name == 'nt':
         return Byte(_query_device_capacity_windows(device_fd))
+
+    if platform.system() == 'Darwin':
+        raise NotImplementedError(
+            "query_device_capacity is not supported on macOS; "
+            "SIP blocks raw block device access. Use query_capacity() instead."
+        )
 
     s = os.stat(device_fd.name).st_mode
     if not stat.S_ISBLK(s):
@@ -1411,45 +1417,6 @@ ioctl's for querying block device sizes:
             # BLKGETSIZE64.
             "func": lambda x: x["BLKGETSIZE64"]
         },
-        # ioctls for the "Darwin" (Mac OS X) platform
-        "Darwin": {
-            "request_params": [
-                # A list of parameters to calculate the block size.
-                #
-                # ( PARAM_NAME , FORMAT_CHAR , REQUEST_CODE )
-                ("DKIOCGETBLOCKCOUNT", "L", 0x40086419),
-                # Per <sys/disk.h>: get media's block count - uint64_t
-                #
-                # As in the BLKGETSIZE64 example, an unsigned 64 bit
-                # integer will use the 'L' formatting character
-                ("DKIOCGETBLOCKSIZE", "I", 0x40046418)
-                # Per <sys/disk.h>: get media's block size - uint32_t
-                #
-                # This request returns an unsigned 32 bit integer, or
-                # in other words: just a normal integer (or 'int' c
-                # type). That should require 4 bytes of space for
-                # buffering. According to the struct modules
-                # 'Formatting Characters' chart:
-                #
-                # * Character 'I' - Unsigned Int C Type (uint32_t) - Loads into a Python int type
-            ],
-            # OS X doesn't have a direct equivalent to the Linux
-            # BLKGETSIZE64 request. Instead, we must request how many
-            # blocks (or "sectors") are on the disk, and the size (in
-            # bytes) of each block. Finally, multiply the two together
-            # to obtain capacity:
-            #
-            #                      n Block * y Byte
-            # capacity (bytes)  =            -------
-            #                                1 Block
-            "func": lambda x: x["DKIOCGETBLOCKCOUNT"] * x["DKIOCGETBLOCKSIZE"]
-            # This expression simply accepts a dictionary ``x`` as a
-            # parameter, and then returns the result of multiplying
-            # the two named dictionary items together. In this case,
-            # that means multiplying ``DKIOCGETBLOCKCOUNT``, the total
-            # number of blocks, by ``DKIOCGETBLOCKSIZE``, the size of
-            # each block in bytes.
-        }
     }
 
     platform_params = ioctl_map[platform.system()]
@@ -1463,7 +1430,7 @@ ioctl's for querying block device sizes:
         # conditions for some possible errors. Really only for cases
         # where it would add value to override the default exception
         # message string.
-        buffer = fcntl.ioctl(device_fd.fileno(), request_code, buffer_size)
+        buffer = fcntl.ioctl(device_fd.fileno(), request_code, b'\x00' * buffer_size)
 
         # Unpack the raw result from the ioctl call into a familiar
         # python data type according to the ``fmt`` rules.
@@ -1472,6 +1439,71 @@ ioctl's for querying block device sizes:
         results[req_name] = result
 
     return Byte(platform_params['func'](results))
+
+
+class Capacity(NamedTuple):
+    """Capacity of a filesystem volume returned by :func:`query_capacity`."""
+    total: 'Bitmath'
+    used: 'Bitmath'
+    free: 'Bitmath'
+
+
+# Matches a bare drive letter: "C", "c", "C:", "c:" — nothing else.
+_DRIVE_LETTER_RE = re.compile(r'^[A-Za-z]:?$')
+
+
+def query_capacity(path: Union[str, os.PathLike], bestprefix: bool = True,
+                   system: int = NIST) -> Capacity:
+    """Return the total, used, and free capacity of the volume at ``path``.
+
+This is the recommended API for querying volume or mount-point size. It
+works cross-platform without elevated privileges.
+
+   :param path: A path on the filesystem volume to query. On Windows, a
+   bare drive letter (``"C"``, ``"C:"``) is normalized to ``"C:\\"``.
+   :param bool bestprefix: When ``True`` (default), each field of the
+   returned :class:`Capacity` is already normalized via
+   :meth:`~bitmath.Bitmath.best_prefix` for human-readable output.
+   When ``False``, each field is a raw :class:`bitmath.Byte`.
+   :param int system: Unit system to use when ``bestprefix`` is ``True``.
+   Either :data:`bitmath.NIST` (default, binary prefixes like ``GiB``)
+   or :data:`bitmath.SI` (decimal prefixes like ``GB``). Ignored when
+   ``bestprefix`` is ``False``.
+
+   :return: A :class:`Capacity` NamedTuple with ``total``, ``used``, and
+   ``free`` fields, each a :class:`bitmath.Bitmath` instance.
+
+   :raises FileNotFoundError: if ``path`` does not exist.
+   :raises PermissionError: if the process lacks access to query ``path``.
+
+Example — attribute access (human-readable by default)::
+
+   cap = bitmath.query_capacity("/")
+   print(cap.total)   # e.g. 465.762 GiB
+
+Example — tuple unpacking::
+
+   total, used, free = bitmath.query_capacity("/")
+
+Example — raw bytes and SI prefixes::
+
+   cap_raw = bitmath.query_capacity("/", bestprefix=False)
+   cap_si = bitmath.query_capacity("/", system=bitmath.SI)
+"""
+    normalized: Union[str, os.PathLike] = path
+    if os.name == 'nt':
+        s = str(path).upper()
+        if _DRIVE_LETTER_RE.match(s):
+            normalized = s.rstrip(':') + ':\\'
+    usage = shutil.disk_usage(normalized)
+    total, used, free = Byte(usage.total), Byte(usage.used), Byte(usage.free)
+    if bestprefix:
+        return Capacity(
+            total.best_prefix(system=system),
+            used.best_prefix(system=system),
+            free.best_prefix(system=system),
+        )
+    return Capacity(total, used, free)
 
 
 def getsize(path: str, bestprefix: bool = True, system: int = NIST) -> Bitmath:

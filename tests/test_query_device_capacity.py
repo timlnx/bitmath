@@ -78,37 +78,15 @@ class TestQueryDeviceCapacity(TestCase):
             bytes = bitmath.query_device_capacity(device)
             self.assertEqual(bytes, 244140625)
             self.assertEqual(ioctl.call_count, 1)
-            ioctl.assert_called_once_with(4, 0x80081272, struct.calcsize('L'))
+            ioctl.assert_called_once_with(4, 0x80081272, b'\x00' * struct.calcsize('L'))
 
-    @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
-    def test_query_device_capacity_mac_everything_is_wonderful(self):
-        """query device capacity works on a happy Mac OS X host"""
-        with nested(
-            mock.patch('os.stat'),
-            mock.patch('stat.S_ISBLK'),
-            mock.patch('platform.system'),
-            mock.patch('fcntl.ioctl'),
-        ) as (os_stat, stat_is_block, plat_system, ioctl):
-            # These are the struct.pack() equivalents of 244140625
-            # (type: u64) and 4096 (type: u32). Multiplied together
-            # they equal the number of bytes in 1 TB.
-            returns = [
-                struct.pack('L', 244140625),  # 'QJ\x8d\x0e\x00\x00\x00\x00'
-                struct.pack('I', 4096)  # , '\x00\x10\x00\x00'
-            ]
-
-            def side_effect(*args, **kwargs):
-                return returns.pop(0)
-
-            os_stat.return_value = mock.Mock(st_mode=25008)
-            stat_is_block.return_value = True
-            plat_system.return_value = 'Darwin'
-            ioctl.side_effect = side_effect
-
-            bytes = bitmath.query_device_capacity(device)
-            # The result should be 1 TB
-            self.assertEqual(bytes, 1000000000000)
-            self.assertEqual(ioctl.call_count, 2)
+    def test_query_device_capacity_macos_raises(self):
+        """query_device_capacity raises NotImplementedError on macOS (SIP restriction)"""
+        with mock.patch('bitmath.os.name', 'posix'):
+            with mock.patch('bitmath.platform.system', return_value='Darwin'):
+                with self.assertRaises(NotImplementedError) as ctx:
+                    bitmath.query_device_capacity(device)
+        self.assertIn('SIP', str(ctx.exception))
 
     @skipUnless(os.name == 'posix', 'fcntl is POSIX only')
     def test_query_device_capacity_device_not_block(self):
@@ -116,11 +94,13 @@ class TestQueryDeviceCapacity(TestCase):
         with nested(
             mock.patch('os.stat'),
             mock.patch('stat.S_ISBLK'),
+            mock.patch('platform.system'),
             mock.patch('fcntl.ioctl'),
-        ) as (os_stat, stat_is_block, ioctl):
+        ) as (os_stat, stat_is_block, plat_system, ioctl):
             os_stat.return_value = mock.Mock(st_mode=33204)
             # Force ISBLK to reject the input 'device'
             stat_is_block.return_value = False
+            plat_system.return_value = 'Linux'
 
             with self.assertRaises(ValueError):
                 bitmath.query_device_capacity(non_device_file)
