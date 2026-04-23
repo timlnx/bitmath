@@ -714,16 +714,10 @@ This section describes all of the `context managers
 <https://docs.python.org/3/reference/datamodel.html#context-managers>`_
 provided by the bitmath class.
 
-.. warning::
+.. note::
 
-   It is a known limitation that the bitmath context managers are
-   **not thread-safe**. You may get unexpected results or errors using
-   these in a threaded environment.
-
-   The suggested workaround is to apply formatting to each object
-   instance directly. See the instance :ref:`format
-   <instances_format>` method docs for additional reference.
-
+   Context manager settings are thread safe. Concurrent contexts in
+   different threads do not interfere with each other.
 
 .. note::
 
@@ -776,8 +770,6 @@ bitmath.format()
                            prints instances using their current prefix
                            unit.
 
-
-   .. note:: The ``bestprefix`` parameter is not yet implemented!
 
    Let's look at an example of toggling pluralization on and
    off. First we'll look over a demonstration script (below), and then
@@ -865,13 +857,13 @@ bitmath.format()
 
       >>> import bitmath
       >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
-      Some instances: 0.333333333333 KiB, 512.0 b
+      Some instances: 0.3333333333333333 KiB, 512.0 b
       >>> with bitmath.format("{value:e}-{unit}"):
       ...     print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
       ...
       Some instances: 3.333333e-01-KiB, 5.120000e+02-b
       >>> print("Some instances: %s, %s" % (bitmath.KiB(1 / 3.0), bitmath.Bit(512)))
-      Some instances: 0.333333333333 KiB, 512.0 b
+      Some instances: 0.3333333333333333 KiB, 512.0 b
 
 
    .. versionadded:: 1.0.8

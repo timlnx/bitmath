@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014-2016 Tim Case <timbielawa@gmail.com>
+# Copyright © 2014-2026 Tim Case <bitmath@lnx.cx>
 # See GitHub Contributors Graph for more information
 #
 # Permission is hereby granted, free of charge, to any person
@@ -24,7 +24,7 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# pylint: disable=bad-continuation,missing-docstring,invalid-name,line-too-long
+# pylint: disable=line-too-long
 
 """Reference material:
 The bitmath homepage is located at:
@@ -785,17 +785,6 @@ always return a Byte-family result.
 
     # Reference: https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types
 
-    """These methods are called to implement the binary arithmetic
-operations (+, -, *, //, %, divmod(), pow(), **, <<, >>, &, ^, |). For
-instance, to evaluate the expression x + y, where x is an instance of
-a class that has an __add__() method, x.__add__(y) is called. The
-__divmod__() method should be the equivalent to using __floordiv__()
-and __mod__(); it should not be related to __truediv__() (described
-below). Note that __pow__() should be defined to accept an optional
-third argument if the ternary version of the built-in pow() function
-is to be supported.object.__complex__(self)
-"""
-
     def __add__(self, other):
         """Supported operations with result types:
 
@@ -894,20 +883,6 @@ Result types match __floordiv__ and __mod__.
         return (self.__floordiv__(other), self.__mod__(other))
 
     ##################################################################
-
-    """These methods are called to implement the binary arithmetic
-operations (+, -, *, /, %, divmod(), pow(), **, <<, >>, &, ^, |) with
-reflected (swapped) operands. These functions are only called if the
-left operand does not support the corresponding operation and the
-operands are of different types. [2] For instance, to evaluate the
-expression x - y, where y is an instance of a class that has an
-__rsub__() method, y.__rsub__(x) is called if x.__sub__(y) returns
-NotImplemented.
-
-These are the add/sub/mul/div methods for syntax where a number type
-is given for the LTYPE and a bitmath object is given for the
-RTYPE. E.g., 3 * MiB(3), or 10 / GB(42)
-"""
 
     def __radd__(self, other):
         # Special case: 0 + bm = bm (identity element, enables built-in sum())
@@ -1663,10 +1638,7 @@ the return value::
             val = float(val)
         except ValueError:
             raise
-        try:
-            return unit_class(val)
-        except:  # pragma: no cover
-            raise ValueError(f"Can't parse string {s} into a bitmath object")
+        return unit_class(val)
 
     else:
         # strict=False path (formerly parse_string_unsafe)

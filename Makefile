@@ -207,7 +207,7 @@ ci-pycodestyle:
 	@echo "#############################################"
 	@echo "# Running PEP8 Compliance Tests in virtualenv"
 	@echo "#############################################"
-	. $(NAME)env3/bin/activate && pycodestyle -v --ignore=E501,E722 bitmath/__init__.py tests/*.py
+	. $(NAME)env3/bin/activate && pycodestyle -v --ignore=E501 bitmath/__init__.py tests/*.py
 
 ci-flake8:
 	@echo ""

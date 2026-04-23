@@ -43,12 +43,13 @@ Two static analysis checks run on every pull request as part of the
 GitHub Actions CI workflow, and locally via ``make ci``:
 
 * ``pycodestyle`` — checks code style, with **E501** (line too long)
-  and **E722** (bare ``except``) ignored.
+  ignored.
 * ``flake8 --select=F`` — runs pyflakes error checks only (undefined
   names, unused imports, etc.). Style checks are disabled.
 
-A PR cannot be merged until both pass. Run ``make ci`` locally to
-check before submitting.
+A PR cannot be merged until both pass. If you want to save time you
+can run ``make ci`` locally to check before submitting and waiting on
+the GitHub runners to report back.
 
 
 .. _contributing_commit_messages:
@@ -102,7 +103,7 @@ This means the minimum supported version tracks the oldest Python still
 included in a supported EPEL target:
 
 * **RHEL 10 / EPEL 10** — Python 3.12
-* **RHEL 9 / EPEL 9** — Python 3.9, 3.11
+* **RHEL 9 / EPEL 9** — Python 3.9, 3.10, 3.11
 
 The CI matrix tests all versions in this range. When a RHEL major
 release reaches end-of-life and is dropped from EPEL, the corresponding
