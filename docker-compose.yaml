@@ -1,0 +1,13 @@
+---
+
+version: '3.8'
+services:
+  bitmath:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: make unittests pycodestyle pyflakes
+    tty: true

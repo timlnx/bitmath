@@ -1484,7 +1484,7 @@ Optionally, set ``bestprefix`` to ``False`` to get ``bitmath.Byte``
 instances back.
     """
     _path = os.path.realpath(path)
-    size_bytes = os.path.getsize(_path)
+    size_bytes = os.stat(_path).st_size
     if bestprefix:
         return Byte(size_bytes).best_prefix(system=system)
     else:
