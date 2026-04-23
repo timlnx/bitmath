@@ -58,13 +58,19 @@ import threading
 from collections.abc import Generator, Iterable, Iterator
 from typing import IO, Any
 
-# For device capacity reading in query_device_capacity(). Only supported
-# on posix systems for now. Will be addressed in issue #52 on GitHub.
+# For device capacity reading in query_device_capacity().
 if os.name == 'posix':
     import stat
     import fcntl
     import struct
+elif os.name == 'nt':
+    import ctypes
+    import ctypes.wintypes
+    import msvcrt
 
+#: Platforms where :func:`query_device_capacity` is supported.
+#: Corresponds to possible values of :data:`os.name`.
+SUPPORTED_PLATFORMS = frozenset({'posix', 'nt'})
 
 __all__ = ['Bit', 'Byte', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB',
            'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'Kib',
@@ -1285,6 +1291,56 @@ Or:
     return Byte(value).best_prefix(system=system)
 
 
+def _query_device_capacity_windows(device_fd: IO[Any]) -> int:
+    """Return device capacity in bytes on Windows via DeviceIoControl.
+
+Windows physical disk paths look like ``\\\\.\\PhysicalDrive0``.
+Raises :class:`ValueError` if the file descriptor is not a physical device.
+Raises :class:`OSError` if the DeviceIoControl call fails.
+"""
+    if not device_fd.name.startswith('\\\\.\\'):
+        raise ValueError("The file descriptor provided is not of a device type")
+
+    IOCTL_DISK_GET_DRIVE_GEOMETRY_EX = 0x000700A0
+
+    class DISK_GEOMETRY(ctypes.Structure):
+        _fields_ = [
+            ('Cylinders', ctypes.c_longlong),
+            ('MediaType', ctypes.c_uint),
+            ('TracksPerCylinder', ctypes.c_ulong),
+            ('SectorsPerTrack', ctypes.c_ulong),
+            ('BytesPerSector', ctypes.c_ulong),
+        ]
+
+    class DISK_GEOMETRY_EX(ctypes.Structure):
+        _fields_ = [
+            ('Geometry', DISK_GEOMETRY),
+            ('DiskSize', ctypes.c_longlong),
+            ('Data', ctypes.c_byte * 1),
+        ]
+
+    geometry = DISK_GEOMETRY_EX()
+    bytes_returned = ctypes.wintypes.DWORD(0)
+    handle = msvcrt.get_osfhandle(device_fd.fileno())
+
+    result = ctypes.windll.kernel32.DeviceIoControl(
+        handle,
+        IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,
+        None,
+        0,
+        ctypes.byref(geometry),
+        ctypes.sizeof(geometry),
+        ctypes.byref(bytes_returned),
+        None,
+    )
+
+    if not result:
+        error_code = ctypes.windll.kernel32.GetLastError()
+        raise OSError(f"DeviceIoControl failed with error code: {error_code}")
+
+    return geometry.DiskSize
+
+
 def query_device_capacity(device_fd: IO[Any]) -> Byte:
     """Create bitmath instances of the capacity of a system block device
 
@@ -1300,13 +1356,16 @@ ioctl's for querying block device sizes:
 * http://stackoverflow.com/a/9764508/263969
 
    :param file device_fd: A ``file`` object of the device to query the
-   capacity of (as in ``get_device_capacity(open("/dev/sda"))``).
+   capacity of. On Linux/macOS: ``open("/dev/sda", "rb")``. On Windows:
+   ``open(r'\\\\.\\PhysicalDrive0', 'rb')`` (requires administrator privileges).
 
    :return: a bitmath :class:`bitmath.Byte` instance equivalent to the
    capacity of the target device in bytes.
 """
-    if os.name != 'posix':
+    if os.name not in SUPPORTED_PLATFORMS:
         raise NotImplementedError(f"'bitmath.query_device_capacity' is not supported on this platform: {os.name}")
+    if os.name == 'nt':
+        return Byte(_query_device_capacity_windows(device_fd))
 
     s = os.stat(device_fd.name).st_mode
     if not stat.S_ISBLK(s):

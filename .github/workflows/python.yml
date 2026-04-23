@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-        os: ["macos-latest", "ubuntu-latest"]
+        os: ["macos-latest", "ubuntu-latest", "windows-latest"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: "GitHub Checks it out :sunglasses-face:"
@@ -24,6 +24,7 @@ jobs:
           cache: 'pip'
 
       - name: Verify Test Case Names Unique
+        if: runner.os != 'Windows'
         run: |
           ./tests/test_unique_testcase_names.sh
 
