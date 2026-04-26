@@ -10,7 +10,7 @@ NEWS
 bitmath-2.0.0
 *************
 
-*Released: April 2026*
+*Released: April 25, 2026*
 
 Nearly eight years after 1.3.3 shipped in 2018, bitmath is back with
 a major release. Version 2.0.0 is a thorough modernization: the
@@ -19,6 +19,11 @@ long-requested features, and the entire project infrastructure has
 been rebuilt from scratch. If you've been running bitmath on Python
 3.9 or later and quietly wishing it felt more modern — this release
 is for you.
+
+Check over on `my blog
+<https://blog.lnx.cx/2026/04/25/bitmath-2.0.0-finally-released.html>`_
+for a personal recap of this release, how much it means to me, and
+what it took to get here.
 
 
 Breaking Changes
@@ -196,6 +201,11 @@ projects are actually maintained in 2026:
    ``make build``, ``make pypitest``, and ``make pypi`` replace the
    old ``make sdist upload`` pattern.
 
+**Fedora/EPEL**
+   Expect to see fresh builds in Fedora/EPEL over the coming
+   weeks. Hopefully I can sneak this into EPEL 10, EPEL 9 might be
+   picky since this is a major version change.
+
 
 Closing Thoughts
 ================
@@ -204,16 +214,16 @@ bitmath started as a small passion project of mine. A utility for
 thinking about and clearly expressing file sizes, and that's still
 exactly what it is. This 2.0.0 release doesn't change what the library
 does. What I've done is change the very foundation that it's built
-on. The test suite sits at 294 tests and 99% coverage. The
+on. The test suite measures in at 311 tests now, basically 100%
+coverage when you add all the platform-specific checks together. The
 documentation has been comprehensively reviewed and updated. The
-packaging is clean enough to pass ``twine check`` on the first attempt
-(well, the second).
+packaging is modernized.
 
 It really is a remarkable milestone in project history. I have to give
 the warmest thanks to all of the users and fans who have written bug
 reports and submitted pull requests. Especially in the least active
 years of the project. Most of those PRs and Issues have been
-integrated into this massive 2.0 release.
+integrated into this massive 2.0.0 release.
 
 **Thanks for your patience and your participation.**
 
