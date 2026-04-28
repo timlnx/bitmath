@@ -94,11 +94,11 @@ viewcover: ci-unittests
 		xdg-open htmlcov/index.html; \
 	fi
 
-build: clean
+build: clean virtualenv
 	@echo "#############################################"
 	@echo "# Building sdist + wheel"
 	@echo "#############################################"
-	. $(NAME)env3/bin/activate && python -m build
+	. $(NAME)env3/bin/activate && pip install build && python -m build
 
 pypi: build
 	@echo "#############################################"
