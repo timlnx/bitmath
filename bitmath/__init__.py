@@ -50,8 +50,10 @@ import os.path
 import platform
 import re
 import shutil
+import struct
 import sys
 import threading
+import warnings
 
 from collections.abc import Generator, Iterable, Iterator
 from typing import IO, Any, NamedTuple, Union
@@ -60,7 +62,6 @@ from typing import IO, Any, NamedTuple, Union
 if os.name == 'posix':
     import stat
     import fcntl
-    import struct
 elif os.name == 'nt':
     import ctypes
     import ctypes.wintypes
@@ -1424,7 +1425,9 @@ macOS (SIP restriction).
         # conditions for some possible errors. Really only for cases
         # where it would add value to override the default exception
         # message string.
-        buffer = fcntl.ioctl(device_fd.fileno(), request_code, b'\x00' * buffer_size)
+        buffer = fcntl.ioctl(  # pylint: disable=possibly-used-before-assignment
+            device_fd.fileno(), request_code, b'\x00' * buffer_size
+        )
 
         # Unpack the raw result from the ioctl call into a familiar
         # python data type according to the ``fmt`` rules.
@@ -1513,17 +1516,17 @@ instances back.
     size_bytes = os.path.getsize(_path)
     if bestprefix:
         return Byte(size_bytes).best_prefix(system=system)
-    else:
-        return Byte(size_bytes)
+    return Byte(size_bytes)
 
 
-def listdir(
+def listdir(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     search_base: str,
     followlinks: bool = False,
-    filter: str = '*',
+    glob: str = '*',
     relpath: bool = False,
     bestprefix: bool = False,
     system: int = NIST,
+    **kwargs,
 ) -> Iterator[tuple[str, Bitmath]]:
     """This is a generator which recurses the directory tree
 `search_base`, yielding 2-tuples of:
@@ -1533,7 +1536,7 @@ def listdir(
 
     - `search_base` - The directory to begin walking down.
     - `followlinks` - Whether or not to follow symbolic links to directories
-    - `filter` - A glob (see :py:mod:`fnmatch`) to filter results with
+    - `glob` - A glob (see :py:mod:`fnmatch`) to filter results with
       (default: ``*``, everything)
     - `relpath` - ``True`` to return the relative path from `pwd` or
       ``False`` (default) to return the fully qualified path
@@ -1547,8 +1550,18 @@ def listdir(
 .. note:: Symlinks to **files** are followed automatically
 
     """
-    for root, dirs, files in os.walk(search_base, followlinks=followlinks):
-        for name in fnmatch.filter(files, filter):
+    if 'filter' in kwargs:
+        warnings.warn(
+            "The 'filter' parameter of listdir() is deprecated as of 2.0.0 and will be "
+            "removed in a future release. Use 'glob' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        glob = kwargs.pop('filter')
+    if kwargs:
+        raise TypeError(f"listdir() got unexpected keyword arguments: {list(kwargs)}")
+    for root, _, files in os.walk(search_base, followlinks=followlinks):
+        for name in fnmatch.filter(files, glob):
             _path = os.path.join(root, name)
             if relpath:
                 # RELATIVE path
@@ -1564,6 +1577,99 @@ def listdir(
                     pass  # pragma: no cover
                 else:
                     yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
+
+
+def _parse_string_strict(s: str) -> 'Bitmath':
+    if not isinstance(s, str):
+        raise ValueError(f"parse_string only accepts string inputs but a {type(s)} was given")
+
+    # get the index of the first alphabetic character
+    try:
+        index = next(i for i, c in enumerate(s) if c.isalpha())
+    except StopIteration:
+        raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object") from None
+
+    # split the string into the value and the unit
+    val, unit = s[:index], s[index:]
+
+    # see if the unit exists as a type in our namespace
+    if unit == "b":
+        unit_class = Bit
+    elif unit == "B":
+        unit_class = Byte
+    else:
+        if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
+            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
+        unit_class = globals()[unit]
+
+    val = float(val)
+    return unit_class(val)
+
+
+def _parse_string_unsafe(s: str | numbers.Number, system: int) -> 'Bitmath':
+    if not isinstance(s, str) and not isinstance(s, numbers.Number):
+        raise ValueError(f"parse_string only accepts string/number inputs but a {type(s)} was given")
+
+    # Test case: raw number input (easy!)
+    if isinstance(s, numbers.Number):
+        return Byte(s)
+
+    # Test case: a number pretending to be a string
+    if isinstance(s, str):
+        try:
+            return Byte(float(s))
+        except ValueError:
+            pass
+
+    # At this point the input is a string with a unit component.
+    # Separate the number and the unit.
+    try:
+        index = next(i for i, c in enumerate(s) if c.isalpha())
+    except StopIteration:  # pragma: no cover
+        raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object") from None
+
+    val, unit = s[:index], s[index:]
+
+    # Explicit base-unit and word-form checks: handle B, b, bit(s),
+    # byte(s) before the prefix-normalization logic below.
+    _unit_lower = unit.lower()
+    if unit == 'B' or _unit_lower in ('byte', 'bytes'):
+        return Byte(float(val))
+    if unit == 'b' or _unit_lower in ('bit', 'bits'):
+        return Bit(float(val))
+
+    # Normalise: strip trailing b/B and append 'B' so we always
+    # work with byte-family units regardless of what was supplied.
+    unit = unit.rstrip('Bb')
+    unit += 'B'
+
+    unit_class = None
+    if len(unit) == 2:
+        if system == NIST:
+            unit = capitalize_first(unit)
+            _unit = list(unit)
+            _unit.insert(1, 'i')
+            unit = ''.join(_unit)
+            if unit in globals():
+                unit_class = globals()[unit]
+        else:
+            if unit.startswith('K'):
+                unit = unit.replace('K', 'k')
+            elif not unit.startswith('k'):
+                unit = capitalize_first(unit)
+            if unit[0] in SI_PREFIXES:
+                unit_class = globals()[unit]
+    elif len(unit) == 3:
+        unit = capitalize_first(unit)
+        if unit[:2] in NIST_PREFIXES:
+            unit_class = globals()[unit]
+    else:
+        raise ValueError(f"The unit {unit} is not a valid bitmath unit")
+
+    if unit_class is None:
+        raise ValueError(f"The unit {unit} is not a valid bitmath unit")
+
+    return unit_class(float(val))
 
 
 def parse_string(s: str | numbers.Number, system: int = NIST, strict: bool = True) -> Bitmath:
@@ -1606,102 +1712,8 @@ the return value::
    defaults to ``bitmath.NIST`` and is ignored when ``strict=True``.
     """
     if strict:
-        # Strings only please
-        if not isinstance(s, str):
-            raise ValueError(f"parse_string only accepts string inputs but a {type(s)} was given")
-
-        # get the index of the first alphabetic character
-        try:
-            index = next(i for i, c in enumerate(s) if c.isalpha())
-        except StopIteration:
-            # If there's no alphabetic characters we won't be able to find a match
-            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
-
-        # split the string into the value and the unit
-        val, unit = s[:index], s[index:]
-
-        # see if the unit exists as a type in our namespace
-        if unit == "b":
-            unit_class = Bit
-        elif unit == "B":
-            unit_class = Byte
-        else:
-            if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
-                raise ValueError(f"The unit {unit} is not a valid bitmath unit")
-            unit_class = globals()[unit]
-
-        try:
-            val = float(val)
-        except ValueError:
-            raise
-        return unit_class(val)
-
-    else:
-        # strict=False path (formerly parse_string_unsafe)
-        if not isinstance(s, str) and not isinstance(s, numbers.Number):
-            raise ValueError(f"parse_string only accepts string/number inputs but a {type(s)} was given")
-
-        # Test case: raw number input (easy!)
-        if isinstance(s, numbers.Number):
-            return Byte(s)
-
-        # Test case: a number pretending to be a string
-        if isinstance(s, str):
-            try:
-                return Byte(float(s))
-            except ValueError:
-                pass
-
-        # At this point the input is a string with a unit component.
-        # Separate the number and the unit.
-        try:
-            index = next(i for i, c in enumerate(s) if c.isalpha())
-        except StopIteration:  # pragma: no cover
-            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
-
-        val, unit = s[:index], s[index:]
-
-        # Explicit base-unit and word-form checks: handle B, b, bit(s),
-        # byte(s) before the prefix-normalization logic below.
-        _unit_lower = unit.lower()
-        if unit == 'B' or _unit_lower in ('byte', 'bytes'):
-            return Byte(float(val))
-        if unit == 'b' or _unit_lower in ('bit', 'bits'):
-            return Bit(float(val))
-
-        # Normalise: strip trailing b/B and append 'B' so we always
-        # work with byte-family units regardless of what was supplied.
-        unit = unit.rstrip('Bb')
-        unit += 'B'
-
-        if len(unit) == 2:
-            if system == NIST:
-                unit = capitalize_first(unit)
-                _unit = list(unit)
-                _unit.insert(1, 'i')
-                unit = ''.join(_unit)
-                if unit in globals():
-                    unit_class = globals()[unit]
-            else:
-                if unit.startswith('K'):
-                    unit = unit.replace('K', 'k')
-                elif not unit.startswith('k'):
-                    unit = capitalize_first(unit)
-                if unit[0] in SI_PREFIXES:
-                    unit_class = globals()[unit]
-        elif len(unit) == 3:
-            unit = capitalize_first(unit)
-            if unit[:2] in NIST_PREFIXES:
-                unit_class = globals()[unit]
-        else:
-            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
-
-        try:
-            unit_class
-        except UnboundLocalError:
-            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
-
-        return unit_class(float(val))
+        return _parse_string_strict(s)
+    return _parse_string_unsafe(s, system)
 
 
 def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
@@ -1718,7 +1730,6 @@ def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
        warnings.filterwarnings('ignore', category=DeprecationWarning,
                                module='bitmath')
     """
-    import warnings
     warnings.warn(
         "parse_string_unsafe is deprecated as of 2.0.0 and will be removed "
         "in a future release. Use parse_string(s, strict=False, system=system) "
@@ -1842,8 +1853,7 @@ def cli_script_main(cli_args):
 
 
 def cli_script():  # pragma: no cover
-    # Wrapper around cli_script_main so we can unittest the command
-    # line functionality
+    """Entry point for the bitmath CLI; wraps cli_script_main for testability."""
     for result in cli_script_main(sys.argv[1:]):
         print(result)
 

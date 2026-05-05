@@ -80,3 +80,6 @@ packages = ["bitmath"]
 
 [tool.hatch.publish.index]
 disable = true
+
+[tool.pylint.main]
+py-version = "3.12"

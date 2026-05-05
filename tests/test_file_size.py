@@ -33,6 +33,7 @@ from . import TestCase
 import bitmath
 import os
 import pathlib
+import warnings
 
 
 class TestFileSize(TestCase):
@@ -241,7 +242,7 @@ Same assumptions as test_listdir_nosymlinks."""
         contents = list(bitmath.listdir('./tests/listdir_nosymlinks/',
                                         relpath=True,
                                         # Should only find 1 file, 1024_byte_file
-                                        filter='1024*'))
+                                        glob='1024*'))
 
         # Ensure the returned path matches the expected path
         self.assertEqual(pathlib.Path(contents[0][0]).as_posix(),
@@ -258,7 +259,35 @@ Same assumptions as test_listdir_nosymlinks."""
         contents = list(bitmath.listdir('./tests/listdir_nosymlinks/',
                                         relpath=True,
                                         # Should find no matches
-                                        filter='*notafile*'))
+                                        glob='*notafile*'))
 
         # There should be one file discovered
         self.assertEqual(len(contents), int(0))
+
+
+class TestListdirDeprecations(TestCase):
+    def test_listdir_filter_kwarg_emits_deprecation_warning(self):
+        """listdir() emits DeprecationWarning when called with filter= instead of glob="""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            list(bitmath.listdir('./tests/listdir_nosymlinks/', filter='*'))
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[0].category, DeprecationWarning))
+            self.assertIn("filter", str(w[0].message))
+            self.assertIn("glob", str(w[0].message))
+
+    def test_listdir_filter_kwarg_still_works(self):
+        """listdir() with deprecated filter= kwarg returns correct results"""
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            contents = list(bitmath.listdir('./tests/listdir_nosymlinks/',
+                                            relpath=True,
+                                            filter='1024*'))
+        self.assertEqual(len(contents), 1)
+        self.assertEqual(pathlib.Path(contents[0][0]).as_posix(),
+                         'tests/listdir_nosymlinks/depth1/depth2/1024_byte_file')
+
+    def test_listdir_unknown_kwarg_raises_typeerror(self):
+        """listdir() raises TypeError for unrecognized keyword arguments"""
+        with self.assertRaises(TypeError):
+            list(bitmath.listdir('./tests/listdir_nosymlinks/', notaarg=True))
