@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014-2026 Tim Case <bitmath@lnx.cx>
-# See GitHub Contributors Graph for more information
+# SPDX-FileCopyrightText: 2014-2026 Tim Case <bitmath@lnx.cx>
+# SPDX-FileCopyrightText: See GitHub Contributors Graph for more information
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -24,22 +24,18 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 # pylint: disable=line-too-long
 
 """Reference material:
 The bitmath homepage is located at:
-* http://bitmath.readthedocs.io/en/latest/
+* https://bitmath.readthedocs.io/en/latest/
 
 Prefixes for binary multiples:
-http://physics.nist.gov/cuu/Units/binary.html
+https://physics.nist.gov/cuu/Units/binary.html
 
 decimal and binary prefixes:
 man 7 units (from the Linux Documentation Project 'man-pages' package)
-
-
-* If you *NEED* to skip a statement because of something untestable:
-
-      # pragma: no cover
 """
 
 from __future__ import annotations
