@@ -7,6 +7,10 @@
 .. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
    :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
 
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml
+   :alt: Bandit Security Scan
+
 .. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
    :target: https://github.com/timlnx/bitmath/issues
    :alt: Open issues
@@ -14,6 +18,10 @@
 .. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
    :target: https://github.com/timlnx/bitmath/pulls
    :alt: Open pull requests
+
+.. image:: https://img.shields.io/pypi/v/bitmath.svg
+   :target: https://pypi.org/project/bitmath/
+   :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
@@ -23,9 +31,9 @@
    :target: https://pypistats.org/packages/bitmath
    :alt: GitHub Project Popularity
 
-.. image:: https://img.shields.io/pypi/l/bitmath?style=flat-square
-   :target: https://opensource.org/licenses/MIT
-   :alt: PyPI - License
+.. image:: https://img.shields.io/badge/license-MIT-blue.svg
+   :target: https://github.com/timlnx/bitmath/blob/master/LICENSE
+   :alt: License
 
 .. image:: https://img.shields.io/pypi/implementation/bitmath?style=flat-square
    :alt: PyPI - Implementation
