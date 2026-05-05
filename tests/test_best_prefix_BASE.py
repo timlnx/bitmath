@@ -99,3 +99,10 @@ Prior to 2.0.0 this returned Byte(2).
         self.assertIs(type(negative_result), type(positive_result))
         # Verify that type is what we expect it to be
         self.assertIs(type(negative_result), bitmath.MiB)
+
+
+class TestBestPrefixInvalidSystem(TestCase):
+    def test_best_prefix_invalid_system_raises(self):
+        """best_prefix raises ValueError when an invalid system constant is passed"""
+        with self.assertRaises(ValueError):
+            bitmath.best_prefix(bitmath.MiB(1), system="bogus")

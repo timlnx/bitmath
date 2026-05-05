@@ -62,7 +62,7 @@ from typing import IO, Any, NamedTuple, Union
 if os.name == 'posix':
     import stat
     import fcntl
-elif os.name == 'nt':
+elif os.name == 'nt':  # pragma: no cover
     import ctypes
     import ctypes.wintypes
     import msvcrt  # pylint: disable=import-error

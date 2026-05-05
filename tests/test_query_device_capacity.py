@@ -31,7 +31,9 @@ Test reading block device capacities
 
 from . import TestCase
 import bitmath
+import ctypes as real_ctypes
 import os
+import types
 from unittest import mock, skipUnless
 import struct
 from contextlib import ExitStack, contextmanager
@@ -133,3 +135,63 @@ class TestQueryDeviceCapacity(TestCase):
         with mock.patch('bitmath.os.name', unsupported):
             with self.assertRaises(NotImplementedError):
                 bitmath.query_device_capacity(device)
+
+
+class TestQueryDeviceCapacityWindowsBody(TestCase):
+    """Mock-based tests for _query_device_capacity_windows body.
+
+    Run on all platforms by injecting ctypes and msvcrt into the bitmath
+    namespace via mock.patch(..., create=True).
+    """
+
+    def _make_mock_ctypes(self):
+        mc = types.SimpleNamespace(
+            Structure=real_ctypes.Structure,
+            c_longlong=real_ctypes.c_longlong,
+            c_uint=real_ctypes.c_uint,
+            c_ulong=real_ctypes.c_ulong,
+            c_byte=real_ctypes.c_byte,
+            byref=real_ctypes.byref,
+            sizeof=real_ctypes.sizeof,
+            wintypes=types.SimpleNamespace(DWORD=real_ctypes.c_ulong),
+            windll=mock.MagicMock(),
+        )
+        mc.windll.kernel32.DeviceIoControl.return_value = 1
+        return mc
+
+    def _make_mock_msvcrt(self):
+        return types.SimpleNamespace(get_osfhandle=mock.Mock(return_value=999))
+
+    def _make_windows_device(self):
+        fd = mock.MagicMock()
+        fd.name = r'\\.\PhysicalDrive0'
+        fd.fileno.return_value = 4
+        return fd
+
+    def test_windows_body_success(self):
+        """_query_device_capacity_windows succeeds via mocked ctypes and msvcrt"""
+        mock_ctypes = self._make_mock_ctypes()
+        mock_msvcrt = self._make_mock_msvcrt()
+        device_fd = self._make_windows_device()
+
+        with mock.patch('bitmath.ctypes', mock_ctypes, create=True):
+            with mock.patch('bitmath.msvcrt', mock_msvcrt, create=True):
+                result = bitmath._query_device_capacity_windows(device_fd)
+
+        # DiskSize is 0 by default — mock DeviceIoControl does not fill the struct
+        self.assertEqual(result, 0)
+        mock_msvcrt.get_osfhandle.assert_called_once_with(4)
+        mock_ctypes.windll.kernel32.DeviceIoControl.assert_called_once()
+
+    def test_windows_body_ioctl_failure_raises_oserror(self):
+        """_query_device_capacity_windows raises OSError when DeviceIoControl fails"""
+        mock_ctypes = self._make_mock_ctypes()
+        mock_ctypes.windll.kernel32.DeviceIoControl.return_value = 0
+        mock_ctypes.windll.kernel32.GetLastError.return_value = 5
+        mock_msvcrt = self._make_mock_msvcrt()
+        device_fd = self._make_windows_device()
+
+        with mock.patch('bitmath.ctypes', mock_ctypes, create=True):
+            with mock.patch('bitmath.msvcrt', mock_msvcrt, create=True):
+                with self.assertRaises(OSError):
+                    bitmath._query_device_capacity_windows(device_fd)

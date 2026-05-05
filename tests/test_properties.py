@@ -73,3 +73,12 @@ class TestAttributeProperties(TestCase):
     def test_Yib_property(self):
         """Yib property returns a Yib instance"""
         self.assertIsInstance(self.kib.Yib, bitmath.Yib)
+
+
+class TestSystemPropertyInvalidBase(TestCase):
+    def test_system_property_invalid_base_raises(self):
+        """system property raises ValueError when _base is not 2 or 10"""
+        obj = bitmath.MiB(1)
+        obj._base = 7
+        with self.assertRaises(ValueError):
+            _ = obj.system
