@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2026 Tim Case <timbielawa@gmail.com>
+# SPDX-FileCopyrightText: 2026 Tim Case <bitmath@lnx.cx>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
