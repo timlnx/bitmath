@@ -27,11 +27,14 @@ Phases 1 (maintenance 1.4.0) and 2 (bitmath 2.0.0) are complete. The project:
 ## Common Commands
 
 ```bash
-# Run the full test suite with coverage (creates venv, runs pytest + linting)
+# Run the full test suite with coverage (creates venv, runs pytest + linting + bandit)
 make ci
 
+# Run security scan only
+make ci-bandit
+
 # Run linting only
-ruff check bitmath/ tests/
+make ci-pylint
 
 # Build a wheel
 make build
@@ -65,6 +68,14 @@ All unit values are normalized to bits internally; conversion between units happ
 - `query_device_capacity(device_fd)` — raw physical block device capacity (Linux: requires root; Windows: requires administrator; macOS: raises `NotImplementedError` due to SIP)
 
 **Constants:** `NIST`, `SI`, `NIST_PREFIXES`, `SI_PREFIXES`, `ALL_UNIT_TYPES`
+
+## Versioning
+
+The single source of truth for the version is the `VERSION` file. `pyproject.toml` reads it dynamically via `[tool.hatch.version]` — do not edit the version in `pyproject.toml` directly. The `Makefile` also reads `VERSION` for docs, man pages, and RPM builds. To bump the version, edit `VERSION` only.
+
+## Security Scanning
+
+Bandit runs as part of `make ci` via the `ci-bandit` target, scanning both `bitmath/` and `tests/`. It also runs as a GitHub Actions workflow (`.github/workflows/bandit.yml`) on push/PR to master and weekly. No issues were present as of 2.0.2.
 
 ## Testing Notes
 
