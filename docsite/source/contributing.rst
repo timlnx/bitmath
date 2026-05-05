@@ -39,13 +39,15 @@ provided template.
 Code Style and Formatting
 *************************
 
-Two static analysis checks run on every pull request as part of the
+Two static analysis tools run on every pull request as part of the
 GitHub Actions CI workflow, and locally via ``make ci``:
 
-* ``pycodestyle`` — checks code style, with **E501** (line too long)
-  ignored.
-* ``flake8 --select=F`` — runs pyflakes error checks only (undefined
-  names, unused imports, etc.). Style checks are disabled.
+* ``pycodestyle`` — checks PEP 8 code style, with **E501** (line too
+  long) ignored. Runs across all matrix cells.
+* ``pylint`` — full static analysis: naming conventions, refactoring
+  hints, design metrics, and correctness checks. The project targets
+  10.00/10. Runs on Ubuntu / Python 3.12 only (linting is not
+  platform-sensitive).
 
 A PR cannot be merged until both pass. If you want to save time you
 can run ``make ci`` locally to check before submitting and waiting on
@@ -150,10 +152,11 @@ The bitmath test suite depends on the following tools:
   can always be discussed in the pull request.
 
 * `pycodestyle <https://pypi.org/project/pycodestyle/>`_ — Checks
-  Python code style.
+  Python code style (PEP 8).
 
-* `pyflakes <https://pypi.org/project/pyflakes/>`_ — Checks Python
-  source files for errors.
+* `pylint <https://pylint.readthedocs.io/>`_ — Full static analysis:
+  naming, refactoring hints, design metrics, and correctness. The
+  project targets a score of 10.00/10.
 
 * `virtualenv <https://virtualenv.pypa.io/en/latest/>`_ — Creates an
   isolated Python environment. The ``make ci`` target manages this
@@ -181,7 +184,7 @@ relevant to contributors are:
    The primary target. Creates a Python virtualenv, installs all
    dependencies from ``requirements.txt``, runs the unique test name
    check, executes the full pytest suite with coverage, and runs
-   ``pycodestyle`` and ``pyflakes``. Run this before opening a pull
+   ``pycodestyle`` and ``pylint``. Run this before opening a pull
    request. **This is the same check GitHub Actions runs.**
 
 ``make clean``

@@ -83,7 +83,7 @@ bitmath.getsize()
 bitmath.listdir()
 =================
 
-.. function:: listdir(search_base[, followlinks=False[, filter='*'[, relpath=False[, bestprefix=False[, system=NIST]]]]])
+.. function:: listdir(search_base[, followlinks=False[, glob='*'[, relpath=False[, bestprefix=False[, system=NIST]]]]])
 
    This is a `generator
    <https://docs.python.org/3/tutorial/classes.html#generators>`_
@@ -97,10 +97,10 @@ bitmath.listdir()
                             links. Whether or not to follow symbolic
                             links to directories. Setting to ``True``
                             enables directory link following
-   :param string filter: **Default:** ``*`` (everything). A glob to
-                         filter results with. See `fnmatch
-                         <https://docs.python.org/3/library/fnmatch.html>`_
-                         for more details about *globs*
+   :param string glob: **Default:** ``*`` (everything). A glob to
+                       filter results with. See `fnmatch
+                       <https://docs.python.org/3/library/fnmatch.html>`_
+                       for more details about *globs*
    :param bool relpath: **Default:** ``False``, returns the fully
                         qualified to each discovered file. ``True`` to
                         return the relative path from the present
@@ -195,12 +195,12 @@ bitmath.listdir()
    on lines **10** and **11** the path is relative to the present
    working directory.
 
-   Let's play with the ``filter`` parameter now. Let's say we only
+   Let's play with the ``glob`` parameter now. Let's say we only
    want to include results for files whose name begins with "second":
 
    .. code-block:: python
 
-      >>> for f in bitmath.listdir('./some_files', filter='second*'):
+      >>> for f in bitmath.listdir('./some_files', glob='second*'):
       ...     print(f)
       ...
       ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))

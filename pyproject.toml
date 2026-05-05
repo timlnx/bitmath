@@ -80,3 +80,18 @@ packages = ["bitmath"]
 
 [tool.hatch.publish.index]
 disable = true
+
+[tool.pylint.main]
+py-version = "3.12"
+
+[tool.pylint.basic]
+# format_string / format_plural: public mutable module-level config (users assign these directly)
+good-names = ["format_string", "format_plural"]
+good-names-rgxs = [
+    "^to_[A-Za-z]+$",   # unit conversion methods: to_KiB, to_kB, to_Mib, etc.
+    "^[a-z][A-Za-z]$",  # two-char unit class names that start lowercase: kB, kb, ko
+    "^[A-Z][A-Z_]+$",   # Windows API / ctypes names: DISK_GEOMETRY, IOCTL_DISK_GET_DRIVE_GEOMETRY_EX
+]
+
+[tool.pylint.design]
+max-module-lines = 2000

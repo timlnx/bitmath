@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2014-2026 Tim Case <bitmath@lnx.cx>
-# See GitHub Contributors Graph for more information
+# SPDX-FileCopyrightText: 2014-2026 Tim Case <bitmath@lnx.cx>
+# SPDX-FileCopyrightText: See GitHub Contributors Graph for more information
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -24,22 +24,18 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 # pylint: disable=line-too-long
 
 """Reference material:
 The bitmath homepage is located at:
-* http://bitmath.readthedocs.io/en/latest/
+* https://bitmath.readthedocs.io/en/latest/
 
 Prefixes for binary multiples:
-http://physics.nist.gov/cuu/Units/binary.html
+https://physics.nist.gov/cuu/Units/binary.html
 
 decimal and binary prefixes:
 man 7 units (from the Linux Documentation Project 'man-pages' package)
-
-
-* If you *NEED* to skip a statement because of something untestable:
-
-      # pragma: no cover
 """
 
 from __future__ import annotations
@@ -54,8 +50,10 @@ import os.path
 import platform
 import re
 import shutil
+import struct
 import sys
 import threading
+import warnings
 
 from collections.abc import Generator, Iterable, Iterator
 from typing import IO, Any, NamedTuple, Union
@@ -64,11 +62,10 @@ from typing import IO, Any, NamedTuple, Union
 if os.name == 'posix':
     import stat
     import fcntl
-    import struct
-elif os.name == 'nt':
+elif os.name == 'nt':  # pragma: no cover
     import ctypes
     import ctypes.wintypes
-    import msvcrt
+    import msvcrt  # pylint: disable=import-error
 
 #: Platforms where :func:`query_device_capacity` is supported.
 #: Corresponds to possible values of :data:`os.name`. macOS (Darwin)
@@ -184,13 +181,13 @@ def capitalize_first(s: str) -> str:
 
 ######################################################################
 # Base class for everything else
-class Bitmath:
+class Bitmath:  # pylint: disable=too-many-public-methods,too-many-instance-attributes
     """The base class for all the other prefix classes"""
 
     # All the allowed input types
     valid_types: tuple[type, ...] = (int, float)
 
-    def __init__(self, value=0, bytes=None, bits=None):
+    def __init__(self, value=0, bytes=None, bits=None):  # pylint: disable=redefined-builtin
         """Instantiate with `value` by the unit, in plain bytes, or
 bits. Don't supply more than one keyword.
 
@@ -312,13 +309,12 @@ That leading ``0b`` is normal. That's how Python represents binary.
         """The system of units used to measure an instance"""
         if self._base == 2:
             return "NIST"
-        elif self._base == 10:
+        if self._base == 10:
             return "SI"
-        else:
-            # I don't expect to ever encounter this logic branch, but
-            # hey, it's better to have extra test coverage than
-            # insufficient test coverage.
-            raise ValueError(f"Instances mathematical base is an unsupported value: {self._base}")
+        # I don't expect to ever encounter this logic branch, but
+        # hey, it's better to have extra test coverage than
+        # insufficient test coverage.
+        raise ValueError(f"Instances mathematical base is an unsupported value: {self._base}")
 
     @property
     def unit(self):
@@ -338,12 +334,11 @@ For example:
         if self.prefix_value == 1:
             # If it's a '1', return it singular, no matter what
             return self._name_singular
-        elif _get_format_plural():
+        if _get_format_plural():
             # Pluralization requested
             return self._name_plural
-        else:
-            # Pluralization NOT requested, and the value is not 1
-            return self._name_singular
+        # Pluralization NOT requested, and the value is not 1
+        return self._name_singular
 
     @property
     def unit_plural(self):
@@ -400,8 +395,7 @@ instantiate the class ahead of time.
         """
         if isinstance(item, Bitmath):
             return cls(bits=item.bits)
-        else:
-            raise ValueError(f"The provided items must be a valid bitmath class: {item.__class__}")
+        raise ValueError(f"The provided items must be a valid bitmath class: {item.__class__}")
 
     ######################################################################
     # The following implement the Python datamodel customization methods
@@ -507,74 +501,57 @@ always return a Byte-family result.
 
         """
 
+        def _resolve_prefix_table(pref):
+            """Return (prefixes, base) for the given system preference."""
+            if pref is None:
+                if self.system == 'NIST':
+                    return NIST_PREFIXES, 1024
+                return SI_PREFIXES, 1000
+            if pref == NIST:
+                return NIST_PREFIXES, 1024
+            if pref == SI:
+                return SI_PREFIXES, 1000
+            raise ValueError("Invalid value given for 'system' parameter. Must be one of NIST or SI")
+
         # Use absolute value so we don't return Bit's for *everything*
         # less than Byte(1). From github issue #55
         if abs(self) < Byte(1):
             return Bit.from_other(self)
-        else:
-            if isinstance(self, Byte):
-                _inst = self
-            else:
-                _inst = Byte.from_other(self)
-
-        # Which table to consult? Was a preferred system provided?
-        if system is None:
-            # No preference. Use existing system
-            if self.system == 'NIST':
-                _STEPS = NIST_PREFIXES
-                _BASE = 1024
-            elif self.system == 'SI':
-                _STEPS = SI_PREFIXES
-                _BASE = 1000
-            # Anything else would have raised by now
-        else:
-            # Preferred system provided.
-            if system == NIST:
-                _STEPS = NIST_PREFIXES
-                _BASE = 1024
-            elif system == SI:
-                _STEPS = SI_PREFIXES
-                _BASE = 1000
-            else:
-                raise ValueError("Invalid value given for 'system' parameter."
-                                 " Must be one of NIST or SI")
+        _inst = self if isinstance(self, Byte) else Byte.from_other(self)
+        _steps, _base = _resolve_prefix_table(system)
 
         # Index of the string of the best prefix in the STEPS list
-        _index = int(math.log(abs(_inst.bytes), _BASE))
+        _index = int(math.log(abs(_inst.bytes), _base))
 
         # Recall that the log() function returns >= 0. This doesn't
         # map to the STEPS list 1:1. That is to say, 0 is handled with
         # special care. So if the _index is 1, we actually want item 0
         # in the list.
-
         if _index == 0:
             # Below the first prefix threshold. Bit-family inputs return as
             # Bit to preserve family; Byte-family inputs return as Byte.
             if isinstance(self, Bit):
                 return Bit.from_other(self)
             return _inst
-        elif _index >= len(_STEPS):
-            # This is a really big number. Use the biggest prefix we've got
-            _best_prefix = _STEPS[-1]
-        elif 0 < _index < len(_STEPS):
-            # There is an appropriate prefix unit to represent this
-            _best_prefix = _STEPS[_index - 1]
+
+        # Default to the largest prefix; override if a more fitting one exists.
+        _best_prefix = _steps[-1]
+        if 0 < _index < len(_steps):
+            _best_prefix = _steps[_index - 1]
 
         # Preserve unit family: Bit-family -> 'to_Xib'/'to_Xb',
         # Byte-family -> 'to_XiB'/'to_XB'.
-        if isinstance(self, Bit):
-            _conversion_method = getattr(self, 'to_%sb' % _best_prefix)
-        else:
-            _conversion_method = getattr(self, 'to_%sB' % _best_prefix)
-
-        return _conversion_method()
+        suffix = 'b' if isinstance(self, Bit) else 'B'
+        return getattr(self, f'to_{_best_prefix}{suffix}')()
 
     ##################################################################
 
     def to_Bit(self):
+        """Convert to Bit."""
         return Bit(self._bit_value)
 
     def to_Byte(self):
+        """Convert to Byte."""
         return Byte(self._byte_value / float(NIST_STEPS['Byte']))
 
     # Properties
@@ -584,15 +561,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_KiB(self):
+        """Convert to KiB."""
         return KiB(bits=self._bit_value)
 
     def to_Kib(self):
+        """Convert to Kib."""
         return Kib(bits=self._bit_value)
 
     def to_kB(self):
+        """Convert to kB."""
         return kB(bits=self._bit_value)
 
     def to_kb(self):
+        """Convert to kb."""
         return kb(bits=self._bit_value)
 
     # Properties
@@ -604,15 +585,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_MiB(self):
+        """Convert to MiB."""
         return MiB(bits=self._bit_value)
 
     def to_Mib(self):
+        """Convert to Mib."""
         return Mib(bits=self._bit_value)
 
     def to_MB(self):
+        """Convert to MB."""
         return MB(bits=self._bit_value)
 
     def to_Mb(self):
+        """Convert to Mb."""
         return Mb(bits=self._bit_value)
 
     # Properties
@@ -624,15 +609,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_GiB(self):
+        """Convert to GiB."""
         return GiB(bits=self._bit_value)
 
     def to_Gib(self):
+        """Convert to Gib."""
         return Gib(bits=self._bit_value)
 
     def to_GB(self):
+        """Convert to GB."""
         return GB(bits=self._bit_value)
 
     def to_Gb(self):
+        """Convert to Gb."""
         return Gb(bits=self._bit_value)
 
     # Properties
@@ -644,15 +633,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_TiB(self):
+        """Convert to TiB."""
         return TiB(bits=self._bit_value)
 
     def to_Tib(self):
+        """Convert to Tib."""
         return Tib(bits=self._bit_value)
 
     def to_TB(self):
+        """Convert to TB."""
         return TB(bits=self._bit_value)
 
     def to_Tb(self):
+        """Convert to Tb."""
         return Tb(bits=self._bit_value)
 
     # Properties
@@ -664,15 +657,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_PiB(self):
+        """Convert to PiB."""
         return PiB(bits=self._bit_value)
 
     def to_Pib(self):
+        """Convert to Pib."""
         return Pib(bits=self._bit_value)
 
     def to_PB(self):
+        """Convert to PB."""
         return PB(bits=self._bit_value)
 
     def to_Pb(self):
+        """Convert to Pb."""
         return Pb(bits=self._bit_value)
 
     # Properties
@@ -684,15 +681,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_EiB(self):
+        """Convert to EiB."""
         return EiB(bits=self._bit_value)
 
     def to_Eib(self):
+        """Convert to Eib."""
         return Eib(bits=self._bit_value)
 
     def to_EB(self):
+        """Convert to EB."""
         return EB(bits=self._bit_value)
 
     def to_Eb(self):
+        """Convert to Eb."""
         return Eb(bits=self._bit_value)
 
     # Properties
@@ -704,15 +705,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_ZiB(self):
+        """Convert to ZiB."""
         return ZiB(bits=self._bit_value)
 
     def to_Zib(self):
+        """Convert to Zib."""
         return Zib(bits=self._bit_value)
 
     def to_ZB(self):
+        """Convert to ZB."""
         return ZB(bits=self._bit_value)
 
     def to_Zb(self):
+        """Convert to Zb."""
         return Zb(bits=self._bit_value)
 
     ZiB = property(lambda s: s.to_ZiB())
@@ -723,15 +728,19 @@ always return a Byte-family result.
     ##################################################################
 
     def to_YiB(self):
+        """Convert to YiB."""
         return YiB(bits=self._bit_value)
 
     def to_Yib(self):
+        """Convert to Yib."""
         return Yib(bits=self._bit_value)
 
     def to_YB(self):
+        """Convert to YB."""
         return YB(bits=self._bit_value)
 
     def to_Yb(self):
+        """Convert to Yb."""
         return Yb(bits=self._bit_value)
 
     YiB = property(lambda s: s.to_YiB())
@@ -746,38 +755,32 @@ always return a Byte-family result.
     def __lt__(self, other):
         if isinstance(other, numbers.Number):
             return self.prefix_value < other
-        else:
-            return self._byte_value < other.bytes
+        return self._byte_value < other.bytes
 
     def __le__(self, other):
         if isinstance(other, numbers.Number):
             return self.prefix_value <= other
-        else:
-            return self._byte_value <= other.bytes
+        return self._byte_value <= other.bytes
 
     def __eq__(self, other):
         if isinstance(other, numbers.Number):
             return self.prefix_value == other
-        else:
-            return self._byte_value == other.bytes
+        return self._byte_value == other.bytes
 
     def __ne__(self, other):
         if isinstance(other, numbers.Number):
             return self.prefix_value != other
-        else:
-            return self._byte_value != other.bytes
+        return self._byte_value != other.bytes
 
     def __gt__(self, other):
         if isinstance(other, numbers.Number):
             return self.prefix_value > other
-        else:
-            return self._byte_value > other.bytes
+        return self._byte_value > other.bytes
 
     def __ge__(self, other):
         if isinstance(other, numbers.Number):
             return self.prefix_value >= other
-        else:
-            return self._byte_value >= other.bytes
+        return self._byte_value >= other.bytes
 
     ##################################################################
     # Basic math operations
@@ -795,10 +798,9 @@ always return a Byte-family result.
         if isinstance(other, numbers.Number):
             # bm + num
             return other + self.value
-        else:
-            # bm + bm
-            total_bytes = self._byte_value + other.bytes
-            return (type(self))(bytes=total_bytes)
+        # bm + bm
+        total_bytes = self._byte_value + other.bytes
+        return (type(self))(bytes=total_bytes)
 
     def __sub__(self, other):
         """Subtraction: Supported operations with result types:
@@ -810,10 +812,9 @@ always return a Byte-family result.
         if isinstance(other, numbers.Number):
             # bm - num
             return self.value - other
-        else:
-            # bm - bm
-            total_bytes = self._byte_value - other.bytes
-            return (type(self))(bytes=total_bytes)
+        # bm - bm
+        total_bytes = self._byte_value - other.bytes
+        return (type(self))(bytes=total_bytes)
 
     def __mul__(self, other):
         """Multiplication: Supported operations with result types:
@@ -826,11 +827,10 @@ always return a Byte-family result.
             # bm * num
             result = self._byte_value * other
             return (type(self))(bytes=result)
-        else:
-            # bm1 * bm2
-            _other = other.value * other.base ** other.power
-            _self = self.prefix_value * self._base ** self._power
-            return (type(self))(bytes=_other * _self)
+        # bm1 * bm2
+        _other = other.value * other.base ** other.power
+        _self = self.prefix_value * self._base ** self._power
+        return (type(self))(bytes=_other * _self)
 
     def __truediv__(self, other):
         """Division: Supported operations with result types:
@@ -843,9 +843,8 @@ always return a Byte-family result.
             # bm / num
             result = self._byte_value / other
             return (type(self))(bytes=result)
-        else:
-            # bm1 / bm2
-            return self._byte_value / float(other.bytes)
+        # bm1 / bm2
+        return self._byte_value / float(other.bytes)
 
     def __floordiv__(self, other):
         """Floor division: Supported operations with result types:
@@ -857,9 +856,8 @@ always return a Byte-family result.
             # bm // num
             result = self._byte_value // other
             return (type(self))(bytes=result)
-        else:
-            # bm1 // bm2
-            return int(self._byte_value // other.bytes)
+        # bm1 // bm2
+        return int(self._byte_value // other.bytes)
 
     def __mod__(self, other):
         """Modulo (remainder): Supported operations with result types:
@@ -871,9 +869,8 @@ always return a Byte-family result.
             # bm % num
             result = self._byte_value % other
             return (type(self))(bytes=result)
-        else:
-            # bm1 % bm2
-            return (type(self))(bytes=self._byte_value % other.bytes)
+        # bm1 % bm2
+        return (type(self))(bytes=self._byte_value % other.bytes)
 
     def __divmod__(self, other):
         """divmod(bm, other) == (bm // other, bm % other).
@@ -903,18 +900,10 @@ Result types match __floordiv__ and __mod__.
         # num / bm = num
         return other / float(self.value)
 
-    """Called to implement the built-in functions complex(), int(), and
-float(). Should return a value of the appropriate type.
-
-If one of those methods does not support the operation with the
-supplied arguments, it should return NotImplemented.
-
-For bitmath purposes, these methods return the int/float
-equivalent of the this instances prefix Unix value. That is to say:
-
-    - int(KiB(3.336)) would return 3
-    - float(KiB(3.336)) would return 3.336
-"""
+    # Called to implement the built-in functions complex(), int(), and
+    # float(). These return the int/float equivalent of the prefix value:
+    #   - int(KiB(3.336))   -> 3
+    #   - float(KiB(3.336)) -> 3.336
 
     def __int__(self) -> int:
         """Return this instances prefix unit as an integer"""
@@ -924,11 +913,9 @@ equivalent of the this instances prefix Unix value. That is to say:
         """Return this instances prefix unit as a floating point number"""
         return float(self.prefix_value)
 
-    """floor/ceil/round operate on the prefix value and return the same unit
-type. They are explicit opt-in operations for when integer prefix values are
-needed. See the Rules for Math appendix in the bitmath documentation for the
-design rationale behind floating-point representation.
-"""
+    # floor/ceil/round operate on the prefix value and return the same unit
+    # type. Explicit opt-in for integer prefix values. See the Rules for Math
+    # appendix in the docs for the floating-point design rationale.
 
     def __floor__(self):
         """Return the largest integer prefix value <= this instance as the same type.
@@ -999,8 +986,8 @@ complement of the bit in x if that bit in y is 1."""
 
 Does a "bitwise or". Each bit of the output is 0 if the corresponding
 bit of x AND of y is 0, otherwise it's 1."""
-        ord = int(self.bits) | other
-        return type(self)(bits=ord)
+        result = int(self.bits) | other
+        return type(self)(bits=result)
 
     ##################################################################
 
@@ -1033,6 +1020,8 @@ class Byte(Bitmath):
 
 
 class KiB(Byte):
+    """Kibibyte — 2^10 (1,024) bytes."""
+
     def _setup(self):
         return (2, 10, 'KiB', 'KiBs')
 
@@ -1041,6 +1030,8 @@ Kio = KiB
 
 
 class MiB(Byte):
+    """Mebibyte — 2^20 (1,048,576) bytes."""
+
     def _setup(self):
         return (2, 20, 'MiB', 'MiBs')
 
@@ -1049,6 +1040,8 @@ Mio = MiB
 
 
 class GiB(Byte):
+    """Gibibyte — 2^30 (1,073,741,824) bytes."""
+
     def _setup(self):
         return (2, 30, 'GiB', 'GiBs')
 
@@ -1057,6 +1050,8 @@ Gio = GiB
 
 
 class TiB(Byte):
+    """Tebibyte — 2^40 bytes."""
+
     def _setup(self):
         return (2, 40, 'TiB', 'TiBs')
 
@@ -1065,6 +1060,8 @@ Tio = TiB
 
 
 class PiB(Byte):
+    """Pebibyte — 2^50 bytes."""
+
     def _setup(self):
         return (2, 50, 'PiB', 'PiBs')
 
@@ -1073,6 +1070,8 @@ Pio = PiB
 
 
 class EiB(Byte):
+    """Exbibyte — 2^60 bytes."""
+
     def _setup(self):
         return (2, 60, 'EiB', 'EiBs')
 
@@ -1081,6 +1080,8 @@ Eio = EiB
 
 
 class ZiB(Byte):
+    """Zebibyte — 2^70 bytes."""
+
     def _setup(self):
         return (2, 70, 'ZiB', 'ZiBs')
 
@@ -1089,6 +1090,8 @@ Zio = ZiB
 
 
 class YiB(Byte):
+    """Yobibyte — 2^80 bytes."""
+
     def _setup(self):
         return (2, 80, 'YiB', 'YiBs')
 
@@ -1099,6 +1102,8 @@ Yio = YiB
 ######################################################################
 # SI Prefixes for Byte based types
 class kB(Byte):
+    """Kilobyte — 10^3 (1,000) bytes."""
+
     def _setup(self):
         return (10, 3, 'kB', 'kBs')
 
@@ -1107,6 +1112,8 @@ ko = kB
 
 
 class MB(Byte):
+    """Megabyte — 10^6 (1,000,000) bytes."""
+
     def _setup(self):
         return (10, 6, 'MB', 'MBs')
 
@@ -1115,6 +1122,8 @@ Mo = MB
 
 
 class GB(Byte):
+    """Gigabyte — 10^9 (1,000,000,000) bytes."""
+
     def _setup(self):
         return (10, 9, 'GB', 'GBs')
 
@@ -1123,6 +1132,8 @@ Go = GB
 
 
 class TB(Byte):
+    """Terabyte — 10^12 bytes."""
+
     def _setup(self):
         return (10, 12, 'TB', 'TBs')
 
@@ -1131,6 +1142,8 @@ To = TB
 
 
 class PB(Byte):
+    """Petabyte — 10^15 bytes."""
+
     def _setup(self):
         return (10, 15, 'PB', 'PBs')
 
@@ -1139,6 +1152,8 @@ Po = PB
 
 
 class EB(Byte):
+    """Exabyte — 10^18 bytes."""
+
     def _setup(self):
         return (10, 18, 'EB', 'EBs')
 
@@ -1147,6 +1162,8 @@ Eo = EB
 
 
 class ZB(Byte):
+    """Zettabyte — 10^21 bytes."""
+
     def _setup(self):
         return (10, 21, 'ZB', 'ZBs')
 
@@ -1155,6 +1172,8 @@ Zo = ZB
 
 
 class YB(Byte):
+    """Yottabyte — 10^24 bytes."""
+
     def _setup(self):
         return (10, 24, 'YB', 'YBs')
 
@@ -1183,41 +1202,57 @@ type"""
 ######################################################################
 # NIST Prefixes for Bit based types
 class Kib(Bit):
+    """Kibibit — 2^10 (1,024) bits."""
+
     def _setup(self):
         return (2, 10, 'Kib', 'Kibs')
 
 
 class Mib(Bit):
+    """Mebibit — 2^20 (1,048,576) bits."""
+
     def _setup(self):
         return (2, 20, 'Mib', 'Mibs')
 
 
 class Gib(Bit):
+    """Gibibit — 2^30 (1,073,741,824) bits."""
+
     def _setup(self):
         return (2, 30, 'Gib', 'Gibs')
 
 
 class Tib(Bit):
+    """Tebibit — 2^40 bits."""
+
     def _setup(self):
         return (2, 40, 'Tib', 'Tibs')
 
 
 class Pib(Bit):
+    """Pebibit — 2^50 bits."""
+
     def _setup(self):
         return (2, 50, 'Pib', 'Pibs')
 
 
 class Eib(Bit):
+    """Exbibit — 2^60 bits."""
+
     def _setup(self):
         return (2, 60, 'Eib', 'Eibs')
 
 
 class Zib(Bit):
+    """Zebibit — 2^70 bits."""
+
     def _setup(self):
         return (2, 70, 'Zib', 'Zibs')
 
 
 class Yib(Bit):
+    """Yobibit — 2^80 bits."""
+
     def _setup(self):
         return (2, 80, 'Yib', 'Yibs')
 
@@ -1225,48 +1260,64 @@ class Yib(Bit):
 ######################################################################
 # SI Prefixes for Bit based types
 class kb(Bit):
+    """Kilobit — 10^3 (1,000) bits."""
+
     def _setup(self):
         return (10, 3, 'kb', 'kbs')
 
 
 class Mb(Bit):
+    """Megabit — 10^6 (1,000,000) bits."""
+
     def _setup(self):
         return (10, 6, 'Mb', 'Mbs')
 
 
 class Gb(Bit):
+    """Gigabit — 10^9 (1,000,000,000) bits."""
+
     def _setup(self):
         return (10, 9, 'Gb', 'Gbs')
 
 
 class Tb(Bit):
+    """Terabit — 10^12 bits."""
+
     def _setup(self):
         return (10, 12, 'Tb', 'Tbs')
 
 
 class Pb(Bit):
+    """Petabit — 10^15 bits."""
+
     def _setup(self):
         return (10, 15, 'Pb', 'Pbs')
 
 
 class Eb(Bit):
+    """Exabit — 10^18 bits."""
+
     def _setup(self):
         return (10, 18, 'Eb', 'Ebs')
 
 
 class Zb(Bit):
+    """Zettabit — 10^21 bits."""
+
     def _setup(self):
         return (10, 21, 'Zb', 'Zbs')
 
 
 class Yb(Bit):
+    """Yottabit — 10^24 bits."""
+
     def _setup(self):
         return (10, 24, 'Yb', 'Ybs')
 
 
 ######################################################################
 # Utility functions
-def best_prefix(bytes: Bitmath | int | float, system: int = NIST) -> Bitmath:
+def best_prefix(bytes: Bitmath | int | float, system: int = NIST) -> Bitmath:  # pylint: disable=redefined-builtin
     """Return a bitmath instance representing the best human-readable
 representation of the number of bytes given by ``bytes``. In addition
 to a numeric type, the ``bytes`` parameter may also be a bitmath type.
@@ -1303,9 +1354,11 @@ Raises :class:`OSError` if the DeviceIoControl call fails.
     if not device_fd.name.startswith('\\\\.\\'):
         raise ValueError("The file descriptor provided is not of a device type")
 
+    # pylint: disable=used-before-assignment  # ctypes/msvcrt: platform-guarded; only reached on os.name == 'nt'
     IOCTL_DISK_GET_DRIVE_GEOMETRY_EX = 0x000700A0
 
-    class DISK_GEOMETRY(ctypes.Structure):
+    class DISK_GEOMETRY(ctypes.Structure):  # pylint: disable=too-few-public-methods
+        """Windows API DISK_GEOMETRY structure (DeviceIoControl layout)."""
         _fields_ = [
             ('Cylinders', ctypes.c_longlong),
             ('MediaType', ctypes.c_uint),
@@ -1314,7 +1367,8 @@ Raises :class:`OSError` if the DeviceIoControl call fails.
             ('BytesPerSector', ctypes.c_ulong),
         ]
 
-    class DISK_GEOMETRY_EX(ctypes.Structure):
+    class DISK_GEOMETRY_EX(ctypes.Structure):  # pylint: disable=too-few-public-methods
+        """Extended disk geometry including total disk size."""
         _fields_ = [
             ('Geometry', DISK_GEOMETRY),
             ('DiskSize', ctypes.c_longlong),
@@ -1372,7 +1426,7 @@ macOS (SIP restriction).
         )
 
     s = os.stat(device_fd.name).st_mode
-    if not stat.S_ISBLK(s):
+    if not stat.S_ISBLK(s):  # pylint: disable=possibly-used-before-assignment
         raise ValueError("The file descriptor provided is not of a device type")
 
     # The keys of the ``ioctl_map`` dictionary correlate to possible
@@ -1428,7 +1482,9 @@ macOS (SIP restriction).
         # conditions for some possible errors. Really only for cases
         # where it would add value to override the default exception
         # message string.
-        buffer = fcntl.ioctl(device_fd.fileno(), request_code, b'\x00' * buffer_size)
+        buffer = fcntl.ioctl(  # pylint: disable=possibly-used-before-assignment
+            device_fd.fileno(), request_code, b'\x00' * buffer_size
+        )
 
         # Unpack the raw result from the ioctl call into a familiar
         # python data type according to the ``fmt`` rules.
@@ -1517,17 +1573,17 @@ instances back.
     size_bytes = os.path.getsize(_path)
     if bestprefix:
         return Byte(size_bytes).best_prefix(system=system)
-    else:
-        return Byte(size_bytes)
+    return Byte(size_bytes)
 
 
-def listdir(
+def listdir(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     search_base: str,
     followlinks: bool = False,
-    filter: str = '*',
+    glob: str = '*',
     relpath: bool = False,
     bestprefix: bool = False,
     system: int = NIST,
+    **kwargs,
 ) -> Iterator[tuple[str, Bitmath]]:
     """This is a generator which recurses the directory tree
 `search_base`, yielding 2-tuples of:
@@ -1537,7 +1593,7 @@ def listdir(
 
     - `search_base` - The directory to begin walking down.
     - `followlinks` - Whether or not to follow symbolic links to directories
-    - `filter` - A glob (see :py:mod:`fnmatch`) to filter results with
+    - `glob` - A glob (see :py:mod:`fnmatch`) to filter results with
       (default: ``*``, everything)
     - `relpath` - ``True`` to return the relative path from `pwd` or
       ``False`` (default) to return the fully qualified path
@@ -1551,8 +1607,18 @@ def listdir(
 .. note:: Symlinks to **files** are followed automatically
 
     """
-    for root, dirs, files in os.walk(search_base, followlinks=followlinks):
-        for name in fnmatch.filter(files, filter):
+    if 'filter' in kwargs:
+        warnings.warn(
+            "The 'filter' parameter of listdir() is deprecated as of 2.0.0 and will be "
+            "removed in a future release. Use 'glob' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        glob = kwargs.pop('filter')
+    if kwargs:
+        raise TypeError(f"listdir() got unexpected keyword arguments: {list(kwargs)}")
+    for root, _, files in os.walk(search_base, followlinks=followlinks):
+        for name in fnmatch.filter(files, glob):
             _path = os.path.join(root, name)
             if relpath:
                 # RELATIVE path
@@ -1568,6 +1634,99 @@ def listdir(
                     pass  # pragma: no cover
                 else:
                     yield (_return_path, getsize(_path, bestprefix=bestprefix, system=system))
+
+
+def _parse_string_strict(s: str) -> 'Bitmath':
+    if not isinstance(s, str):
+        raise ValueError(f"parse_string only accepts string inputs but a {type(s)} was given")
+
+    # get the index of the first alphabetic character
+    try:
+        index = next(i for i, c in enumerate(s) if c.isalpha())
+    except StopIteration:
+        raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object") from None
+
+    # split the string into the value and the unit
+    val, unit = s[:index], s[index:]
+
+    # see if the unit exists as a type in our namespace
+    if unit == "b":
+        unit_class = Bit
+    elif unit == "B":
+        unit_class = Byte
+    else:
+        if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
+            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
+        unit_class = globals()[unit]
+
+    val = float(val)
+    return unit_class(val)
+
+
+def _parse_string_unsafe(s: str | numbers.Number, system: int) -> 'Bitmath':  # pylint: disable=too-many-branches
+    if not isinstance(s, str) and not isinstance(s, numbers.Number):
+        raise ValueError(f"parse_string only accepts string/number inputs but a {type(s)} was given")
+
+    # Test case: raw number input (easy!)
+    if isinstance(s, numbers.Number):
+        return Byte(s)
+
+    # Test case: a number pretending to be a string
+    if isinstance(s, str):
+        try:
+            return Byte(float(s))
+        except ValueError:
+            pass
+
+    # At this point the input is a string with a unit component.
+    # Separate the number and the unit.
+    try:
+        index = next(i for i, c in enumerate(s) if c.isalpha())
+    except StopIteration:  # pragma: no cover
+        raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object") from None
+
+    val, unit = s[:index], s[index:]
+
+    # Explicit base-unit and word-form checks: handle B, b, bit(s),
+    # byte(s) before the prefix-normalization logic below.
+    _unit_lower = unit.lower()
+    if unit == 'B' or _unit_lower in ('byte', 'bytes'):
+        return Byte(float(val))
+    if unit == 'b' or _unit_lower in ('bit', 'bits'):
+        return Bit(float(val))
+
+    # Normalise: strip trailing b/B and append 'B' so we always
+    # work with byte-family units regardless of what was supplied.
+    unit = unit.rstrip('Bb')
+    unit += 'B'
+
+    unit_class = None
+    if len(unit) == 2:
+        if system == NIST:
+            unit = capitalize_first(unit)
+            _unit = list(unit)
+            _unit.insert(1, 'i')
+            unit = ''.join(_unit)
+            if unit in globals():
+                unit_class = globals()[unit]
+        else:
+            if unit.startswith('K'):
+                unit = unit.replace('K', 'k')
+            elif not unit.startswith('k'):
+                unit = capitalize_first(unit)
+            if unit[0] in SI_PREFIXES:
+                unit_class = globals()[unit]
+    elif len(unit) == 3:
+        unit = capitalize_first(unit)
+        if unit[:2] in NIST_PREFIXES:
+            unit_class = globals()[unit]
+    else:
+        raise ValueError(f"The unit {unit} is not a valid bitmath unit")
+
+    if unit_class is None:
+        raise ValueError(f"The unit {unit} is not a valid bitmath unit")
+
+    return unit_class(float(val))
 
 
 def parse_string(s: str | numbers.Number, system: int = NIST, strict: bool = True) -> Bitmath:
@@ -1610,102 +1769,8 @@ the return value::
    defaults to ``bitmath.NIST`` and is ignored when ``strict=True``.
     """
     if strict:
-        # Strings only please
-        if not isinstance(s, str):
-            raise ValueError(f"parse_string only accepts string inputs but a {type(s)} was given")
-
-        # get the index of the first alphabetic character
-        try:
-            index = next(i for i, c in enumerate(s) if c.isalpha())
-        except StopIteration:
-            # If there's no alphabetic characters we won't be able to find a match
-            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
-
-        # split the string into the value and the unit
-        val, unit = s[:index], s[index:]
-
-        # see if the unit exists as a type in our namespace
-        if unit == "b":
-            unit_class = Bit
-        elif unit == "B":
-            unit_class = Byte
-        else:
-            if not (hasattr(sys.modules[__name__], unit) and isinstance(getattr(sys.modules[__name__], unit), type)):
-                raise ValueError(f"The unit {unit} is not a valid bitmath unit")
-            unit_class = globals()[unit]
-
-        try:
-            val = float(val)
-        except ValueError:
-            raise
-        return unit_class(val)
-
-    else:
-        # strict=False path (formerly parse_string_unsafe)
-        if not isinstance(s, str) and not isinstance(s, numbers.Number):
-            raise ValueError(f"parse_string only accepts string/number inputs but a {type(s)} was given")
-
-        # Test case: raw number input (easy!)
-        if isinstance(s, numbers.Number):
-            return Byte(s)
-
-        # Test case: a number pretending to be a string
-        if isinstance(s, str):
-            try:
-                return Byte(float(s))
-            except ValueError:
-                pass
-
-        # At this point the input is a string with a unit component.
-        # Separate the number and the unit.
-        try:
-            index = next(i for i, c in enumerate(s) if c.isalpha())
-        except StopIteration:  # pragma: no cover
-            raise ValueError(f"No unit detected, can not parse string '{s}' into a bitmath object")
-
-        val, unit = s[:index], s[index:]
-
-        # Explicit base-unit and word-form checks: handle B, b, bit(s),
-        # byte(s) before the prefix-normalization logic below.
-        _unit_lower = unit.lower()
-        if unit == 'B' or _unit_lower in ('byte', 'bytes'):
-            return Byte(float(val))
-        if unit == 'b' or _unit_lower in ('bit', 'bits'):
-            return Bit(float(val))
-
-        # Normalise: strip trailing b/B and append 'B' so we always
-        # work with byte-family units regardless of what was supplied.
-        unit = unit.rstrip('Bb')
-        unit += 'B'
-
-        if len(unit) == 2:
-            if system == NIST:
-                unit = capitalize_first(unit)
-                _unit = list(unit)
-                _unit.insert(1, 'i')
-                unit = ''.join(_unit)
-                if unit in globals():
-                    unit_class = globals()[unit]
-            else:
-                if unit.startswith('K'):
-                    unit = unit.replace('K', 'k')
-                elif not unit.startswith('k'):
-                    unit = capitalize_first(unit)
-                if unit[0] in SI_PREFIXES:
-                    unit_class = globals()[unit]
-        elif len(unit) == 3:
-            unit = capitalize_first(unit)
-            if unit[:2] in NIST_PREFIXES:
-                unit_class = globals()[unit]
-        else:
-            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
-
-        try:
-            unit_class
-        except UnboundLocalError:
-            raise ValueError(f"The unit {unit} is not a valid bitmath unit")
-
-        return unit_class(float(val))
+        return _parse_string_strict(s)
+    return _parse_string_unsafe(s, system)
 
 
 def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
@@ -1722,7 +1787,6 @@ def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
        warnings.filterwarnings('ignore', category=DeprecationWarning,
                                module='bitmath')
     """
-    import warnings
     warnings.warn(
         "parse_string_unsafe is deprecated as of 2.0.0 and will be removed "
         "in a future release. Use parse_string(s, strict=False, system=system) "
@@ -1734,7 +1798,7 @@ def parse_string_unsafe(s: str | numbers.Number, system: int = NIST) -> Bitmath:
     return parse_string(s, system=system, strict=False)
 
 
-def sum(iterable: Iterable[Bitmath], start: Bitmath | None = None) -> Bitmath:
+def sum(iterable: Iterable[Bitmath], start: Bitmath | None = None) -> Bitmath:  # pylint: disable=redefined-builtin
     """Sum an iterable of bitmath instances, returning a Byte by default.
 
 The built-in sum() also works with bitmath objects: the __radd__
@@ -1755,7 +1819,7 @@ Byte(0) by default, or into the provided start instance.
 ######################################################################
 # Context Managers
 @contextlib.contextmanager
-def format(fmt_str: str | None = None, plural: bool = False, bestprefix: bool = False) -> Generator[None, None, None]:
+def format(fmt_str: str | None = None, plural: bool = False, bestprefix: bool = False) -> Generator[None, None, None]:  # pylint: disable=redefined-builtin
     """Thread-safe context manager for printing bitmath instances.
 
 ``fmt_str`` - a formatting mini-language compatible string. See
@@ -1846,8 +1910,7 @@ def cli_script_main(cli_args):
 
 
 def cli_script():  # pragma: no cover
-    # Wrapper around cli_script_main so we can unittest the command
-    # line functionality
+    """Entry point for the bitmath CLI; wraps cli_script_main for testability."""
     for result in cli_script_main(sys.argv[1:]):
         print(result)
 

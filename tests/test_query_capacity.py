@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # The MIT License (MIT)
 #
-# Copyright © 2026 Tim Case <timbielawa@gmail.com>
+# SPDX-FileCopyrightText: 2026 Tim Case <bitmath@lnx.cx>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -30,7 +30,7 @@ Tests for bitmath.query_capacity()
 
 import os
 import pathlib
-from unittest import skipUnless
+from unittest import mock, skipUnless
 
 import bitmath
 from bitmath import Bitmath, Byte, Capacity
@@ -125,3 +125,19 @@ class TestQueryCapacity(TestCase):
         result = bitmath.query_capacity(pathlib.PureWindowsPath("C:"))
         self.assertIsInstance(result, Capacity)
         self.assertGreater(result.total.bytes, 0)
+
+
+class TestQueryCapacityWindowsDriveLetterMock(TestCase):
+    def test_query_capacity_windows_drive_letter_normalization_mock(self):
+        """query_capacity normalizes a bare drive letter via mocked os.name='nt'"""
+        mock_usage = mock.MagicMock()
+        mock_usage.total = 1_000_000_000_000
+        mock_usage.used = 500_000_000_000
+        mock_usage.free = 500_000_000_000
+
+        with mock.patch('bitmath.os.name', 'nt'):
+            with mock.patch('bitmath.shutil.disk_usage', return_value=mock_usage) as mock_du:
+                result = bitmath.query_capacity("c:")
+
+        self.assertIsInstance(result, Capacity)
+        mock_du.assert_called_once_with("C:\\")

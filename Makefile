@@ -209,12 +209,12 @@ ci-pycodestyle:
 	@echo "#############################################"
 	. $(NAME)env3/bin/activate && pycodestyle -v --ignore=E501 bitmath/__init__.py tests/*.py
 
-ci-flake8:
+ci-pylint:
 	@echo ""
 	@echo "#################################################"
-	@echo "# Running Flake8 Compliance Tests in virtualenv"
+	@echo "# Running pylint in virtualenv"
 	@echo "#################################################"
-	. $(NAME)env3/bin/activate && flake8 --select=F bitmath/__init__.py tests/*.py
+	. $(NAME)env3/bin/activate && pylint bitmath/__init__.py
 
-ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-flake8 ci-unittests
+ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-pylint ci-unittests
 	:

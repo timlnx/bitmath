@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep class tests/*.py | awk '{
+grep "^class" tests/*.py | awk '{
     arr[$NF]++
   }
   END {
