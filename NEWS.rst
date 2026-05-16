@@ -5,6 +5,80 @@ NEWS
    :depth: 1
    :local:
 
+.. _bitmath-2.1.0:
+
+bitmath-2.1.0
+*************
+
+*Unreleased*
+
+bitmath 2.1.0 is a focused follow-up to the 2.0.0 modernization. It
+finishes the last of the Python 2 cleanup, tightens the project's
+quality tooling, and retires one piece of legacy API surface.
+
+
+Breaking Changes
+================
+
+**Internal representation is uniformly floating-point**
+   Every bitmath instance now stores its size as a 64-bit float, no
+   matter which constructor created it. Previously the ``bytes=`` and
+   ``bits=`` keyword constructors, along with the bit-family value
+   constructors such as ``Kib(N)``, leaked Python ``int`` values
+   through the ``.bytes`` and ``.bits`` properties. Those properties
+   now always return ``float``, matching the long-documented
+   floating-point measurement design described in the :ref:`Rules for
+   Math <appendix_math>` appendix. Equality, ordering, ``repr()``, and
+   arithmetic results are unchanged; only code that inspected
+   ``type(instance.bytes)`` or ``type(instance.bits)`` directly will
+   observe the difference.
+
+**listdir() is deprecated**
+   :func:`bitmath.listdir` now emits a :exc:`DeprecationWarning` on
+   every call and will be removed in a future release. Iterate with
+   :py:func:`os.walk` and call :func:`bitmath.getsize` directly
+   instead. Closes `issue #27
+   <https://github.com/timlnx/bitmath/issues/27>`_.
+
+
+Library Improvements
+====================
+
+**pathlib support**
+   :func:`bitmath.getsize` and :func:`bitmath.listdir` now accept
+   :class:`pathlib.Path` objects, not just strings, for their path
+   and ``search_base`` arguments.
+
+
+Project Infrastructure
+======================
+
+**Linting moved to pylint**
+   pylint replaces flake8/pyflakes across the CI workflow and the
+   local toolchain, and the library is held at a 10.00/10 score.
+   pycodestyle is retained for the PEP 8 whitespace checks pylint
+   does not cover.
+
+**Security scanning with bandit**
+   bandit runs as part of ``make ci`` and as a dedicated GitHub
+   Actions workflow that fires on every push, every pull request, and
+   on a weekly schedule, scanning both ``bitmath/`` and ``tests/``.
+
+**100% test coverage**
+   The remaining coverage gaps were closed, including the
+   platform-specific :func:`bitmath.query_device_capacity` branches,
+   bringing the suite to 100% measured coverage on every supported
+   platform.
+
+**SPDX license headers**
+   Every source and test file now carries ``SPDX-License-Identifier``
+   and ``SPDX-FileCopyrightText`` headers.
+
+**Single-sourced version**
+   The package version is read dynamically from the ``VERSION`` file
+   by hatchling, so bumping that one file propagates everywhere.
+
+
 .. _bitmath-2.0.0:
 
 bitmath-2.0.0

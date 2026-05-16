@@ -82,3 +82,25 @@ class TestSystemPropertyInvalidBase(TestCase):
         obj._base = 7
         with self.assertRaises(ValueError):
             _ = obj.system
+
+
+class TestPropertyTypesAlwaysFloat(TestCase):
+    """The .bytes and .bits properties are float for every construction
+    path. The internal representation is uniformly floating-point (see
+    the 'Floating-Point Measurements' design philosophy appendix)."""
+
+    def test_bytes_property_float_from_value_constructor(self):
+        """.bytes is float when built via the unit-value constructor"""
+        self.assertIs(type(bitmath.KiB(1).bytes), float)
+
+    def test_bytes_property_float_from_bytes_kwarg(self):
+        """.bytes is float when built via the bytes= keyword"""
+        self.assertIs(type(bitmath.Byte(bytes=1).bytes), float)
+
+    def test_bits_property_float_from_bits_kwarg(self):
+        """.bits is float when built via the bits= keyword"""
+        self.assertIs(type(bitmath.Byte(bits=1).bits), float)
+
+    def test_bits_property_float_from_bit_value_constructor(self):
+        """.bits is float when a Bit-family unit is built by value"""
+        self.assertIs(type(bitmath.Kib(1).bits), float)
