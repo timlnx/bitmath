@@ -26,7 +26,9 @@ bitmath.getsize()
    Return a bitmath instance representing the size of a file at any
    given path.
 
-   :param string path: The path of a file to read the size of
+   :param path: The path of a file to read the size of. Accepts a
+                plain string or a :class:`pathlib.Path` object.
+   :type path: str or pathlib.Path
    :param bool bestprefix: **Default:** ``True``, the returned
                            instance will be in the best human-readable
                            prefix unit. If set to ``False`` the result
@@ -37,46 +39,43 @@ bitmath.getsize()
 
    Internally :py:func:`bitmath.getsize` calls
    :py:func:`os.path.realpath` before calling
-   :py:func:`os.path.getsize` on any paths.
+   :py:func:`os.path.getsize` on any paths. Both functions accept
+   :class:`pathlib.Path` objects natively, so no conversion is needed.
 
-   Here's an example of where we'll run :py:func:`bitmath.getsize` on
-   the bitmath source code using the defaults for the ``bestprefix``
-   and ``system`` parameters:
+   The traditional approach uses :func:`os.stat`, which gives raw bytes
+   and leaves unit conversion to you:
 
    .. code-block:: python
 
-      >>> import bitmath
+      >>> import os
+      >>> stat = os.stat('./bitmath/__init__.py')
+      >>> stat.st_size                        # raw bytes — no unit context
+      34159
+      >>> f"{stat.st_size / 1024:.4f} KiB"   # manual math, locked to one unit
+      '33.3584 KiB'
+
+   :py:func:`bitmath.getsize` returns a :class:`.Bitmath` object you can
+   format, convert, and do arithmetic with — no manual math required:
+
+   .. code-block:: python
+
+      >>> import bitmath, pathlib
+
+      # NIST default - picks the most human-readable prefix automatically
       >>> print(bitmath.getsize('./bitmath/__init__.py'))
       33.3583984375 KiB
 
-   Let's say we want to see the results in bytes. We can do this by
-   setting ``bestprefix`` to ``False``:
-
-   .. code-block:: python
-
-      >>> import bitmath
-      >>> print(bitmath.getsize('./bitmath/__init__.py', bestprefix=False))
-      34159.0 B
-
-   Recall, the default for representation is with the best
-   human-readable prefix. We can control the prefix system used by
-   setting ``system`` to either :py:data:`bitmath.NIST` (the default)
-   or :py:data:`bitmath.SI`:
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 1-4
-
-      >>> print(bitmath.getsize('./bitmath/__init__.py'))
+      # pathlib.Path works directly, no conversion needed
+      >>> print(bitmath.getsize(pathlib.Path('./bitmath/__init__.py')))
       33.3583984375 KiB
-      >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.NIST))
-      33.3583984375 KiB
+
+      # SI units instead of NIST
       >>> print(bitmath.getsize('./bitmath/__init__.py', system=bitmath.SI))
       34.159 kB
 
-   We can see in lines **1** → **4** that the same result is returned
-   when ``system`` is not set and when ``system`` is set to
-   :py:data:`bitmath.NIST` (the default).
+      # skip prefix selection — get the value as a plain Byte instance
+      >>> print(bitmath.getsize('./bitmath/__init__.py', bestprefix=False))
+      34159.0 B
 
    .. versionadded:: 1.0.7
 
@@ -92,7 +91,9 @@ bitmath.listdir()
    * The absolute/relative path to a discovered file
    * A bitmath instance representing the *apparent size* of the file
 
-   :param string search_base: The directory to begin walking down
+   :param search_base: The directory to begin walking down. May be a
+                       plain string or a :class:`pathlib.Path` object.
+   :type search_base: str or pathlib.Path
    :param bool followlinks: **Default:** ``False``, do not follow
                             links. Whether or not to follow symbolic
                             links to directories. Setting to ``True``
@@ -118,122 +119,52 @@ bitmath.listdir()
                   ``True``
    :type system: One of :py:data:`bitmath.NIST` or :py:data:`bitmath.SI`
 
-   .. note::
+   .. note:: Symlinks to **files** are followed automatically
 
-      * This function does **not** return tuples for directory
-        entities. Including directories in results is `scheduled for
-        introduction <https://github.com/timlnx/bitmath/issues/27>`_
-        in an upcoming release.
-      * Symlinks to **files** are followed automatically
+   .. deprecated:: 2.1.0
+
+      :func:`bitmath.listdir` is deprecated and will be removed in a future
+      release. Use :func:`os.walk` with :func:`bitmath.getsize` directly.
 
 
-   When interpreting the results from this function it is *crucial* to
-   understand exactly which items are being taken into account, what
-   decisions were made to select those items, and how their sizes are
-   measured.
-
-   Results from this function may seem invalid when directly compared
-   to the results from common command line utilities, such as ``du``,
-   or ``tree``.
-
-   Let's pretend we have a directory structure like the following::
+   Given this directory tree::
 
       some_files/
       ├── deeper_files/
-      │   └── second_file
-      └── first_file
-
-   Where ``some_files/`` is a directory, and so is
-   ``some_files/deeper_files/``. There are two regular files in this
-   tree:
-
-   * ``somefiles/first_file`` - 1337 Bytes
-   * ``some_files/deeper_files/second_file`` - 13370 Bytes
-
-   The **total** size of the files in this tree is **1337 + 13370 =
-   14707** bytes.
-
-   .. versionadded:: 2.0.0
-
-   By far the simplest way to sum all of the results is using the built-in
-   :py:func:`sum` function, or :py:func:`bitmath.sum` for additional control
-   (complete docs on that following this section).
+      │   └── second_file   (13370 bytes)
+      └── first_file        (1337 bytes)
 
    .. code-block:: python
-
-      >>> discovered_files = [f[1] for f in bitmath.listdir('./some_files')]
-      >>> print(discovered_files)
-      [Byte(1337.0), Byte(13370.0)]
-      >>> print(sum(discovered_files))
-      14707.0 B
-      >>> print(sum(discovered_files).best_prefix())
-      14.3623046875 KiB
-
-
-
-   Let's call :py:func:`bitmath.listdir` on the ``some_files/``
-   directory and see what the results look like. First we'll use all
-   the default parameters, then we'll set ``relpath`` to ``True``:
-
-   .. code-block:: python
-      :linenos:
-      :emphasize-lines: 5-6,10-11
 
       >>> import bitmath
-      >>> for f in bitmath.listdir('./some_files'):
-      ...     print(f)
-      ...
-      ('/tmp/tmp.P5lqtyqwPh/some_files/first_file', Byte(1337.0))
-      ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))
-      >>> for f in bitmath.listdir('./some_files', relpath=True):
-      ...     print(f)
-      ...
-      ('some_files/first_file', Byte(1337.0))
-      ('some_files/deeper_files/second_file', Byte(13370.0))
 
-   On lines **5** and **6** the results print the full path, whereas
-   on lines **10** and **11** the path is relative to the present
-   working directory.
+      >>> # Default: absolute paths, Byte instances
+      >>> for path, size in bitmath.listdir('./some_files'):
+      ...     print(path, size)
+      /tmp/some_files/first_file Byte(1337.0)
+      /tmp/some_files/deeper_files/second_file Byte(13370.0)
 
-   Let's play with the ``glob`` parameter now. Let's say we only
-   want to include results for files whose name begins with "second":
+      >>> # Relative paths
+      >>> for path, size in bitmath.listdir('./some_files', relpath=True):
+      ...     print(path, size)
+      some_files/first_file Byte(1337.0)
+      some_files/deeper_files/second_file Byte(13370.0)
 
-   .. code-block:: python
+      >>> # Filter by glob
+      >>> for path, size in bitmath.listdir('./some_files', glob='second*'):
+      ...     print(path, size)
+      /tmp/some_files/deeper_files/second_file Byte(13370.0)
 
-      >>> for f in bitmath.listdir('./some_files', glob='second*'):
-      ...     print(f)
-      ...
-      ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))
-
-
-   If we wish to avoid having to write for-loops, we can collect the
-   results into a list rather simply:
-
-   .. code-block:: python
-
-      >>> files = list(bitmath.listdir('./some_files'))
-      >>> print(files)
-      [('/tmp/tmp.P5lqtyqwPh/some_files/first_file', Byte(1337.0)), ('/tmp/tmp.P5lqtyqwPh/some_files/deeper_files/second_file', Byte(13370.0))]
-
-   Here's a more advanced example where we will sum the size of all
-   the returned results and then play around with the possible
-   formatting. Recall that a bitmath instance representing the size of
-   the discovered file is the second item in each returned tuple.
-
-   .. code-block:: python
-
-      >>> discovered_files = [f[1] for f in bitmath.listdir('./some_files')]
-      >>> print(discovered_files)
-      [Byte(1337.0), Byte(13370.0)]
-      >>> print(reduce(lambda x,y: x+y, discovered_files))
-      14707.0 B
-      >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix())
+      >>> # Sum all results
+      >>> sizes = [size for _, size in bitmath.listdir('./some_files')]
+      >>> print(sum(sizes).best_prefix())
       14.3623046875 KiB
-      >>> print(reduce(lambda x,y: x+y, discovered_files).best_prefix().format("{value:.3f} {unit}"))
-      14.362 KiB
-
 
    .. versionadded:: 1.0.7
+
+   .. versionchanged:: 2.0.0
+      The ``filter`` parameter was renamed to ``glob``. Passing ``filter``
+      still works but emits a :exc:`DeprecationWarning`.
 
 
 .. _bitmath_sum:

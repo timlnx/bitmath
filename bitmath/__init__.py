@@ -47,6 +47,7 @@ import math
 import numbers
 import os
 import os.path
+import pathlib
 import platform
 import re
 import shutil
@@ -114,7 +115,7 @@ SI_PREFIXES = ['k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
 
 #: Byte values represented by each SI prefix unit
 SI_STEPS = {
-    'Bit': 1 / 8.0,
+    'Bit': 1 / 8,
     'Byte': 1,
     'k': 1000,
     'M': 1000000,
@@ -132,7 +133,7 @@ NIST_PREFIXES = ['Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi']
 
 #: Byte values represented by each NIST prefix unit
 NIST_STEPS = {
-    'Bit': 1 / 8.0,
+    'Bit': 1 / 8,
     'Byte': 1,
     'Ki': 1024,
     'Mi': 1048576,
@@ -552,7 +553,7 @@ always return a Byte-family result.
 
     def to_Byte(self):
         """Convert to Byte."""
-        return Byte(self._byte_value / float(NIST_STEPS['Byte']))
+        return Byte(self._byte_value / NIST_STEPS['Byte'])
 
     # Properties
     Bit = property(lambda s: s.to_Bit())
@@ -1560,11 +1561,13 @@ Example — raw bytes and SI prefixes::
     return Capacity(total, used, free)
 
 
-def getsize(path: str, bestprefix: bool = True, system: int = NIST) -> Bitmath:
+def getsize(path: str | pathlib.Path, bestprefix: bool = True, system: int = NIST) -> Bitmath:
     """Return a bitmath instance in the best human-readable representation
 of the file size at `path`. Optionally, provide a preferred unit
 system by setting `system` to either `bitmath.NIST` (default) or
 `bitmath.SI`.
+
+`path` may be a plain string or a :class:`pathlib.Path` object.
 
 Optionally, set ``bestprefix`` to ``False`` to get ``bitmath.Byte``
 instances back.
@@ -1577,7 +1580,7 @@ instances back.
 
 
 def listdir(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-    search_base: str,
+    search_base: str | pathlib.Path,
     followlinks: bool = False,
     glob: str = '*',
     relpath: bool = False,
@@ -1591,7 +1594,8 @@ def listdir(  # pylint: disable=too-many-arguments,too-many-positional-arguments
 * The absolute/relative path to a discovered file
 * A bitmath instance representing the "apparent size" of the file.
 
-    - `search_base` - The directory to begin walking down.
+    - `search_base` - The directory to begin walking down. May be a
+      plain string or a :class:`pathlib.Path` object.
     - `followlinks` - Whether or not to follow symbolic links to directories
     - `glob` - A glob (see :py:mod:`fnmatch`) to filter results with
       (default: ``*``, everything)
@@ -1602,11 +1606,19 @@ def listdir(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     - `system` - Provide a preferred unit system by setting `system`
       to either ``bitmath.NIST`` (default) or ``bitmath.SI``.
 
-.. note:: This function does NOT return tuples for directory entities.
-
 .. note:: Symlinks to **files** are followed automatically
 
+.. deprecated:: 2.1.0
+   :func:`bitmath.listdir` is deprecated and will be removed in a future
+   release. Use :func:`os.walk` with :func:`bitmath.getsize` directly.
+
     """
+    warnings.warn(
+        "bitmath.listdir() is deprecated and will be removed in a future release. "
+        "Use os.walk() with bitmath.getsize() directly.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if 'filter' in kwargs:
         warnings.warn(
             "The 'filter' parameter of listdir() is deprecated as of 2.0.0 and will be "

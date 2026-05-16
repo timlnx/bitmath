@@ -31,6 +31,12 @@
 bitmath
 #######
 
+* Free software: MIT License
+* Documentation: https://bitmath.readthedocs.io/en/latest/
+* Source: https://github.com/timlnx/bitmath
+* Bugs: https://github.com/timlnx/bitmath/issues
+* Contributing: https://bitmath.readthedocs.io/en/latest/contributing.html
+
 `bitmath <http://bitmath.readthedocs.org/en/latest/>`_ simplifies many
 facets of interacting with file sizes in various units. Originally
 focusing on file size unit conversion, functionality now includes:
@@ -77,35 +83,34 @@ yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
 Installation
 ############
 
-bitmath is available in Fedora and EPEL repositories, as well as
-directly available via `PyPI
-<https://pypi.org/project/bitmath/>`_. As of 2023 bitmath is only
-developed, tested, and supported for `currently supported
-<https://devguide.python.org/versions/>`_ Python releases.
+.. admonition:: Seeking a Debian Maintainer
 
-**Package Managers**
+   bitmath is not currently packaged for Debian or Ubuntu. If you're
+   interested in maintaining the package for those distributions, please
+   see `issue #117 <https://github.com/timlnx/bitmath/issues/117>`_.
 
-.. code-block:: bash
+Requires Python 3.9 or newer. No runtime dependencies outside the
+standard library.
 
-   $ sudo dnf install python3-bitmath
-   $ pip install --user bitmath
-
-
-**Source**
-
-To install from source, clone the repository and use pip:
+**PyPI** (the typical path):
 
 .. code-block:: bash
 
-   $ git clone https://github.com/timlnx/bitmath.git
-   $ cd bitmath
-   $ pip install .
+   pip install bitmath
 
-To also install the ``bitmath`` manpage:
+**Fedora and EPEL**
 
 .. code-block:: bash
 
-   $ sudo make install
+   sudo dnf install python3-bitmath
+
+**From source**
+
+.. code-block:: bash
+
+   git clone https://github.com/timlnx/bitmath.git
+   pip install ./bitmath
+
 
 
 Contents

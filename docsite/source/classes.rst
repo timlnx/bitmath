@@ -15,8 +15,8 @@ Available Classes
 There are two **fundamental** classes available, the :class:`Bit` and
 the :class:`Byte`.
 
-There are **24** other classes available, representing all the prefix
-units from **k** through **e** (*kilo/kibi* through *exa/exbi*).
+There are **32** other classes available, representing all the prefix
+units from **k** through **Y** (*kilo/kibi* through *yotta/yobi*).
 
 Classes with **'i'** in their names are **NIST** type classes. They
 were defined by the `National Institute of Standards and Technology
@@ -64,6 +64,14 @@ more apparent:
 +---------------+--------------+
 | ``TiB(Byte)`` | ``TB(Byte)`` |
 +---------------+--------------+
+| ``Zib(Bit)``  | ``Zb(Bit)``  |
++---------------+--------------+
+| ``ZiB(Byte)`` | ``ZB(Byte)`` |
++---------------+--------------+
+| ``Yib(Bit)``  | ``Yb(Bit)``  |
++---------------+--------------+
+| ``YiB(Byte)`` | ``YB(Byte)`` |
++---------------+--------------+
 
 .. note:: As per SI definition, the ``kB`` and ``kb`` classes begins
           with a *lower-case* **k** character.
@@ -107,8 +115,12 @@ Initializing
 .. class:: Tib([value=0[, bytes=None[, bits=None]]])
 .. class:: YB([value=0[, bytes=None[, bits=None]]])
 .. class:: Yb([value=0[, bytes=None[, bits=None]]])
+.. class:: YiB([value=0[, bytes=None[, bits=None]]])
+.. class:: Yib([value=0[, bytes=None[, bits=None]]])
 .. class:: ZB([value=0[, bytes=None[, bits=None]]])
 .. class:: Zb([value=0[, bytes=None[, bits=None]]])
+.. class:: ZiB([value=0[, bytes=None[, bits=None]]])
+.. class:: Zib([value=0[, bytes=None[, bits=None]]])
 
 .. class:: Bitmath([value=0[, bytes=None[, bits=None]]])
 
