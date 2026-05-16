@@ -1,41 +1,43 @@
-.. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
-   :target: http://bitmath.rtfd.org/
-   :align: right
-   :height: 19
-   :width: 77
-
 .. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
    :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
-
-.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
-   :target: https://github.com/timlnx/bitmath/issues
-   :alt: Open issues
-
-.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
-   :target: https://github.com/timlnx/bitmath/pulls
-   :alt: Open pull requests
-
+.. image:: https://img.shields.io/pypi/v/bitmath.svg
+   :target: https://pypi.org/project/bitmath/
+   :alt: Latest Version
 .. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
    :alt: PyPI - Package Downloads
-
-.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
-   :target: https://pypistats.org/packages/bitmath
-   :alt: GitHub Project Popularity
-
-.. image:: https://img.shields.io/pypi/l/bitmath?style=flat-square
-   :target: https://opensource.org/licenses/MIT
-   :alt: PyPI - License
-
 .. image:: https://img.shields.io/pypi/implementation/bitmath?style=flat-square
    :alt: PyPI - Implementation
-
 .. image:: https://img.shields.io/pypi/pyversions/bitmath?style=flat-square
    :alt: PyPI - Python Version
+
+.. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
+   :target: http://bitmath.rtfd.org/
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml
+   :alt: Bandit Security Scan
+.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/issues
+   :alt: Open issues
+.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/pulls
+   :alt: Open pull requests
+.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath
+   :alt: GitHub Project Popularity
+.. image:: https://img.shields.io/badge/license-MIT-blue.svg
+   :target: https://github.com/timlnx/bitmath/blob/master/LICENSE
+   :alt: License
 
 
 bitmath
 =======
+
+* Free software: MIT License
+* Documentation: https://bitmath.readthedocs.io/en/latest/
+* Source: https://github.com/timlnx/bitmath
+* Bugs: https://github.com/timlnx/bitmath/issues
+* Contributing: https://bitmath.readthedocs.io/en/latest/contributing.html
 
 `bitmath <http://bitmath.readthedocs.org/en/latest/>`_ simplifies many
 facets of interacting with file sizes in various units. Originally
@@ -88,44 +90,33 @@ issues.
 Installation
 ============
 
-The easiest way to install bitmath is via ``dnf`` (or ``yum``) if
-you're on a Fedora/RHEL based distribution. bitmath is available in
-the main Fedora repositories, as well as EPEL Repositories. As of 2023
-bitmath is only developed, tested, and supported for `currently
-supported <https://devguide.python.org/versions/>`_ Python releases.
+.. admonition:: Seeking a Debian Maintainer
 
+   bitmath is not currently packaged for Debian or Ubuntu. If you're
+   interested in maintaining the package for those distributions, please
+   see `issue #117 <https://github.com/timlnx/bitmath/issues/117>`_.
 
-.. code-block:: bash
+Requires Python 3.9 or newer. No runtime dependencies outside the
+standard library.
 
-   $ sudo dnf install python3-bitmath
-
-
-**PyPI**:
-
-You could also install bitmath from `PyPI
-<https://pypi.org/project/bitmath/>`_ if you like:
+**PyPI** (the typical path):
 
 .. code-block:: bash
 
-   $ pip install --user bitmath
+   pip install bitmath
 
-
-
-**Source**:
-
-To install from source, clone the repository and use pip:
+**Fedora and EPEL**
 
 .. code-block:: bash
 
-   $ git clone https://github.com/timlnx/bitmath.git
-   $ cd bitmath
-   $ pip install .
+   sudo dnf install python3-bitmath
 
-To also install the ``bitmath`` manpage:
+**From source**
 
 .. code-block:: bash
 
-   $ sudo make install
+   git clone https://github.com/timlnx/bitmath.git
+   pip install ./bitmath
 
 
 Documentation

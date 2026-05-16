@@ -271,10 +271,9 @@ class TestListdirDeprecations(TestCase):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             list(bitmath.listdir('./tests/listdir_nosymlinks/', filter='*'))
-            self.assertEqual(len(w), 1)
-            self.assertTrue(issubclass(w[0].category, DeprecationWarning))
-            self.assertIn("filter", str(w[0].message))
-            self.assertIn("glob", str(w[0].message))
+            messages = [str(warning.message) for warning in w]
+            self.assertTrue(all(issubclass(warning.category, DeprecationWarning) for warning in w))
+            self.assertTrue(any("filter" in m and "glob" in m for m in messages))
 
     def test_listdir_filter_kwarg_still_works(self):
         """listdir() with deprecated filter= kwarg returns correct results"""

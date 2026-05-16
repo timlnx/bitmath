@@ -175,7 +175,7 @@ bitmath objects come with a few basic methods: :py:meth:`to_THING`,
 to_THING()
 ==========
 
-Like the :ref:`available classes <classes_available>`, there are 24
+Like the :ref:`available classes <classes_available>`, there are 32
 ``to_THING()`` methods available. ``THING`` is any of the bitmath
 classes. You can even ``to_THING()`` an instance into itself again:
 
@@ -516,7 +516,7 @@ Instance Properties
 THING Properties
 ================
 
-Like the :ref:`available classes <classes_available>`, there are 24
+Like the :ref:`available classes <classes_available>`, there are 32
 ``THING`` properties available. ``THING`` is any of the bitmath
 classes. Under the covers these properties call ``to_THING``.
 

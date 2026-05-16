@@ -216,5 +216,12 @@ ci-pylint:
 	@echo "#################################################"
 	. $(NAME)env3/bin/activate && pylint bitmath/__init__.py
 
-ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-pylint ci-unittests
+ci-bandit:
+	@echo ""
+	@echo "#############################################"
+	@echo "# Running Bandit Security Scan in virtualenv"
+	@echo "#############################################"
+	. $(NAME)env3/bin/activate && bandit -r -v bitmath/ tests/
+
+ci: clean uniquetestnames virtualenv ci-list-deps ci-pycodestyle ci-pylint ci-bandit ci-unittests
 	:

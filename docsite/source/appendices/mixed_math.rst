@@ -298,6 +298,9 @@ Design Philosophy: Floating-Point Measurements
 
 bitmath represents sizes as **floating-point measurements**, not as
 discrete counts of hardware bits. This is an intentional design choice.
+Every constructor (by unit value, by ``bytes=``, or by ``bits=``)
+normalizes its input to a float, so the ``bytes`` and ``bits``
+properties always return floating-point values.
 
 A file reported as ``1.7 GiB`` is a *measurement* — the same way
 ``2.3 miles`` or ``1.7 liters`` are measurements. Physical storage is

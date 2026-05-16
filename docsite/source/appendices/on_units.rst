@@ -21,7 +21,7 @@ a percent one "unit" of SI is to one "unit" of NIST.
 
    In [16]: one_kibi = 1 * 2**10
 
-   In [17]: round(one_kilo / float(one_kibi), 2)
+   In [17]: round(one_kilo / one_kibi, 2)
 
    Out[17]: 0.98
 
@@ -29,7 +29,7 @@ a percent one "unit" of SI is to one "unit" of NIST.
 
    In [19]: one_tebi = 1 * 2**40
 
-   In [20]: round(one_tera / float(one_tebi), 2)
+   In [20]: round(one_tera / one_tebi, 2)
 
    Out[20]: 0.91
 
@@ -37,7 +37,7 @@ a percent one "unit" of SI is to one "unit" of NIST.
 
    In [22]: one_exbi = 1 * 2**60
 
-   In [23]: round(one_exa / float(one_exbi), 2)
+   In [23]: round(one_exa / one_exbi, 2)
 
    Out[23]: 0.87
 
