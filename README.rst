@@ -16,6 +16,9 @@
 .. image:: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml/badge.svg
    :target: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml
    :alt: Bandit Security Scan
+.. image:: https://api.securityscorecards.dev/projects/github.com/timlnx/bitmath/badge
+   :target: https://securityscorecards.dev/viewer/?uri=github.com/timlnx/bitmath
+   :alt: OSSF Scorecard
 .. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
    :target: https://github.com/timlnx/bitmath/issues
    :alt: Open issues
