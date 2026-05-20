@@ -533,7 +533,7 @@ Changes
 
 * New utility: ``progressbar`` integration:
   `bitmath.integrations.BitmathFileTransferSpeed
-  <http://bitmath.readthedocs.io/en/latest/module.html#progressbar>`_.
+  <https://bitmath.readthedocs.io/en/latest/module.html#progressbar>`_.
   A more functional file transfer speed widget.
 
 
@@ -541,12 +541,12 @@ Documentation
 =============
 
 * The command-line ``bitmath`` tool now has `online documentation
-  <http://bitmath.readthedocs.io/en/latest/commandline.html>`_
+  <https://bitmath.readthedocs.io/en/latest/commandline.html>`_
 * A full demo of the ``argparse`` and ``progressbar`` integrations has
   been written. Additionally, it includes a comprehensive
   demonstration of the full capabilities of the bitmath library. View
   it in the *Real Life Demos* `Creating Download Progress Bars
-  <http://bitmath.readthedocs.io/en/latest/real_life_examples.html#real-life-examples-download-progress-bars>`_
+  <https://bitmath.readthedocs.io/en/latest/real_life_examples.html#real-life-examples-download-progress-bars>`_
   example.
 
 
@@ -613,7 +613,7 @@ Changes
   <https://github.com/timlnx/bitmath/issues/35>`_ added. Provides
   CLI access to basic unit conversion functions
 * New utility function `bitmath.parse_string
-  <http://bitmath.readthedocs.io/en/latest//module.html#bitmath-parse-string>`_
+  <https://bitmath.readthedocs.io/en/latest//module.html#bitmath-parse-string>`_
   for parsing a human-readable string into a bitmath object. `Patch
   submitted <https://github.com/timlnx/bitmath/pull/42>`_ by new
   contributor `tonycpsu <https://github.com/tonycpsu>`_.
@@ -634,7 +634,7 @@ Major Updates
 
 * bitmath has a proper documentation website up now on Read the Docs,
   check it out: `bitmath.readthedocs.io
-  <http://bitmath.readthedocs.io/en/latest/>`_
+  <https://bitmath.readthedocs.io/en/latest/>`_
 * bitmath is now Python 3.x compatible
 * bitmath is now included in the `Extra Packages for Enterprise Linux
   <https://fedoraproject.org/wiki/EPEL>`_ EPEL6 and EPEL7 repositories
@@ -659,25 +659,25 @@ Changes
 **Added Functionality**
 
 * `best-prefix
-  <http://bitmath.readthedocs.io/en/latest/instances.html#best-prefix>`_
+  <https://bitmath.readthedocs.io/en/latest/instances.html#best-prefix>`_
   guessing: automatic best human-readable unit selection
 * support for `bitwise operations
-  <http://bitmath.readthedocs.io/en/latest/simple_examples.html#bitwise-operations>`_
+  <https://bitmath.readthedocs.io/en/latest/simple_examples.html#bitwise-operations>`_
 * `formatting customization
-  <http://bitmath.readthedocs.io/en/latest/instances.html#format>`_
+  <https://bitmath.readthedocs.io/en/latest/instances.html#format>`_
   methods (including plural/singular selection)
 * exposed many more `instance attributes
-  <http://bitmath.readthedocs.io/en/latest/instances.html#instances-attributes>`_
+  <https://bitmath.readthedocs.io/en/latest/instances.html#instances-attributes>`_
   (all instance attributes are usable in custom formatting)
 * a `context manager
-  <http://bitmath.readthedocs.io/en/latest/module.html#bitmath-format>`_
+  <https://bitmath.readthedocs.io/en/latest/module.html#bitmath-format>`_
   for applying formatting to an entire block of code
 * utility functions for sizing `files
-  <http://bitmath.readthedocs.io/en/latest/module.html#bitmath-getsize>`_
+  <https://bitmath.readthedocs.io/en/latest/module.html#bitmath-getsize>`_
   and `directories
-  <http://bitmath.readthedocs.io/en/latest/module.html#bitmath-listdir>`_
+  <https://bitmath.readthedocs.io/en/latest/module.html#bitmath-listdir>`_
 * add `instance properties
-  <http://bitmath.readthedocs.io/en/latest/instances.html#instance-properties>`_
+  <https://bitmath.readthedocs.io/en/latest/instances.html#instance-properties>`_
   equivalent to ``instance.to_THING()`` methods
 
 Project
