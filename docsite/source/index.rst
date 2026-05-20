@@ -12,7 +12,7 @@
    :alt: PyPI - Python Version
 
 .. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
-   :target: http://bitmath.rtfd.org/
+   :target: https://bitmath.readthedocs.io/
 .. image:: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml/badge.svg
    :target: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml
    :alt: Bandit Security Scan
@@ -42,7 +42,7 @@ bitmath
 * Bugs: https://github.com/timlnx/bitmath/issues
 * Contributing: https://bitmath.readthedocs.io/en/latest/contributing.html
 
-`bitmath <http://bitmath.readthedocs.org/en/latest/>`_ simplifies many
+`bitmath <https://bitmath.readthedocs.io/en/latest/>`_ simplifies many
 facets of interacting with file sizes in various units. Originally
 focusing on file size unit conversion, functionality now includes:
 
