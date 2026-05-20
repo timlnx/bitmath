@@ -42,9 +42,16 @@ Three invariants are checked:
 
 import math
 
-from hypothesis import given, settings, strategies as st
+import pytest
 
-import bitmath
+# Downstream packagers (Fedora/EPEL RPM builds) run %check without
+# installing test-only dependencies. Skip the whole module when
+# hypothesis isn't on the path rather than failing collection.
+pytest.importorskip("hypothesis")
+
+from hypothesis import given, settings, strategies as st  # noqa: E402
+
+import bitmath  # noqa: E402
 
 
 # Bracketed to avoid values that Python's str() renders in scientific
