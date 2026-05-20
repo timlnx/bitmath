@@ -1,4 +1,5 @@
 bandit
+hypothesis
 pycodestyle
 pylint
 pytest
