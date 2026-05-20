@@ -10,6 +10,8 @@ on:
     - cron: "0 0 * * 0"
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
