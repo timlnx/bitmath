@@ -1,32 +1,37 @@
-.. image:: https://github.com/tbielawa/bitmath/actions/workflows/python.yml/badge.svg
-   :target: https://github.com/tbielawa/bitmath/actions/workflows/python.yml
-   :alt: Build Status on GitHub
-
-.. image:: https://img.shields.io/github/issues/tbielawa/bitmath?style=flat-square
-   :target: https://github.com/tbielawa/bitmath/issues
-   :alt: Open Issues
-
-.. image:: https://img.shields.io/github/issues-pr/tbielawa/bitmath?style=flat-square
-   :target: https://github.com/tbielawa/bitmath/pulls
-   :alt: Open Pull Requests
-
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/python.yml
+.. image:: https://img.shields.io/pypi/v/bitmath.svg
+   :target: https://pypi.org/project/bitmath/
+   :alt: Latest Version
 .. image:: https://img.shields.io/pypi/dm/bitmath?style=flat-square
    :target: https://pypistats.org/packages/bitmath
-   :alt: PyPI - Package Popularity
-
-.. image:: https://img.shields.io/github/stars/tbielawa/bitmath?style=flat-square
-   :target: https://pypistats.org/packages/bitmath
-   :alt: GitHub Project Popularity
-
-.. image:: https://img.shields.io/pypi/l/bitmath?style=flat-square
-   :target: https://opensource.org/licenses/MIT
-   :alt: PyPI - License
-
+   :alt: PyPI - Package Downloads
 .. image:: https://img.shields.io/pypi/implementation/bitmath?style=flat-square
    :alt: PyPI - Implementation
-
 .. image:: https://img.shields.io/pypi/pyversions/bitmath?style=flat-square
    :alt: PyPI - Python Version
+
+.. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
+   :target: http://bitmath.rtfd.org/
+.. image:: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml/badge.svg
+   :target: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml
+   :alt: Bandit Security Scan
+.. image:: https://api.securityscorecards.dev/projects/github.com/timlnx/bitmath/badge
+   :target: https://securityscorecards.dev/viewer/?uri=github.com/timlnx/bitmath
+   :alt: OSSF Scorecard
+.. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/issues
+   :alt: Open issues
+.. image:: https://img.shields.io/github/issues-pr/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath/pulls
+   :alt: Open pull requests
+.. image:: https://img.shields.io/github/stars/timlnx/bitmath?style=flat-square
+   :target: https://github.com/timlnx/bitmath
+   :alt: GitHub Project Popularity
+.. image:: https://img.shields.io/badge/license-MIT-blue.svg
+   :target: https://github.com/timlnx/bitmath/blob/master/LICENSE
+   :alt: License
+
 
 bitmath
 #######
