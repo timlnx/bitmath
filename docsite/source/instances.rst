@@ -574,5 +574,5 @@ given).
 
 .. seealso::
 
-   `Python String Format Cookbook <https://mkaz.blog/code/python-string-format-cookbook/>`_
+   `Python String Format Cookbook <https://mkaz.blog/working-with-python/string-formatting/>`_
       `Marcus Kazmierczak’s <https://mkaz.com/>`_ *excellent* introduction to string formatting

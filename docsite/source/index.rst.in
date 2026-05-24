@@ -56,7 +56,7 @@ focusing on file size unit conversion, functionality now includes:
 * Converting between **SI** and **NIST** prefix units (``kB`` to ``GiB``)
 * Converting between units of the same type (SI to SI, or NIST to NIST)
 * Full NIST unit coverage including **ZiB**, **YiB**, **Zib**, and **Yib**
-* Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_)
+* Automatic human-readable prefix selection (like in `hurry.filesize <https://pypi.org/project/hurry.filesize/>`_)
 * Basic arithmetic operations (subtracting 42KiB from 50GiB)
 * Capacity math with floor division, modulo, and ``divmod`` (``GiB(1) // MiB(300)``, ``GiB(1) % MiB(300)``)
 * Rich comparison operations (``1024 Bytes == 1KiB``)
@@ -87,7 +87,7 @@ most of the time what you're really seeing are the base-2 sizes/rates.
 <https://github.com/timlnx/bitmath>`_.
 
 And did we mention there are nearly 300 unit tests? `Check them out for
-yourself <https://github.com/tbielawa/bitmath/tree/master/tests>`_.
+yourself <https://github.com/timlnx/bitmath/tree/master/tests>`_.
 
 * :ref:`Examples <index_examples>` after the TOC.
 
