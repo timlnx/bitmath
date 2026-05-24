@@ -169,6 +169,13 @@ model.
 | PyPI Trusted Publishing | PyPI's OIDC verifier | Validates the OIDC token from the `publish.yml` workflow and authorizes the upload |
 | PyPI | pypi.org | The distribution channel; serves wheels and sdists over HTTPS to `pip` |
 | Read The Docs | bitmath.readthedocs.io | Hosts the rendered documentation; rebuilds on push to master |
+| `.packit.yaml` | Repository root | Packit configuration; declares which release events trigger Copr scratch builds, dist-git PRs, Koji builds, and Bodhi updates |
+| `python-bitmath.spec` | Repository root | RPM packaging spec used by Packit to build Fedora and EPEL RPMs |
+| Packit | packit.dev | Hosted automation that connects upstream releases to Fedora dist-git, Copr, Koji, and Bodhi based on `.packit.yaml` |
+| Copr | copr.fedorainfracloud.org/coprs/tbielawa/bitmath-ci | Fedora's build-on-demand farm; used for PR scratch builds and release-candidate builds |
+| Fedora dist-git | src.fedoraproject.org/rpms/python-bitmath | Where the official RPM source lives for each Fedora/EPEL branch |
+| Koji | koji.fedoraproject.org | Fedora's official build system; produces the RPMs that ship to users |
+| Bodhi | bodhi.fedoraproject.org | Fedora's update system; pushes Koji-built RPMs to stable for f42, epel9, and epel10 |
 
 ### Pipeline View
 
@@ -217,6 +224,80 @@ model.
                   | Consumer's process     |
                   +------------------------+
 ```
+
+### RPM Distribution Path (Fedora and EPEL via Packit)
+
+The same `release: published` event that triggers `publish.yml` also
+fires the Packit pipeline. The two paths run in parallel and are
+independent of each other; PyPI consumers get the wheel, Fedora and
+EPEL consumers get an RPM. Production releases (clean `vX.Y.Z` tags)
+flow through `propose_downstream` to dist-git, Koji, and Bodhi.
+Release-candidate tags (`vX.Y.Z-rcN`) take a shorter path that only
+produces Copr builds for testing.
+
+```
+                  +------------------------+
+                  | release: published     |
+                  | (same event that fires |
+                  | the publish.yml flow   |
+                  | above)                 |
+                  +-----------+------------+
+                              | reads .packit.yaml
+                              v                + python-bitmath.spec
+                  +------------------------+
+                  | Packit                 |
+                  |                        |
+                  | clean vX.Y.Z tag:      |
+                  |   propose_downstream   |
+                  |   opens dist-git PRs   |
+                  |   for rawhide, f42,    |
+                  |   epel9, epel10        |
+                  |                        |
+                  | vX.Y.Z-rcN tag:        |
+                  |   copr_build only      |
+                  +-----------+------------+
+                              | dist-git PR merged
+                              v
+                  +------------------------+
+                  | Fedora dist-git        |
+                  |   src.fedoraproject    |
+                  |   .org/rpms/           |
+                  |   python-bitmath       |
+                  +-----------+------------+
+                              | commit trigger
+                              v
+                  +------------------------+
+                  | Koji                   |
+                  |   builds RPMs from     |
+                  |   each dist-git branch |
+                  +-----------+------------+
+                              | tagged build
+                              v
+                  +------------------------+
+                  | Bodhi                  |
+                  |   update_type:         |
+                  |   enhancement;         |
+                  |   stable push for      |
+                  |   f42, epel9, epel10   |
+                  |   (rawhide skipped)    |
+                  +-----------+------------+
+                              | dnf install python-bitmath
+                              v
+                  +------------------------+
+                  | Fedora / EPEL consumer |
+                  +------------------------+
+```
+
+The Copr scratch-build job that fires on every pull request is not
+shown above; it is a CI-style validation, not part of the release
+pipeline. It uses the same `.packit.yaml` and spec file to confirm
+the RPM still builds across the targeted Fedora and EPEL branches
+before a change merges.
+
+**Known limitation**: the target matrix in `.packit.yaml` today is
+`fedora-rawhide`, `fedora-42`, `epel-9`, and `epel-10`. As new
+Fedora and EPEL releases land, that list needs to be refreshed. That
+work is tracked outside this document.
 
 ### Actions
 
