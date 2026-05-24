@@ -15,7 +15,7 @@ identify:
   flocker storage driver
 
 * EMC's `scaleio
-  <https://github.com/codedellemc/flocker-drivers/blob/master/scaleio/scaleio_flocker_driver/emc_sio.py>`_
+  <https://github.com/thecodeteam/flocker-drivers/blob/master/scaleio/scaleio_flocker_driver/emc_sio.py>`_
   flocker storage driver
 
 * Dell Storage's `storage center block device

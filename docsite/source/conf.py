@@ -271,6 +271,9 @@ linkcheck_workers = 8
 linkcheck_timeout = 15
 linkcheck_retries = 2
 linkcheck_anchors = True
+# Don't hang the entire run waiting on a rate-limited host (GitHub, gnu.org).
+# Default is 60+ seconds (honors Retry-After). Bail after 10s instead.
+linkcheck_rate_limit_timeout = 10.0
 
 linkcheck_ignore = [
     # The OSSF Scorecard badge endpoint serves an SVG and returns 405 to HEAD,
