@@ -19,6 +19,9 @@
 .. image:: https://api.securityscorecards.dev/projects/github.com/timlnx/bitmath/badge
    :target: https://securityscorecards.dev/viewer/?uri=github.com/timlnx/bitmath
    :alt: OSSF Scorecard
+.. image:: https://www.bestpractices.dev/projects/12749/badge
+   :target: https://www.bestpractices.dev/en/projects/12749
+   :alt: OpenSSF Best Practices
 .. image:: https://img.shields.io/github/issues/timlnx/bitmath?style=flat-square
    :target: https://github.com/timlnx/bitmath/issues
    :alt: Open issues
