@@ -37,7 +37,7 @@ Calculating how many files fit on a device
 ******************************************
 
 In 2001 Apple® announced the iPod™. Their `headline statement
-<http://www.apple.com/pr/library/2001/10/23Apple-Presents-iPod.html>`_
+<https://web.archive.org/web/20170911040157/https://www.apple.com/newsroom/2001/10/23Apple-Presents-iPod/>`_
 boasting:
 
     "... iPod stores up to 1,000 CD-quality songs on its super-thin 5 GB hard drive, ..."
