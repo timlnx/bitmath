@@ -34,7 +34,17 @@ You may also reach out to me at this email address:
 
 * `bitmath@lnx.cx`
 
-Please include a tag in the subject indicating the sensitivity of the issue. I will respond and we will triage the issue, a disclosure statement will be made as soon as we understand the potential impact and have prepared a mitigation.
+Please include a tag in the subject indicating the sensitivity of the issue.
+
+## Response Timeframes
+
+I treat security reports as the top of my queue. The commitments I make to anybody who files one:
+
+* **Acknowledgement of receipt: within 72 hours.** This is just a "got it, working on it" reply so you know the report did not get lost. If you do not hear back in three days, the email may not have made it; try one of the backup channels below.
+* **Initial triage assessment: within 7 days.** This is where I tell you whether the report is reproducible, what the rough severity looks like, and what the disclosure timeline will be.
+* **Coordinated disclosure: as soon as we have a fix prepared and an impact statement we both agree on.** I aim to publish a [GitHub Security Advisory](https://github.com/timlnx/bitmath/security/advisories) and a `NEWS.rst` entry alongside the patch release that contains the fix. If the issue is severe enough that disclosure has to happen before a fix is ready, we coordinate the timing together.
+
+These are commitments, not guarantees. bitmath is maintained by one person on the side. If I am on a plane or in a hospital the clock will keep ticking and I will catch up when I land. The backup channels below exist precisely for "I tried email and got nothing back" situations.
 
 As an emergency backup you can find me on bsky or instagram and direct message me there:
 
