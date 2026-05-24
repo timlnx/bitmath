@@ -10,11 +10,16 @@ NEWS
 bitmath-2.1.0
 *************
 
-*Unreleased*
+*Released: May 24, 2026*
 
 bitmath 2.1.0 is a focused follow-up to the 2.0.0 modernization. It
 finishes the last of the Python 2 cleanup, tightens the project's
-quality tooling, and retires one piece of legacy API surface.
+quality tooling, retires one piece of legacy API surface, and works
+through OpenSSF's full menu of supply-chain checks (Scorecard, Best
+Practices, and the OSPS Baseline) to put a credible security posture
+on the record. The public API is essentially unchanged from 2.0; the
+two breaking changes below are narrow ones that affect internal-type
+inspection and one deprecated helper.
 
 
 Breaking Changes
@@ -45,9 +50,8 @@ Library Improvements
 ====================
 
 **pathlib support**
-   :func:`bitmath.getsize` and :func:`bitmath.listdir` now accept
-   :class:`pathlib.Path` objects, not just strings, for their path
-   and ``search_base`` arguments.
+   :func:`bitmath.getsize` now accepts :class:`pathlib.Path` objects,
+   not just strings, for its ``path`` argument.
 
 
 Project Infrastructure
@@ -60,15 +64,29 @@ Project Infrastructure
    does not cover.
 
 **Security scanning with bandit**
-   bandit runs as part of ``make ci`` and as a dedicated GitHub
-   Actions workflow that fires on every push, every pull request, and
-   on a weekly schedule, scanning both ``bitmath/`` and ``tests/``.
+   Bandit is a static analyzer from PyCQA that scans Python source
+   for common security smells (hardcoded secrets, ``eval``,
+   ``subprocess`` calls with ``shell=True``, insecure ``yaml`` and
+   ``pickle`` deserialization, weak crypto primitives). It runs as
+   part of ``make ci`` and as a dedicated GitHub Actions workflow
+   that fires on every push, every pull request, and on a weekly
+   schedule, scanning both ``bitmath/`` and ``tests/``.
 
 **100% test coverage**
    The remaining coverage gaps were closed, including the
    platform-specific :func:`bitmath.query_device_capacity` branches,
    bringing the suite to 100% measured coverage on every supported
    platform.
+
+**Property-based testing with Hypothesis**
+   Four ``@given`` properties cover :func:`bitmath.parse_string`
+   roundtrips, lossless unit conversion across every ``(src, dst)``
+   pair in :data:`bitmath.ALL_UNIT_TYPES`, and the contract that
+   :func:`bitmath.parse_string` raises only :exc:`ValueError` on bad
+   input. The roundtrip property already turned up a real parser bug
+   around scientific-notation float formatting, which is filed as a
+   follow-up. See `PR #144
+   <https://github.com/timlnx/bitmath/pull/144>`_.
 
 **SPDX license headers**
    Every source and test file now carries ``SPDX-License-Identifier``
@@ -77,6 +95,163 @@ Project Infrastructure
 **Single-sourced version**
    The package version is read dynamically from the ``VERSION`` file
    by hatchling, so bumping that one file propagates everywhere.
+
+**Signed releases (landing with 2.1.0)**
+   The 2.1.0 release closes out the open OSSF Scorecard
+   Signed-Releases finding ("Determines if the project
+   cryptographically signs release artifacts," currently flagged
+   at high severity). Scorecard should reflect the improvement on
+   its next weekly run after the release lands.
+
+
+Security and Supply Chain
+=========================
+
+.. |scorecard| image:: https://api.securityscorecards.dev/projects/github.com/timlnx/bitmath/badge
+   :target: https://securityscorecards.dev/viewer/?uri=github.com/timlnx/bitmath
+   :alt: OSSF Scorecard
+.. |bestpractices| image:: https://www.bestpractices.dev/projects/12749/badge
+   :target: https://www.bestpractices.dev/en/projects/12749
+   :alt: OpenSSF Best Practices
+.. |baseline| image:: https://www.bestpractices.dev/projects/12749/baseline
+   :target: https://www.bestpractices.dev/projects/12749
+   :alt: OpenSSF Baseline
+
+|scorecard| |bestpractices| |baseline|
+
+Most of the work in this release happened here. OpenSSF's
+supply-chain story has matured enough to be worth pursuing in earnest
+even on a small library like bitmath, and the project now carries
+the badges and the automation to back them up.
+
+**OpenSSF Best Practices passing badge**
+   bitmath earned the `OpenSSF Best Practices passing badge
+   <https://www.bestpractices.dev/projects/12749>`_. The full
+   self-assessment is on the linked profile; the badge appears on the
+   README and the docsite landing page alongside the OSSF Scorecard
+   and OSPS Baseline badges.
+
+**OSPS Baseline Levels 1 and 2 (Level 3 mostly)**
+   `OSPS Baseline <https://baseline.openssf.org/>`_ Level 1: 23 Met,
+   2 Not Applicable, 0 Unmet. Level 2: 19 Met, 0 Unmet. Level 3: 18
+   Met, 2 Not Applicable, 1 Unmet. The single Unmet at Level 3 is
+   OSPS-QA-07.01 (non-author code review), which is structurally
+   blocked by this being a single-maintainer project. Closing it
+   would require either onboarding a second maintainer or changing
+   the project governance model, neither of which is happening in
+   2.1.0. The control responses backing each Met assessment live in
+   the docsite under :ref:`Project Architecture
+   <contributing_architecture>` and the policy documents listed below.
+
+**OSSF Scorecard**
+   ``.github/workflows/scorecard.yml`` runs on every push to
+   ``master``, on branch-protection-rule changes, and on a weekly
+   cron. Current score and history are published at
+   https://securityscorecards.dev/viewer/?uri=github.com/timlnx/bitmath.
+
+**GitHub Actions pinned to commit SHAs**
+   Every GitHub Actions reference in ``.github/workflows/`` is now
+   pinned to a full-length commit SHA with the version as a trailing
+   ``# vX.Y.Z`` comment. Floating tags (the old ``@v4``) and
+   floating branch refs (the now-removed
+   ``MishaKav/pytest-coverage-comment@main`` third-party step) are
+   gone. Dependabot keeps the SHAs fresh.
+
+**Dependabot**
+   ``.github/dependabot.yml`` watches the ``github-actions`` and
+   ``pip`` ecosystems on a weekly cadence. Minor and patch bumps are
+   grouped per ecosystem to keep PR noise bounded; major bumps land
+   as standalone PRs so breaking-change review stays honest.
+
+**Hardened workflow token permissions**
+   Every workflow declares an explicit ``permissions: read-all`` at
+   the top level, with ``write`` scopes applied only to the jobs that
+   need them (``security-events: write`` for SARIF upload,
+   ``id-token: write`` for PyPI OIDC Trusted Publishing, and so on).
+   The default-write ``GITHUB_TOKEN`` posture is no longer inherited
+   anywhere.
+
+**SCA via pip-audit**
+   ``.github/workflows/sca.yml`` runs `pip-audit
+   <https://github.com/pypa/pip-audit>`_ on every push, every pull
+   request, and on a weekly cron. bitmath has no runtime
+   dependencies, so this scans the test-only deps in
+   ``requirements.txt``. Findings are resolved on the release-blocking
+   timetable specified in ``SECURITY_POLICIES.md``.
+
+**CycloneDX SBOM attached to every release**
+   The publish workflow now installs the built wheel into an isolated
+   venv, snapshots it with `cyclonedx-py
+   <https://github.com/CycloneDX/cyclonedx-python>`_, and attaches
+   the resulting ``bitmath-<version>.cdx.json`` to the GitHub release
+   alongside the wheel and sdist. Downstream consumers who SBOM-scan
+   everything they ingest can now pull bitmath's SBOM from the
+   release page directly instead of generating their own.
+
+
+Project Documentation and Governance
+====================================
+
+The documentation set picked up five new top-level files this
+release. These exist to answer standing security, governance, and
+verification questions for downstream consumers without requiring a
+real-time email exchange, and several of them are direct deliverables
+for OSPS Baseline controls.
+
+`MAINTAINERS.md <https://github.com/timlnx/bitmath/blob/master/MAINTAINERS.md>`_
+   New top-level file naming the sole current maintainer, the
+   sensitive-resource access that comes with the role (PyPI account,
+   GitHub admin, GPG key, ReadTheDocs admin), maintainer
+   responsibilities, and a standing open call for a Debian/Ubuntu
+   co-maintainer (see `issue #117
+   <https://github.com/timlnx/bitmath/issues/117>`_ if you're
+   interested).
+
+`ARCHITECTURE.md <https://github.com/timlnx/bitmath/blob/master/ARCHITECTURE.md>`_
+   New top-level design document covering runtime architecture, the
+   build and release pipeline (including the Packit downstream RPM
+   flow into Fedora and EPEL), CI gates, trust boundaries, and the
+   documentation pipeline. Lives at the repo root so the OpenSSF
+   scanner finds it by filename, and so anyone exploring the repo for
+   the first time can get the design picture before reading code.
+
+`SECURITY_ASSESSMENT.md <https://github.com/timlnx/bitmath/blob/master/SECURITY_ASSESSMENT.md>`_
+   Standing threat model describing the attack surfaces (supply
+   chain, PyPI account, source repository, build chain, distribution
+   chain), the mitigations in place for each, and the automated
+   security tooling stack with what each tool catches.
+
+`SECURITY_POLICIES.md <https://github.com/timlnx/bitmath/blob/master/SECURITY_POLICIES.md>`_
+   The SAST and SCA remediation thresholds and release-blocking
+   criteria in one place. Bandit and pip-audit findings, severity
+   ladder, the rule for what blocks a release versus what gets a
+   follow-up, and the timetable for acting on each.
+
+`VERIFICATION.md <https://github.com/timlnx/bitmath/blob/master/VERIFICATION.md>`_
+   Downstream-consumer guide for verifying a bitmath release end to
+   end: integrity via the SHA-256 sums published alongside the GitHub
+   release, authenticity via `PEP 740
+   <https://peps.python.org/pep-0740/>`_ attestations and
+   `pypi-attestations
+   <https://github.com/trailofbits/pypi-attestations>`_, and
+   provenance via the CycloneDX SBOM. If your organization's policy
+   requires verifying every dependency before installation, this is
+   the playbook.
+
+`SECURITY.md <https://github.com/timlnx/bitmath/blob/master/SECURITY.md>`_ tightened up
+   Coordinated Vulnerability Disclosure now states explicit response
+   timeframes (72 hours to acknowledge a report, 7 days to triage),
+   and the document picked up new Scope of Support, Duration of
+   Support, and Secrets and Credentials Policy sections.
+
+**HTTPS for all project doc URLs**
+   Every ``http://`` reference to project-owned documentation
+   (``bitmath.readthedocs.io``, the docsite, README badge targets,
+   NEWS historical links, CONTRIBUTING) has been switched to
+   ``https://`` to clear the bestpractices.dev ``sites_https`` check.
+   ReadTheDocs was already serving TLS; only the scheme needed
+   flipping. See `PR #146
+   <https://github.com/timlnx/bitmath/pull/146>`_.
 
 
 .. _bitmath-2.0.0:
