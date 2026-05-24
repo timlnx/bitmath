@@ -18,6 +18,16 @@ jobs:
           python-version: "3.12"
       - name: Build package
         run: pip install build && python -m build
+      - name: Generate CycloneDX SBOM
+        run: |
+          pip install cyclonedx-bom
+          VERSION=$(cat VERSION)
+          python -m venv /tmp/sbom-env
+          /tmp/sbom-env/bin/pip install --upgrade pip
+          /tmp/sbom-env/bin/pip install --no-deps dist/*.whl
+          cyclonedx-py environment /tmp/sbom-env/bin/python \
+            --output-format JSON \
+            --output-file "dist/bitmath-${VERSION}.cdx.json"
       - name: Upload dist artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -30,6 +40,7 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
+      contents: write
     steps:
       - name: Download dist artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -38,3 +49,13 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        with:
+          # Keep the SBOM out of the PyPI upload; it ships on the GitHub release instead.
+          packages-dir: dist/
+          skip-existing: false
+      - name: Attach SBOM to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          gh release upload "$TAG" dist/bitmath-*.cdx.json --clobber --repo "$GITHUB_REPOSITORY"

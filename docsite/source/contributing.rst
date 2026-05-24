@@ -134,16 +134,44 @@ If anybody wants to take over Debian/Ubuntu patching, we can add notes
 for which distributions are covered.
 
 
-.. _contributing_automated_tests:
+.. _contributing_testing_policy:
 
-Automated Tests
-***************
+Testing Policy
+**************
 
-Write `unittests <https://docs.python.org/3/library/unittest.html>`_
-for any new functionality if you are up to the task. It is not a hard
-requirement, but it greatly helps.
+The bitmath testing policy is short: **every major change to the
+library MUST be accompanied by tests in the same pull request.**
 
-All bitmath code includes unit tests to verify expected functionality.
+A "major change" for the purposes of this policy means any of:
+
+* a new public function, method, class, or property
+* a change to the behavior of an existing public API
+* a bug fix whose root cause is reproducible by a test (which is
+  almost all of them)
+* a change to the internal arithmetic, parsing, or normalization
+  logic
+
+A "non-major change" that does not require new tests:
+
+* documentation changes
+* comment-only changes
+* CI workflow tweaks that do not affect the build matrix
+* changes to packaging metadata that do not change runtime behavior
+
+All bitmath code includes unit tests to verify expected
+functionality. New tests should:
+
+* live in ``tests/`` as a ``test_*.py`` file
+* have a unique test case name across the whole suite
+  (``tests/test_unique_testcase_names.sh`` enforces this)
+* be written using `unittest
+  <https://docs.python.org/3/library/unittest.html>`_ (the existing
+  style) unless there is a specific reason to reach for
+  ``pytest``-native features
+
+If you are unsure how to write a test for a particular change, open
+the pull request anyway and ask in the description. I will help you
+scope an appropriate test.
 
 
 .. _contributing_components:
