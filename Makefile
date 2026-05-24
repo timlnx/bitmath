@@ -58,6 +58,12 @@ docs-venv:
 docs: docs-venv $(MANPAGES) docsite/source/index.rst
 	. $(DOCSVENV)/bin/activate && cd docsite && make html
 
+# Scan every external URL in the docsite (plus NEWS.rst via include) and
+# report broken links. Output lands in docsite/build/linkcheck/output.txt.
+# Configured via linkcheck_* settings in docsite/source/conf.py.
+linkcheck: docs-venv docsite/source/index.rst
+	. $(DOCSVENV)/bin/activate && cd docsite && make linkcheck
+
 # Add examples to the RTD docs by taking it from the README
 docsite/source/index.rst: docsite/source/index.rst.in README.rst VERSION
 	@echo "#############################################"
