@@ -961,5 +961,5 @@ behavior.
 
 Self-contained, copy-paste examples for integrating :mod:`bitmath` with
 :mod:`argparse`, `click <https://click.palletsprojects.com/>`_, and
-`progressbar2 <https://progressbar-2.readthedocs.io/>`_ are collected in
+`progressbar2 <https://progressbar-2.readthedocs.io/en/latest/>`_ are collected in
 the :ref:`Integration Examples <integration_examples>` chapter.

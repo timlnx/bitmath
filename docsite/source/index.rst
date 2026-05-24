@@ -21,7 +21,7 @@
 .. image:: https://img.shields.io/pypi/pyversions/bitmath?style=flat-square
    :alt: PyPI - Python Version
 
-.. image:: https://readthedocs.org/projects/bitmath/badge/?version=latest
+.. image:: https://app.readthedocs.org/projects/bitmath/badge/?version=latest
    :target: https://bitmath.readthedocs.io/
 .. image:: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml/badge.svg
    :target: https://github.com/timlnx/bitmath/actions/workflows/bandit.yml

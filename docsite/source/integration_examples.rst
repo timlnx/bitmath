@@ -224,7 +224,7 @@ Example run:
 progressbar2
 ************
 
-`progressbar2 <https://progressbar-2.readthedocs.io/>`_ is a flexible
+`progressbar2 <https://progressbar-2.readthedocs.io/en/latest/>`_ is a flexible
 terminal progress-bar library.  The example below defines a custom widget
 that displays a data-transfer speed (bytes per second) in a
 human-readable bitmath unit, and demonstrates it with a simulated file

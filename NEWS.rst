@@ -233,7 +233,7 @@ for OSPS Baseline controls.
    release, authenticity via `PEP 740
    <https://peps.python.org/pep-0740/>`_ attestations and
    `pypi-attestations
-   <https://github.com/trailofbits/pypi-attestations>`_, and
+   <https://github.com/pypi/pypi-attestations>`_, and
    provenance via the CycloneDX SBOM. If your organization's policy
    requires verifying every dependency before installation, this is
    the playbook.
@@ -861,7 +861,7 @@ Project
 **Tests**
 
 * Test suite is now implemented using `Python virtualenv's
-  <https://github.com/timlnx/bitmath/blob/master/Makefile#L177>`_
+  <https://github.com/timlnx/bitmath/blob/master/Makefile>`_
   for consistency across across platforms
 * Test suite now contains 150 unit tests. This is **110** more tests
   than the previous major release (`1.0.4-1 <bitmath-1.0.4-1>`__)

@@ -51,7 +51,7 @@ calculations <getting_started_arithmetic>`, then you will find
 hurry.filesize lacking. This project has not updated since 2009, so I
 would not expect to see updates any time soon.
 
-* `PyPi Homepage & Download <https://pypi.python.org/pypi/hurry.filesize>`_
+* `PyPi Homepage & Download <https://pypi.org/project/hurry.filesize/>`_
 
 
 SymPy - Units

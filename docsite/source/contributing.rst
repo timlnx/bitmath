@@ -193,14 +193,14 @@ The bitmath test suite depends on the following tools:
   to execute the unittest-based test suite, collect results, and report
   coverage.
 
-* `pytest-cov <https://pytest-cov.readthedocs.io/>`_ — Coverage plugin
+* `pytest-cov <https://pytest-cov.readthedocs.io/en/latest/>`_ — Coverage plugin
   for pytest. The project aims for high coverage; reasonable exceptions
   can always be discussed in the pull request.
 
 * `pycodestyle <https://pypi.org/project/pycodestyle/>`_ — Checks
   Python code style (PEP 8).
 
-* `pylint <https://pylint.readthedocs.io/>`_ — Full static analysis:
+* `pylint <https://pylint.readthedocs.io/en/stable/>`_ — Full static analysis:
   naming, refactoring hints, design metrics, and correctness. The
   project targets a score of 10.00/10.
 
