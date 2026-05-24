@@ -259,3 +259,24 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+
+# -- Options for linkcheck builder ---------------------------------------------
+
+# Run `make linkcheck` to scan every external URL in the docsite plus NEWS.rst
+# (included via `.. include::`) and report broken links to
+# docsite/build/linkcheck/output.txt.
+
+linkcheck_workers = 8
+linkcheck_timeout = 15
+linkcheck_retries = 2
+linkcheck_anchors = True
+
+linkcheck_ignore = [
+    # The OSSF Scorecard badge endpoint serves an SVG and returns 405 to HEAD,
+    # 302 to GET. The badge renders fine in the wild; skip the probe.
+    r'^https://api\.securityscorecards\.dev/.*',
+    # Wayback Machine snapshots are intentionally pinned to a specific archive
+    # date. They occasionally return 5xx during indexing; treat as out-of-band.
+    r'^https://web\.archive\.org/web/\d+/.*',
+]
