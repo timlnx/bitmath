@@ -34,6 +34,24 @@ provided template.
 * `View open issues <https://github.com/timlnx/bitmath/issues>`_
 
 
+.. _contributing_architecture:
+
+Project Architecture
+********************
+
+If you are about to make a non-trivial change, read the
+`ARCHITECTURE.md
+<https://github.com/timlnx/bitmath/blob/master/ARCHITECTURE.md>`_
+document in the repository root first. It is the map of how bitmath
+is put together: the runtime library, the build and release
+pipeline, the CI gates, and the trust boundaries.
+
+The contract is that ``ARCHITECTURE.md`` is reviewed at every minor
+release and updated alongside any change to a public API, the build
+pipeline, or a trust boundary. If you are touching one of those
+things, your pull request should include the corresponding update.
+
+
 .. _contributing_code_style:
 
 Code Style and Formatting
