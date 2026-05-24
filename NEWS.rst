@@ -507,12 +507,12 @@ Changes
 * Fixed packaging: ``bitmath.integrations`` subpackage was missing from
   the ``packages`` list in ``setup.py.in``, causing the argparse, click,
   and progressbar integrations to be absent from installed distributions.
-  Reported in `PR #107 <https://github.com/tbielawa/bitmath/pull/107>`_.
+  Reported in `PR #107 <https://github.com/timlnx/bitmath/pull/107>`_.
 
 * Modernized mock imports in the test suite: ``tests/test_progressbar.py``
   and ``tests/test_query_device_capacity.py`` now prefer ``unittest.mock``
   (stdlib, Python 3.3+) and fall back to the third-party ``mock`` package.
-  Based on `PR #105 <https://github.com/tbielawa/bitmath/pull/105>`_.
+  Based on `PR #105 <https://github.com/timlnx/bitmath/pull/105>`_.
 
 
 .. _bitmath-1.3.3-1:
@@ -683,7 +683,7 @@ Project
 
 Look for separate python3.x and python2.x packages coming soon to
 `Fedora <https://getfedora.org/>`_ and `EPEL
-<https://fedoraproject.org/wiki/EPEL>`_. This is happening because of
+<https://docs.fedoraproject.org/en-US/epel/>`_. This is happening because of
 the `initiative
 <https://fedoraproject.org/wiki/FAD_Python_3_Porting_2015>`_ to update
 the base Python implementation on Fedora to Python 3.x
@@ -812,7 +812,7 @@ Major Updates
   <https://bitmath.readthedocs.io/en/latest/>`_
 * bitmath is now Python 3.x compatible
 * bitmath is now included in the `Extra Packages for Enterprise Linux
-  <https://fedoraproject.org/wiki/EPEL>`_ EPEL6 and EPEL7 repositories
+  <https://docs.fedoraproject.org/en-US/epel/>`_ EPEL6 and EPEL7 repositories
   (`pkg info
   <https://src.fedoraproject.org/rpms/python-bitmath>`_)
 * merged 6 `pull requests
@@ -885,7 +885,7 @@ Project
 
 Available via:
 
-* `PyPi <https://pypi.python.org/pypi/bitmath/>`_
+* `PyPi <https://pypi.org/project/bitmath/>`_
 * Fedora 19
 * Fedora 20
 
