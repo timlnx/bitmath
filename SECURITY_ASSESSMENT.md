@@ -99,7 +99,7 @@ and operate on a descriptor the consumer has already opened.
   Protection model makes the call meaningless. There is no codepath
   to exploit there because there is no codepath at all.
 
-### 4. The build and release pipeline
+### 4. The Build and Release Pipeline
 
 The build pipeline itself is an attack surface: if the publishing
 workflow could be tricked into emitting a malicious wheel, every

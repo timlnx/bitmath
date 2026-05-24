@@ -8,15 +8,15 @@
 
 ## Contents
 
-- [Why this document exists](#why-this-document-exists)
-- [Runtime architecture](#runtime-architecture)
-- [Build and release pipeline](#build-and-release-pipeline)
-- [CI and quality gates](#ci-and-quality-gates)
-- [Trust boundaries](#trust-boundaries)
-- [Documentation pipeline](#documentation-pipeline)
+- [Why This Document Exists](#why-this-document-exists)
+- [Runtime Architecture](#runtime-architecture)
+- [Build and Release Pipeline](#build-and-release-pipeline)
+- [CI and Quality Gates](#ci-and-quality-gates)
+- [Trust Boundaries](#trust-boundaries)
+- [Documentation Pipeline](#documentation-pipeline)
 - [Maintenance](#maintenance)
 
-## Why this document exists
+## Why This Document Exists
 
 This is the architecture map for bitmath. It exists so downstream
 consumers and future contributors can see, in one place, what the
@@ -40,9 +40,9 @@ adding a new public function, restructuring the class hierarchy,
 changing the build backend, or changing how releases get published.
 No, if you are fixing a bug or adding a test.
 
-## Runtime architecture
+## Runtime Architecture
 
-### Component inventory
+### Component Inventory
 
 The runtime library is a single Python module, `bitmath`, deliberately
 kept small. Almost all the logic lives in `bitmath/__init__.py`. The
@@ -58,7 +58,7 @@ actors that show up at runtime:
 | Constants | `bitmath.NIST`, `bitmath.SI`, `bitmath.NIST_PREFIXES`, `bitmath.SI_PREFIXES`, `bitmath.ALL_UNIT_TYPES` | Module-level lookup tables and system identifiers |
 | OS abstraction layer | Standard library: `shutil`, `os`, `fcntl` (Linux), `ctypes` (Windows) | Platform-specific calls used by the capacity-query functions |
 
-### Layered view
+### Layered View
 
 ```
 +--------------------------------------------------------------+
@@ -141,7 +141,7 @@ consumer triggers them:
    elevated privileges on Linux (root) and Windows (administrator);
    macOS raises `NotImplementedError`.
 
-### Data flow
+### Data Flow
 
 Untrusted input enters the library at exactly three runtime places:
 the string parsers (`parse_string`, `parse_string_unsafe`), the
@@ -153,9 +153,9 @@ what bitmath does and does not validate at each entry point. See
 [SECURITY_ASSESSMENT.md](SECURITY_ASSESSMENT.md) for the full threat
 model.
 
-## Build and release pipeline
+## Build and Release Pipeline
 
-### Component inventory
+### Component Inventory
 
 | Actor | Lives at | What it does |
 |-------|----------|--------------|
@@ -170,7 +170,7 @@ model.
 | PyPI | pypi.org | The distribution channel; serves wheels and sdists over HTTPS to `pip` |
 | Read The Docs | bitmath.readthedocs.io | Hosts the rendered documentation; rebuilds on push to master |
 
-### Pipeline view
+### Pipeline View
 
 ```
                   +------------------------+
@@ -249,7 +249,7 @@ model.
    against the published SHA-256 hash, and installs into their
    environment.
 
-## CI and quality gates
+## CI and Quality Gates
 
 CI runs continuously on `master` and on every pull request. These
 actors influence what is merged but do not produce released
@@ -269,7 +269,7 @@ The first three are required status checks on the `master` branch.
 Merges are blocked until they pass. `enforce_admins: true` so I
 cannot bypass them.
 
-## Trust boundaries
+## Trust Boundaries
 
 bitmath validates input only at the places untrusted data enters the
 library. The ingress points are:
@@ -293,7 +293,7 @@ library. The ingress points are:
 See [SECURITY_ASSESSMENT.md](SECURITY_ASSESSMENT.md) for the full
 threat model and the specific mitigations at each boundary.
 
-## Documentation pipeline
+## Documentation Pipeline
 
 The documentation lives in `docsite/source/`. Sphinx builds it.
 `index.rst.in` is the source template; `index.rst` is generated from
