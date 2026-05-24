@@ -47,7 +47,7 @@ values.
 
 Why two unit systems? Why take the time to point this difference out?
 Why should you care? `The Linux Documentation Project
-<http://www.tldp.org/>`_ comments on that:
+<https://www.tldp.org/>`_ comments on that:
 
     Before these binary prefixes were introduced, it was fairly common
     to use k=1000 and K=1024, just like b=bit, B=byte.  Unfortunately,

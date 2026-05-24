@@ -98,7 +98,7 @@ Bitwise Operations
 
 .. seealso::
 
-   `Bitwise Calculator <http://www.miniwebtool.com/bitwise-calculator/>`_
+   `Bitwise Calculator <https://miniwebtool.com/bitwise-calculator/>`_
       A free online calculator for checking your math
 
 Bitwise operations are also supported. Bitwise operations work

@@ -814,7 +814,7 @@ Major Updates
 * bitmath is now included in the `Extra Packages for Enterprise Linux
   <https://fedoraproject.org/wiki/EPEL>`_ EPEL6 and EPEL7 repositories
   (`pkg info
-  <https://admin.fedoraproject.org/pkgdb/package/rpms/python-bitmath/>`_)
+  <https://src.fedoraproject.org/rpms/python-bitmath>`_)
 * merged 6 `pull requests
   <https://github.com/timlnx/bitmath/pulls?q=is%3Apr+closed%3A%3C2014-08-28>`_
   from 3 `contributors
@@ -867,7 +867,7 @@ Project
   than the previous major release (`1.0.4-1 <bitmath-1.0.4-1>`__)
 * Test suite now runs on EPEL6 and EPEL7
 * `Code coverage
-  <https://coveralls.io/github/timlnx/bitmath>`_ is stable
+  <https://coveralls.io/github/tbielawa/bitmath>`_ is stable
   around 95-100%
 
 

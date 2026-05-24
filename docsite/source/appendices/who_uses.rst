@@ -22,7 +22,7 @@ identify:
   <https://github.com/dellstorage/storagecenter-flocker-driver/blob/master/dell_storagecenter_driver/dell_storagecenter_blockdevice.py>`_
   flocker driver
 
-* `TravelCRM <http://www.travelcrm.org.ua/en/>`_ - Free CRM for travel
+* `TravelCRM <https://www.travelcrm.org.ua/en/>`_ - Free CRM for travel
   companies - `Bitbucket <https://bitbucket.org/mazvv/travelcrm>`_
 
 * `direscraw
