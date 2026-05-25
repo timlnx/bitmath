@@ -13,6 +13,22 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Verify tag matches VERSION file
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          TAG_VERSION="${TAG#v}"
+          FILE_VERSION="$(cat VERSION)"
+          if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
+            echo "::error::Release tag does not match VERSION file."
+            echo "  Tag (raw):       $TAG"
+            echo "  Tag (normalized): $TAG_VERSION"
+            echo "  VERSION file:     $FILE_VERSION"
+            echo ""
+            echo "This almost always means VERSION was not bumped before the tag was cut."
+            echo "Fix: bump VERSION on master, delete the bad tag and release, re-tag, recreate the release."
+            exit 1
+          fi
+          echo "OK: tag $TAG matches VERSION $FILE_VERSION"
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
