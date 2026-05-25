@@ -79,9 +79,16 @@ jobs:
         with:
           packages-dir: dist/
           skip-existing: false
-      - name: Attach SBOM to GitHub Release
+      - name: Attach release artifacts to GitHub Release
+        # The .publish.attestation files are what Scorecard's Signed-Releases
+        # check looks for; it inspects GitHub release assets, not PyPI.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
-          gh release upload "$TAG" sbom/bitmath-*.cdx.json --clobber --repo "$GITHUB_REPOSITORY"
+          gh release upload "$TAG" \
+            dist/bitmath-*.whl \
+            dist/bitmath-*.tar.gz \
+            dist/bitmath-*.publish.attestation \
+            sbom/bitmath-*.cdx.json \
+            --clobber --repo "$GITHUB_REPOSITORY"
