@@ -40,6 +40,10 @@
    :alt: License
 
 
+.. image:: https://raw.githubusercontent.com/timlnx/bitmath/refs/heads/master/assets/logo/masthead.png
+   :alt: Bitmath logo
+
+
 bitmath
 =======
 
@@ -49,9 +53,8 @@ bitmath
 * Bugs: https://github.com/timlnx/bitmath/issues
 * Contributing: https://bitmath.readthedocs.io/en/latest/contributing.html
 
-`bitmath <https://bitmath.readthedocs.io/en/latest/>`_ simplifies many
-facets of interacting with file sizes in various units. Originally
-focusing on file size unit conversion, functionality now includes:
+`bitmath <https://bitmath.readthedocs.io/en/latest/>`_ lets you treat
+files sizes like any other number in Python.
 
 * Converting between **SI** and **NIST** prefix units (``kB`` to ``GiB``)
 * Converting between units of the same type (SI to SI, or NIST to NIST)
